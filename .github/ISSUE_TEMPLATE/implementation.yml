@@ -1,0 +1,30 @@
+name: New Implementation
+description: A new feature or enhancement to be implemented.
+title: "[NEW] Nueva Implementación"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Nueva Implementación por ser realizada.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Qué se necesita implementar?
+      placeholder: Describe el requerimiento a implementar.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: projects
+    attributes:
+      label: Entorno de Implementación
+      description: A qué entorno pertenece esta implementación?
+      multiple: true
+      options:
+        - Frontend/Backend
+        - Ciberseguridad
+        - Redes
+        - Proyecto
+
