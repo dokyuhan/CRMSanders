@@ -1,9 +1,8 @@
-// src/LoginPage.tsx
+
 import React, { useState } from 'react';
 import { useLogin, useNotify } from 'react-admin';
 import styled from 'styled-components';
 
-// Styling for the container
 const LoginContainer = styled.div`
   display: flex;
   align-items: center;
@@ -21,7 +20,6 @@ const LoginContainer = styled.div`
   }
 `;
 
-// Styling for input fields
 const Input = styled.input`
   width: 100%;
   padding: 10px 15px;
@@ -36,7 +34,6 @@ const Input = styled.input`
   }
 `;
 
-// Styling for the button
 const Button = styled.button`
   width: 100%;
   padding: 10px 0;
