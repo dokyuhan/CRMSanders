@@ -4,6 +4,7 @@ import express from "express"
 import mysql from "mysql2"
 import bodyParser from "body-parser"
 import bycrypt from "bcryptjs"
+import cors from "cors"
 
 const app = express();
 const port = process.env.PORT || 3000;

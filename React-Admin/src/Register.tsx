@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNotify } from 'react-admin';
 import styled from 'styled-components';
 
-// Estilos reutilizados para el contenedor, input y botón
 const RegisterContainer = styled.div`
   display: flex;
   align-items: center;
@@ -59,10 +58,7 @@ const RegisterPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      // Aquí deberías hacer la llamada a la API para registrar al usuario
-      // Ejemplo: await register({ username, email, password });
-      
-      // Suponiendo que la operación fue exitosa:
+
       notify('Registration successful');
     } catch (error) {
       notify('Registration failed');
