@@ -51,15 +51,27 @@ const Button = styled.button`
 
 const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const notify = useNotify();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
+      const response = await fetch('http://localhost:3002/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-      notify('Registration successful');
+      const data = await response.json();
+
+      if (response.ok) {
+        notify('Registration successful');
+      } else {
+        notify(data.msg || 'Registration failed');
+      }
     } catch (error) {
       notify('Registration failed');
     }
