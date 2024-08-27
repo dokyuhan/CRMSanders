@@ -14,10 +14,10 @@ app.use(bodyParser.json());
 //Database connection
 const pool = mysql.createPool({
     connectionLimit: 10, 
-    host: 'localhost',
-    user: 'user', 
-    password: 'contraseña', 
-    database: 'crmSanders', 
+    host: 'process.env.HOST',
+    user: 'process.env.USER', 
+    password: 'process.env.PASSWORD', 
+    database: 'process.env.DATABASE', 
 });
 
 app.post("/register", async (req, res) => {
