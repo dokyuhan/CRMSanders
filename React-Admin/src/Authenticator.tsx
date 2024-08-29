@@ -1,32 +1,38 @@
-// in src/authProvider.ts
+// src/authProvider.ts
 import { AuthProvider } from "react-admin";
 
 export const authProvider: AuthProvider = {
-    // called when the user attempts to log in
-    login: ({ username }) => {
+    login: (params: { username: string; password: string }) => {
+        const { username, password } = params;
+        // Aquí deberías verificar el username y password contra tu base de datos o API
+        const role = username === 'admin' ? 'admin' : 'user'; // Simple simulación de roles
         localStorage.setItem("username", username);
-        // accept all username/password combinations
+        localStorage.setItem("role", role);
+        window.dispatchEvent(new CustomEvent('login-success'));
         return Promise.resolve();
     },
-    // called when the user clicks on the logout button
     logout: () => {
         localStorage.removeItem("username");
+        localStorage.removeItem("role");
         return Promise.resolve();
     },
-    // called when the API returns an error
-    checkError: ({ status }: { status: number }) => {
+    checkError: (error: any) => {
+        const { status } = error;
         if (status === 401 || status === 403) {
             localStorage.removeItem("username");
+            localStorage.removeItem("role");
             return Promise.reject();
         }
         return Promise.resolve();
     },
-    // called when the user navigates to a new location, to check for authentication
     checkAuth: () => {
-        return localStorage.getItem("username")
-            ? Promise.resolve()
-            : Promise.reject();
+        return localStorage.getItem("username") ? Promise.resolve() : Promise.reject();
     },
-    // called when the user navigates to a new location, to check for permissions / roles
-    getPermissions: () => Promise.resolve(),
+    getPermissions: () => {
+        const role = localStorage.getItem("role");
+        console.log("Current role from localStorage:", role);  // Debugging output
+        return role ? (console.log("done"), Promise.resolve(role)) : Promise.reject("No role found");
+
+    },
 };
+
