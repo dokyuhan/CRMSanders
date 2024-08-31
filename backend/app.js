@@ -33,14 +33,16 @@ const pool = mysql.createPool({
 });
 
 app.post("/register", async (req, res) => {
-    const { nombre, contrasena, correo } = req.body;
+    const { username: nombre, password: contrasena, email: correo } = req.body;
     const tipo_usuario = 'donador'; 
     console.log("Datos recibidos:", req.body);
-
+    
     try {
-        const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
+        const [rows] = await pool.query('SELECT * FROM usuarios WHERE nombre = ?', [nombre]);
         if (rows.length > 0) {
+            console.log("El usuario ya existe")
             return res.status(400).json({ msg: 'El usuario ya existe' });
+            
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -60,31 +62,31 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { correo, contrasena } = req.body;
-  
-  try {
-      const salt = await bcrypt.genSalt(10);
-      const hashedCorreo = await bcrypt.hash(correo, salt);
+    const { email: correo, password: contrasena } = req.body;
+    
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const hashedCorreo = await bcrypt.hash(correo, salt);
 
-      const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [hashedCorreo]);
-      
-      if (rows.length === 0) {
-          return res.status(400).json({ msg: 'Usuario no encontrado' });
-      }
+        const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [hashedCorreo]);
+        
+        if (rows.length === 0) {
+            return res.status(400).json({ msg: 'Usuario no encontrado' });
+        }
 
-      const user = rows[0];
-      
-      const isMatch = await bcrypt.compare(contrasena, user.contrasena);
+        const user = rows[0];
+        
+        const isMatch = await bcrypt.compare(contrasena, user.contrasena);
 
-      if (isMatch) {
-          res.status(200).json({ msg: 'Inicio de sesión exitoso' });
-      } else {
-          res.status(400).json({ msg: 'Contraseña incorrecta' });
-      }
-  } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Error del servidor');
-  }
+        if (isMatch) {
+            res.status(200).json({ msg: 'Inicio de sesión exitoso' });
+        } else {
+            res.status(400).json({ msg: 'Contraseña incorrecta' });
+        }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
+    }
 });
 
 

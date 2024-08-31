@@ -5,8 +5,8 @@ USE  crmSanders;
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
-    contrasena VARCHAR(100) NOT NULL,
-    correo VARCHAR(20) NOT NULL UNIQUE,
+    contrasena VARCHAR(255) NOT NULL,
+    correo VARCHAR(100) NOT NULL UNIQUE,
     tipo_usuario ENUM('admin', 'donador') NOT NULL
 );
 
@@ -25,7 +25,7 @@ DELIMITER $$
 
 CREATE PROCEDURE registrar_usuario(
     IN p_nombre VARCHAR(50),
-    IN p_contrasena VARCHAR(30),
+    IN p_contrasena VARCHAR(255),
     IN p_correo VARCHAR(100),
     IN p_tipo_usuario ENUM( 'donador')
 )
