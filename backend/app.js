@@ -1,11 +1,11 @@
-"use strict"
+"use strict";
 
-import express from "express"
-import mysql from "mysql2"
-import bodyParser from "body-parser"
-import bcrypt from "bcryptjs"
-import cors from "cors"
-import 'dotenv/config'
+import express from "express";
+import mysql from "mysql2/promise";
+import bodyParser from "body-parser";
+import bcrypt from "bcryptjs";
+import cors from "cors";
+import 'dotenv/config';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,43 +14,78 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Database connection
+// Database connection pool
+/*async function connectToDB() {
+  return await mysql.createConnection({
+    host: "localhost",
+    user: "user1",
+    password: "cisco",
+    database: "crmSanders",
+  });
+}*/
+
 const pool = mysql.createPool({
-    connectionLimit: 10, 
-    host: process.env.DB_HOST, 
-    user: process.env.DB_USER, 
-    password: process.env.DB_PASSWORD, 
-    database: process.env.DB_DATABASE, 
+    connectionLimit: 10,
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'user1', 
+    password: process.env.DB_PASSWORD || 'cisco', 
+    database: process.env.DB_DATABASE || 'crmSanders', 
 });
 
 app.post("/register", async (req, res) => {
-    const { username, password } = req.body;
-  
+    const { nombre, contrasena, correo } = req.body;
+    const tipo_usuario = 'donador'; 
+    console.log("Datos recibidos:", req.body);
+
     try {
-      
-      pool.query('SELECT * FROM users WHERE username = ?', [username], async (err, results) => {
-        if (err) throw err;
-  
-        if (results.length > 0) {
-          return res.status(400).json({ msg: 'User already exists' });
+        const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
+        if (rows.length > 0) {
+            return res.status(400).json({ msg: 'El usuario ya existe' });
         }
-  
+
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-  
-        pool.query(
-          'INSERT INTO users (username, password) VALUES (?, ?)',
-          [username, hashedPassword],
-          (err, result) => {
-            if (err) throw err;
-            res.status(201).json({ msg: 'User registered successfully' });
-          }
+        const hashedPassword = await bcrypt.hash(contrasena, salt);
+        const hashedcorreo = await bcrypt.hash(correo, salt);
+
+        await pool.query(
+            'CALL registrar_usuario(?, ?, ?, ?)',
+            [nombre, hashedPassword, hashedcorreo, tipo_usuario]
         );
-      });
+
+        res.status(201).json({ msg: 'Usuario registrado exitosamente como donador' });
     } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server error');
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
     }
-  });
+});
+
+app.post("/login", async (req, res) => {
+  const { correo, contrasena } = req.body;
+  
+  try {
+      const salt = await bcrypt.genSalt(10);
+      const hashedCorreo = await bcrypt.hash(correo, salt);
+
+      const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [hashedCorreo]);
+      
+      if (rows.length === 0) {
+          return res.status(400).json({ msg: 'Usuario no encontrado' });
+      }
+
+      const user = rows[0];
+      
+      const isMatch = await bcrypt.compare(contrasena, user.contrasena);
+
+      if (isMatch) {
+          res.status(200).json({ msg: 'Inicio de sesión exitoso' });
+      } else {
+          res.status(400).json({ msg: 'Contraseña incorrecta' });
+      }
+  } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Error del servidor');
+  }
+});
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

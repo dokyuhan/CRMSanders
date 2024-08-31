@@ -17,7 +17,7 @@ const RegisterContainer = styled.div`
   min-height: 100vh;
 `;
 
-const FormContainer = styled.div`
+const FormContainer = styled.form`  // Cambiado de div a form para permitir el envío de formulario
   display: flex;
   flex-direction: column;
   padding: 30px;
@@ -32,7 +32,7 @@ const FormContainer = styled.div`
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;  // Ajustado al 100% para alinear los inputs y el botón
+  width: 100%;
 `;
 
 const Input = styled.input`
@@ -71,6 +71,7 @@ const Button = styled.button`
 const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(''); 
   const notify = useNotify();
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -81,7 +82,7 @@ const RegisterPage: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, email }),
       });
 
       const data = await response.json();
@@ -116,7 +117,13 @@ const RegisterPage: React.FC = () => {
               type="password"
               required
             />
-            <Button type = "submit"> Register </Button>
+            <Input
+              value={email}
+              onChange={e => setEmail(e.target.value)} 
+              placeholder="Email"
+              type="email" 
+            />
+            <Button type="submit">Register</Button>
           </InputContainer>
         </FormContainer>
       </RegisterContainer>
