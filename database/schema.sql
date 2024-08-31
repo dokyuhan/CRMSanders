@@ -5,8 +5,8 @@ USE  crmSanders;
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
-    contrasena VARCHAR(255) NOT NULL,
-    correo VARCHAR(100) NOT NULL UNIQUE,
+    contrasena VARCHAR(100) NOT NULL,  
+    correo VARCHAR(100) NOT NULL UNIQUE,  
     tipo_usuario ENUM('admin', 'donador') NOT NULL
 );
 
@@ -19,41 +19,34 @@ CREATE TABLE IF NOT EXISTS donaciones (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
-
-
 DELIMITER $$
 
 CREATE PROCEDURE registrar_usuario(
     IN p_nombre VARCHAR(50),
-    IN p_contrasena VARCHAR(255),
+    IN p_contrasena VARCHAR(100),  
     IN p_correo VARCHAR(100),
-    IN p_tipo_usuario ENUM( 'donador')
+    IN p_tipo_usuario ENUM('admin', 'donador')
 )
 BEGIN
     INSERT INTO usuarios (nombre, contrasena, correo, tipo_usuario)
     VALUES (p_nombre, p_contrasena, p_correo, p_tipo_usuario);
 END $$
 
-DELIMITER ;
-
 DELIMITER $$
-
 
 CREATE PROCEDURE registrar_donacion(
     IN p_usuario_id INT,
     IN p_monto DECIMAL(10, 2),
     IN p_metodo_pago VARCHAR(50)
 )
-
-
 BEGIN
     DECLARE tipo ENUM('admin', 'donador');
 
     SELECT tipo_usuario INTO tipo FROM usuarios WHERE id = p_usuario_id;
 
     IF tipo = 'donador' THEN
-        INSERT INTO donaciones (usuario_id, monto, metodo_pago, donacion_continua)
-        VALUES (p_usuario_id, p_monto, p_metodo_pago, p_donacion_continua);
+        INSERT INTO donaciones (usuario_id, monto, metodo_pago)
+        VALUES (p_usuario_id, p_monto, p_metodo_pago);
     ELSE
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Solo los donadores pueden realizar donaciones';
     END IF;
