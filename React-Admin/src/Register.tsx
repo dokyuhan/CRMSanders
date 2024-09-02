@@ -6,7 +6,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(to right, #313131, #313131);
+    background: linear-gradient(to right, #3D2DD4, #3D2DD4);
   }
 `;
 
