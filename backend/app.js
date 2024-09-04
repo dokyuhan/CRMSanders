@@ -15,15 +15,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Database connection pool
-/*async function connectToDB() {
-  return await mysql.createConnection({
-    host: "localhost",
-    user: "user1",
-    password: "cisco",
-    database: "crmSanders",
-  });
-}*/
-
 const pool = mysql.createPool({
     connectionLimit: 10,
     host: process.env.DB_HOST || 'localhost',
@@ -35,14 +26,15 @@ const pool = mysql.createPool({
 app.post("/register", async (req, res) => {
     const { username: nombre, password: contrasena, email: correo } = req.body;
     const tipo_usuario = 'donador'; 
-    console.log("Datos recibidos:", req.body);
+    console.log("Datos recibidos en /register:", req.body);
     
     try {
         const [rows] = await pool.query('SELECT * FROM usuarios WHERE nombre = ?', [nombre]);
+        console.log("Usuarios encontrados con el nombre dado:", rows);
+        
         if (rows.length > 0) {
-            console.log("El usuario ya existe")
+            console.log("El usuario ya existe");
             return res.status(400).json({ msg: 'El usuario ya existe' });
-            
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -56,26 +48,27 @@ app.post("/register", async (req, res) => {
 
         res.status(201).json({ msg: 'Usuario registrado exitosamente como donador' });
     } catch (err) {
-        console.error(err.message);
+        console.error("Error en /register:", err.message);
         res.status(500).send('Error del servidor');
     }
 });
 
 app.post("/login", async (req, res) => {
     const { email: correo, password: contrasena } = req.body;
+    console.log("Datos recibidos en /login:", req.body);
     
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedCorreo = await bcrypt.hash(correo, salt);
 
         const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [hashedCorreo]);
+        console.log("Usuarios encontrados con el correo dado:", rows);
         
         if (rows.length === 0) {
             return res.status(400).json({ msg: 'Usuario no encontrado' });
         }
 
         const user = rows[0];
-        
         const isMatch = await bcrypt.compare(contrasena, user.contrasena);
 
         if (isMatch) {
@@ -84,10 +77,85 @@ app.post("/login", async (req, res) => {
             res.status(400).json({ msg: 'Contraseña incorrecta' });
         }
     } catch (err) {
-        console.error(err.message);
+        console.error("Error en /login:", err.message);
         res.status(500).send('Error del servidor');
     }
 });
 
+// Obtener todas las donaciones
+app.get("/donaciones", async (req, res) => {
+    console.log("Solicitud GET a /donaciones recibida");
+    try {
+        // Consulta para obtener todas las donaciones
+        const [rows] = await pool.query('SELECT * FROM donaciones');
+        console.log("Donaciones encontradas:", rows);
+        
+        // Consulta para contar el número total de donaciones
+        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM donaciones');
+        const totalCount = countResult[0].count;
+        
+        // Añadir el encabezado X-Total-Count
+        res.setHeader('X-Total-Count', totalCount);
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
+
+        // Enviar las donaciones como respuesta
+        res.json(rows);
+    } catch (err) {
+        console.error("Error en GET /donaciones:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+
+// Crear una nueva donación
+app.post("/donaciones", async (req, res) => {
+    const { usuario_id, monto, metodo_pago } = req.body;
+    console.log("Datos recibidos en POST /donaciones:", req.body);
+    
+    try {
+        const [result] = await pool.query(
+            'INSERT INTO donaciones (usuario_id, monto, metodo_pago) VALUES (?, ?, ?)',
+            [usuario_id, monto, metodo_pago]
+        );
+
+        res.status(201).json({ id: result.insertId, usuario_id, monto, metodo_pago, fecha_donacion: new Date() });
+    } catch (err) {
+        console.error("Error en POST /donaciones:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+// Actualizar una donación
+app.put("/donaciones/:id", async (req, res) => {
+    const { id } = req.params;
+    const { usuario_id, monto, metodo_pago } = req.body;
+    console.log("Datos recibidos en PUT /donaciones/:id:", { id, ...req.body });
+    
+    try {
+        await pool.query(
+            'UPDATE donaciones SET usuario_id = ?, monto = ?, metodo_pago = ? WHERE id = ?',
+            [usuario_id, monto, metodo_pago, id]
+        );
+
+        res.status(200).json({ id, usuario_id, monto, metodo_pago });
+    } catch (err) {
+        console.error("Error en PUT /donaciones/:id:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+// Eliminar una donación
+app.delete("/donaciones/:id", async (req, res) => {
+    const { id } = req.params;
+    console.log("Solicitud DELETE a /donaciones/:id recibida:", { id });
+    
+    try {
+        await pool.query('DELETE FROM donaciones WHERE id = ?', [id]);
+        res.status(200).json({ msg: 'Donación eliminada' });
+    } catch (err) {
+        console.error("Error en DELETE /donaciones/:id:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
