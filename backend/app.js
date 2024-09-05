@@ -81,35 +81,27 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// Obtener todas las donaciones
-app.get("/donaciones", async (req, res) => {
-    console.log("Solicitud GET a /donaciones recibida");
+app.get("/donations", async (req, res) => {
     try {
-        // Consulta para obtener todas las donaciones
         const [rows] = await pool.query('SELECT * FROM donaciones');
-        console.log("Donaciones encontradas:", rows);
         
-        // Consulta para contar el número total de donaciones
         const [countResult] = await pool.query('SELECT COUNT(*) as count FROM donaciones');
         const totalCount = countResult[0].count;
-        
-        // Añadir el encabezado X-Total-Count
+
         res.setHeader('X-Total-Count', totalCount);
         res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
-
-        // Enviar las donaciones como respuesta
+        
         res.json(rows);
     } catch (err) {
-        console.error("Error en GET /donaciones:", err.message);
+        console.error(err.message);
         res.status(500).send('Error del servidor');
     }
 });
 
 
 // Crear una nueva donación
-app.post("/donaciones", async (req, res) => {
+app.post("/donations", async (req, res) => {
     const { usuario_id, monto, metodo_pago } = req.body;
-    console.log("Datos recibidos en POST /donaciones:", req.body);
     
     try {
         const [result] = await pool.query(
@@ -119,17 +111,16 @@ app.post("/donaciones", async (req, res) => {
 
         res.status(201).json({ id: result.insertId, usuario_id, monto, metodo_pago, fecha_donacion: new Date() });
     } catch (err) {
-        console.error("Error en POST /donaciones:", err.message);
+        console.error(err.message);
         res.status(500).send('Error del servidor');
     }
 });
 
 // Actualizar una donación
-app.put("/donaciones/:id", async (req, res) => {
+app.put("/donations/:id", async (req, res) => {
     const { id } = req.params;
     const { usuario_id, monto, metodo_pago } = req.body;
-    console.log("Datos recibidos en PUT /donaciones/:id:", { id, ...req.body });
-    
+
     try {
         await pool.query(
             'UPDATE donaciones SET usuario_id = ?, monto = ?, metodo_pago = ? WHERE id = ?',
@@ -138,23 +129,23 @@ app.put("/donaciones/:id", async (req, res) => {
 
         res.status(200).json({ id, usuario_id, monto, metodo_pago });
     } catch (err) {
-        console.error("Error en PUT /donaciones/:id:", err.message);
+        console.error(err.message);
         res.status(500).send('Error del servidor');
     }
 });
 
 // Eliminar una donación
-app.delete("/donaciones/:id", async (req, res) => {
+app.delete("/donations/:id", async (req, res) => {
     const { id } = req.params;
-    console.log("Solicitud DELETE a /donaciones/:id recibida:", { id });
-    
+
     try {
         await pool.query('DELETE FROM donaciones WHERE id = ?', [id]);
         res.status(200).json({ msg: 'Donación eliminada' });
     } catch (err) {
-        console.error("Error en DELETE /donaciones/:id:", err.message);
+        console.error(err.message);
         res.status(500).send('Error del servidor');
     }
 });
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
