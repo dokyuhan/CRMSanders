@@ -58,10 +58,8 @@ app.post("/login", async (req, res) => {
     console.log("Datos recibidos en /login:", req.body);
     
     try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedCorreo = await bcrypt.hash(correo, salt);
-
-        const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [hashedCorreo]);
+        // Buscar al usuario por el correo (sin hash)
+        const [rows] = await pool.query('SELECT * FROM usuarios WHERE nombre = ?', [correo]);
         console.log("Usuarios encontrados con el correo dado:", rows);
         
         if (rows.length === 0) {
@@ -72,7 +70,8 @@ app.post("/login", async (req, res) => {
         const isMatch = await bcrypt.compare(contrasena, user.contrasena);
 
         if (isMatch) {
-            res.status(200).json({ msg: 'Inicio de sesión exitoso' });
+            // Devolver el tipo de usuario si la autenticación es exitosa
+            res.status(200).json({ msg: 'Inicio de sesión exitoso', tipo_usuario: user.tipo_usuario });
         } else {
             res.status(400).json({ msg: 'Contraseña incorrecta' });
         }
