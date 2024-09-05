@@ -75,7 +75,7 @@ export const App = () => {
               <Resource name="contacts" list={Contacts} />
               <Resource name="companies" list={Companies} />
               <Resource name="stats" list={Stats} />
-              <Resource name="donaciones" list={DonationList} edit={DonationEdit} create={DonationCreate} /> {/* Añadir recurso de donaciones */}
+              <Resource name="donations" list={DonationList} edit={DonationEdit} create={DonationCreate} /> {/* Añadir recurso de donaciones */}
               {permissions === 'admin' && (
                 <Resource name="todos" list={AdminList} edit={AdminEdit} create={AdminCreate} />
               )}
