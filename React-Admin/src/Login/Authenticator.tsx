@@ -24,8 +24,7 @@ export const authProvider: AuthProvider = {
         }
     },
     logout: () => {
-        localStorage.removeItem("username");
-        localStorage.removeItem("role");
+        localStorage.clear();
         return Promise.resolve();
     },
     checkError: (error: any) => {
