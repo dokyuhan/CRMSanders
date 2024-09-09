@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNotify } from 'react-admin';
+import { useNotify, useRedirect } from 'react-admin';
 import styled, { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
@@ -73,6 +73,7 @@ const RegisterPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState(''); 
   const notify = useNotify();
+  const redirect = useRedirect();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -89,6 +90,7 @@ const RegisterPage: React.FC = () => {
 
       if (response.ok) {
         notify('Registration successful');
+        redirect('/login');
       } else {
         notify(data.msg || 'Registration failed');
       }
