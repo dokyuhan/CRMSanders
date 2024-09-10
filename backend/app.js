@@ -147,5 +147,48 @@ app.delete("/donations/:id", async (req, res) => {
     }
 });
 
+// Endpoint para mostrar estadísticas de donaciones
+app.get("/donaciones", async (req, res) => {
+    try {
+        const [donationsByMethod] = await pool.query(`
+            SELECT metodo_pago, SUM(monto) as total
+            FROM donaciones
+            GROUP BY metodo_pago
+        `);
+
+        const [donationsPerDay] = await pool.query(`
+            SELECT DATE(fecha_donacion) as fecha, COUNT(*) as count
+            FROM donaciones
+            GROUP BY fecha
+            ORDER BY fecha
+        `);
+
+        const [cumulativeDonations] = await pool.query(`
+            SELECT DATE(fecha_donacion) as fecha, SUM(monto) as daily_total
+            FROM donaciones
+            GROUP BY fecha
+            ORDER BY fecha
+        `);
+
+        let cumulativeSum = 0;
+        const cumulativeData = cumulativeDonations.map(row => {
+            cumulativeSum += parseFloat(row.daily_total);
+            return { fecha: row.fecha, acumulado: cumulativeSum };
+        });
+
+        res.json({
+            donationsByMethod,
+            donationsPerDay,
+            cumulativeData
+        });
+    } catch (err) {
+        console.error("Error en /donaciones-estadisticas:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+
+
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
