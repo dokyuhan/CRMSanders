@@ -23,9 +23,50 @@ const pool = mysql.createPool({
     database: process.env.DB_DATABASE || 'crmSanders', 
 });
 
+// Función para registrar usuarios admin
+async function createAdminUsers() {
+    const admins = [
+        {
+            nombre: 'admin1',
+            contrasena: 'admin1',
+            correo: 'admin1@gmail.com',
+            tipo_usuario: 'admin'
+        },
+        {
+            nombre: 'admin2',
+            contrasena: 'admin2',
+            correo: 'admin2@gmail.com',
+            tipo_usuario: 'admin'
+        }
+    ];
+
+    for (const admin of admins) {
+        try {
+            const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [admin.correo]);
+
+            if (rows.length === 0) {
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(admin.contrasena, salt);
+                const hashedCorreo = await bcrypt.hash(admin.correo, salt);
+
+                await pool.query(
+                    'CALL registrar_usuario(?, ?, ?, ?)',
+                    [admin.nombre, hashedPassword, hashedCorreo, admin.tipo_usuario]
+                );
+
+                console.log(`Usuario ${admin.nombre} registrado correctamente.`);
+            } else {
+                console.log(`Usuario ${admin.nombre} ya existe.`);
+            }
+        } catch (err) {
+            console.error(`Error creando usuario ${admin.nombre}:`, err.message);
+        }
+    }
+}
+
 app.post("/register", async (req, res) => {
     const { username: nombre, password: contrasena, email: correo } = req.body;
-    const tipo_usuario = 'donador'; 
+    const tipo_usuario = 'donador'; // Todos los usuarios, excepto los admins creados al inicio, serán "donadores" por defecto
     console.log("Datos recibidos en /register:", req.body);
     
     try {
@@ -98,7 +139,6 @@ app.get("/donations", async (req, res) => {
     }
 });
 
-
 // Crear una nueva donación
 app.post("/donations", async (req, res) => {
     const { usuario_id, monto, metodo_pago } = req.body;
@@ -147,5 +187,8 @@ app.delete("/donations/:id", async (req, res) => {
     }
 });
 
+app.listen(PORT, async () => {
+    console.log(`Server running on port ${PORT}`);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    await createAdminUsers();
+});
