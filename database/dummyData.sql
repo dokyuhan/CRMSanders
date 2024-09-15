@@ -6,7 +6,7 @@ INSERT INTO usuarios (nombre, contrasena, correo, tipo_usuario) VALUES
 ('Usuario5', 'contrasena5', 'usuario5@example.com', 'donador'),
 ('Usuario6', 'contrasena6', 'usuario6@example.com', 'donador'),
 ('Usuario7', 'contrasena7', 'usuario7@example.com', 'donador'),
-('Usuario8', 'contrasena8', 'usuario8@example.com', 'donador'),
+('Usuario8', 'conusuariostrasena8', 'usuario8@example.com', 'donador'),
 ('Usuario9', 'contrasena9', 'usuario9@example.com', 'donador'),
 ('Usuario10', 'contrasena10', 'usuario10@example.com', 'donador');
 

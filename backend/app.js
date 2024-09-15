@@ -8,7 +8,7 @@ import cors from "cors";
 import 'dotenv/config';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3003;
 
 // Middleware
 app.use(cors());
