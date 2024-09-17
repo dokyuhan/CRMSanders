@@ -23,7 +23,6 @@ const pool = mysql.createPool({
     database: process.env.DB_DATABASE || 'crmSanders', 
 });
 
-// Función para registrar usuarios admin
 async function createAdminUsers() {
     const admins = [
         {
@@ -42,7 +41,7 @@ async function createAdminUsers() {
 
     for (const admin of admins) {
         try {
-            const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [admin.correo]);
+            const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ? OR nombre = ?', [admin.correo, admin.nombre]);
 
             if (rows.length === 0) {
                 const salt = await bcrypt.genSalt(10);
@@ -56,7 +55,7 @@ async function createAdminUsers() {
 
                 console.log(`Usuario ${admin.nombre} registrado correctamente.`);
             } else {
-                console.log(`Usuario ${admin.nombre} ya existe.`);
+                console.log(`Usuario ${admin.nombre} o el correo ya existen.`);
             }
         } catch (err) {
             console.error(`Error creando usuario ${admin.nombre}:`, err.message);
@@ -66,7 +65,7 @@ async function createAdminUsers() {
 
 app.post("/register", async (req, res) => {
     const { username: nombre, password: contrasena, email: correo } = req.body;
-    const tipo_usuario = 'donador'; // Todos los usuarios, excepto los admins creados al inicio, serán "donadores" por defecto
+    const tipo_usuario = 'donador'; 
     console.log("Datos recibidos en /register:", req.body);
     
     try {
@@ -99,7 +98,6 @@ app.post("/login", async (req, res) => {
     console.log("Datos recibidos en /login:", req.body);
     
     try {
-        // Buscar al usuario por el correo (sin hash)
         const [rows] = await pool.query('SELECT * FROM usuarios WHERE nombre = ?', [correo]);
         console.log("Usuarios encontrados con el correo dado:", rows);
         
