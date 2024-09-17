@@ -1,24 +1,32 @@
 import { AuthProvider } from "react-admin";
-import axios from "axios";
+import axios from "./axiosConfig";
 
 export const authProvider: AuthProvider = {
     login: async (params: { username: string; password: string }) => {
         const { username, password } = params;
-
+    
         try {
-            const response = await axios.post("http://localhost:3003/login", {
+            const response = await axios.post("login", {
                 email: username,
                 password: password,
             });
+            
+            console.log("Full response from backend:", response);
+            const { token, tipo_usuario } = response.data;
+            
+            console.log("Token from backend: ", token);
+            console.log("Role from backend: ", tipo_usuario);
+            console.log("Username from frontend: ", username);
 
-            const { tipo_usuario } = response.data;
-
-            localStorage.setItem("username", username);
-            localStorage.setItem("role", tipo_usuario);
-
-            window.dispatchEvent(new CustomEvent('login-success'));
-
-            return Promise.resolve();
+            if (token) {
+                localStorage.setItem("token", token);
+                console.log("Stored token:", localStorage.getItem('token'));
+                localStorage.setItem("username", username);
+                localStorage.setItem("role", tipo_usuario);
+                window.dispatchEvent(new CustomEvent('login-success'));
+            } else {
+                throw new Error("Token not provided by the backend");
+            }
         } catch (error) {
             return Promise.reject(error);
         }
@@ -26,6 +34,7 @@ export const authProvider: AuthProvider = {
     logout: () => {
         localStorage.removeItem("username");
         localStorage.removeItem("role");
+        localStorage.removeItem("token");
         return Promise.resolve();
     },
     checkError: (error: any) => {
@@ -33,6 +42,7 @@ export const authProvider: AuthProvider = {
         if (status === 401 || status === 403) {
             localStorage.removeItem("username");
             localStorage.removeItem("role");
+            localStorage.removeItem("token");
             return Promise.reject();
         }
         return Promise.resolve();

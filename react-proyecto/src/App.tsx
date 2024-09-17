@@ -30,7 +30,7 @@ interface State {
 
 interface Action {
   type: string;
-  payload: string;
+  payload: string | null;
 }
 
 // Define the reducer function
