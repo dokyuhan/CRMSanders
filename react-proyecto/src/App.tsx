@@ -43,7 +43,6 @@ export const App = () => {
 
   useEffect(() => {
     const handleLoginSuccess = () => {
-<<<<<<< HEAD:react-proyecto/src/App.tsx
       //const role = localStorage.getItem('role');
       const authString = localStorage.getItem('auth');
       if (!authString) {
@@ -56,10 +55,6 @@ export const App = () => {
         console.log("Login success detected. Role from localStorage: ", role);
         dispatch({ type: SET_PERMISSIONS, payload: role });
       }
-=======
-      const role = localStorage.getItem('role');
-      dispatch({ type: SET_PERMISSIONS, payload: role });
->>>>>>> main:React-Admin/src/App.tsx
     };
 
     window.addEventListener('login-success', handleLoginSuccess);
