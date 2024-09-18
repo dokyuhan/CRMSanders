@@ -82,7 +82,8 @@ app.post("/login", async (req, res) => {
 
             console.log("Token generado:", token);
             console.log("tipo_usuario:", user.tipo_usuario);
-            res.status(200).json({ msg: 'Inicio de sesión exitoso', tipo_usuario: user.tipo_usuario, token });
+            //res.json({ tipo_usuario: user.tipo_usuario, token });
+            res.status(200).json({ token, tipo_usuario: user.tipo_usuario, username: user.nombre });
         } else {
             res.status(400).json({ msg: 'Contraseña incorrecta' });
         }
@@ -98,11 +99,9 @@ app.get("/donations", authenticateJWT, async (req, res) => {
         
         const [countResult] = await pool.query('SELECT COUNT(*) as count FROM donaciones');
         const totalCount = countResult[0].count;
-
-        /*
+        
         res.setHeader('X-Total-Count', totalCount);
         res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
-        */
         
         //res.json(rows);
         res.json({ data: rows, total: totalCount });

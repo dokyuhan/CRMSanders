@@ -28,6 +28,7 @@ const DonationPieChart = ({ data }) => {
     );
 };
 
+
 export const DonationList = () => (
     <List>
         <Datagrid rowClick="edit">
@@ -43,6 +44,7 @@ export const DonationList = () => (
 
 const DonationData = () => {
     const { data, isLoading, error } = useListContext();
+    console.log("Received data:", data);
 
     if (isLoading) {
         console.log("Loading data...");
@@ -53,10 +55,10 @@ const DonationData = () => {
         return <div>Error loading data!</div>;
     }
 
-    const chartData = Object.values(data).reduce((acc, curr) => {
+    const chartData = Object.values(data || {}).reduce((acc, curr) => {
         const found = acc.find(item => item.name === curr.metodo_pago);
         if (found) {
-            found.monto += curr.monto;
+            found.monto += curr.monto;  // Sum up 'monto' for each payment method
         } else {
             acc.push({ name: curr.metodo_pago, monto: curr.monto });
         }
