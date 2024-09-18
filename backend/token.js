@@ -4,8 +4,7 @@ const authenticateJWT = (req, res, next) => {
     console.log("All headers received:", req.headers);
     const authHeader = req.headers['authorization'] || req.headers['Authorization'];
 
-    console.log("Authorization header:", authHeader);  // For debugging
-
+    console.log("Authorization header:", authHeader);
     if (authHeader) {
         const parts = authHeader.split(' ');
         if (parts.length === 2 && parts[0] === 'Bearer') {
@@ -14,7 +13,7 @@ const authenticateJWT = (req, res, next) => {
             jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
                 if (err) {
                     console.error("Token verification error:", err);
-                    return res.sendStatus(403);  // Invalid token
+                    return res.sendStatus(403);  
                 }
                 req.user = user;
                 next();
