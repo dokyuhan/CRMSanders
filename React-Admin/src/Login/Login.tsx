@@ -121,18 +121,18 @@ const LoginPage: React.FC = () => {
               <Input
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                placeholder="Username"
+                placeholder="Nombre de Usuario"
                 type="text"
                 required
               />
               <Input
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                placeholder="Password"
+                placeholder="Contraseña"
                 type="password"
                 required
               />
-              <Button type="submit">Log In</Button>
+              <Button type="submit">Iniciar Sesión</Button>
             </form>
             <RegisterLink>
               No tienes una cuenta? <Link to = "/register" style={{ fontWeight: 'bold' }} > Regístrate </Link>

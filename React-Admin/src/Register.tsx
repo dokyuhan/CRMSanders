@@ -108,14 +108,14 @@ const RegisterPage: React.FC = () => {
             <Input
               value={username}
               onChange={e => setUsername(e.target.value)}
-              placeholder="Username"
+              placeholder="Nombre de Usuario"
               type="text"
               required
             />
             <Input
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="Password"
+              placeholder="Contraseña"
               type="password"
               required
             />
@@ -125,7 +125,7 @@ const RegisterPage: React.FC = () => {
               placeholder="Email"
               type="email" 
             />
-            <Button type="submit">Register</Button>
+            <Button type="submit">Registrar Usuario</Button>
           </InputContainer>
         </FormContainer>
       </RegisterContainer>

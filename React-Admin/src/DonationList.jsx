@@ -30,12 +30,12 @@ const DonationPieChart = ({ data }) => {
 
 export const DonationList = () => (
     <List>
-        <Datagrid rowClick="edit">
-            <TextField source="id" />
+        <Datagrid rowClick="edit" >
+            <TextField source='id' />
             <TextField source="usuario_id" />
             <NumberField source="monto" />
-            <TextField source="metodo_pago" />
-            <DateField source="fecha_donacion" />
+            <TextField source="metodo_de_pago" />
+            <DateField source="fecha_de_donación" />
         </Datagrid>
         <DonationData />
     </List>

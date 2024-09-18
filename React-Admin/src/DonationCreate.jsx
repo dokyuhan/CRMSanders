@@ -9,7 +9,7 @@ const DisplayUserId = () => {
 export const DonationCreate = () => (
     <Create>
         <SimpleForm>
-            <NumberInput source="usuario_id" />
+            <NumberInput source="usuario_id"/>
             <NumberInput source="monto" />
             <TextInput source="metodo_pago" />
             <DisplayUserId />

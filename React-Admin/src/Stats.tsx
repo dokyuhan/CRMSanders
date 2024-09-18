@@ -2,17 +2,17 @@ import { Card, CardContent, CardHeader, List, ListItem, ListItemText } from "@mu
 
 export const Stats = () => (
     <Card>
-        <CardHeader title="Statistics" />
+        <CardHeader title="Estadísticas" />
         <CardContent>
             <List>
                 <ListItem>
-                    <ListItemText primary="Total Users" secondary="1,250" />
+                    <ListItemText primary="Total de usuarios" secondary="1,250" />
                 </ListItem>
                 <ListItem>
-                    <ListItemText primary="Active Projects" secondary="300" />
+                    <ListItemText primary="Proyectos activos" secondary="300" />
                 </ListItem>
                 <ListItem>
-                    <ListItemText primary="Revenue" secondary="$1,200,000" />
+                    <ListItemText primary="Ganancia" secondary="$1,200,000" />
                 </ListItem>
             </List>
         </CardContent>

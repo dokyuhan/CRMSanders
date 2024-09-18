@@ -19,6 +19,7 @@ import { MyLayout } from './design/dashboardLayout';
 import { DonationList } from './DonationList'; 
 import { DonationCreate } from './DonationCreate';
 import { DonationEdit } from './DonationEdit';
+import { i18nProvider } from './Polyglot';
 
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
@@ -30,7 +31,7 @@ interface State {
 
 interface Action {
   type: string;
-  payload: string;
+  payload: string | null;
 }
 
 // Define the reducer function
@@ -89,16 +90,17 @@ export const App = () => {
               authProvider={authProvider} 
               loginPage={LoginPage} 
               dashboard={Dashboard}
+              i18nProvider={i18nProvider}
             >
-              <Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} />
-              <Resource name="contacts" list={Contacts} />
-              <Resource name="companies" list={Companies} />
-              <Resource name="stats" list={Stats} />
+              <Resource name="Posts" list={PostList} edit={PostEdit} create={PostCreate} />
+              <Resource name="Contactos" list={Contacts} />
+              <Resource name="Empresas" list={Companies} />
+              <Resource name="Estadísticas" list={Stats} />
               <Resource name="donations" list={DonationList} edit={DonationEdit} create={DonationCreate} />
               {state.permissions === 'admin' && (
                 <Resource name="user_donations" list={DonacionesPorUsuario} />
               )}
-            </Admin>
+            </Admin> 
           }
         />
       </Routes>
