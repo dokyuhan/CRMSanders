@@ -7,8 +7,6 @@ import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
 import { DonationList } from './DonationList'; 
-import { DonationCreate } from './DonationCreate';
-import { DonationEdit } from './DonationEdit';
 import { MyLayout } from './design/dashboardLayout';
 import { PostCreate, PostEdit, PostList } from './post-test'; 
 import { Contacts } from './Contacts'; 
@@ -96,7 +94,7 @@ export const App = () => {
               )}
               
               {/* Recursos disponibles para todos los usuarios */}
-              <Resource name="donations" list={DonationList} edit={DonationEdit} create={DonationCreate} />
+              <Resource name="donations" list={DonationList}/>
             </Admin>
           }
         />
