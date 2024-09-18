@@ -38,7 +38,7 @@ const PaymentForm = () => {
               row
             >
               <FormControlLabel value="credit" control={<Radio />} label="Tarjeta de Crédito/Débito" />
-              <FormControlLabel value="spei" control={<Radio />} label="SPEI" />
+              <FormControlLabel value="Transferencia bancaria" control={<Radio />} label="Transferencia bancaria" />
               <FormControlLabel value="paypal" control={<Radio />} label="PayPal" />
             </RadioGroup>
           </FormControl>
@@ -75,7 +75,7 @@ const PaymentForm = () => {
             </Box>
           )}
 
-          {paymentMethod === 'spei' && (
+          {paymentMethod === 'Transferencia bancaria' && (
             <TextField
               label="Clave de Banco"
               variant="outlined"
