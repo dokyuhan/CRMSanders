@@ -1,25 +1,19 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import {
-  Admin,
-  Resource
-} from 'react-admin';
-import { useEffect, useState, useReducer } from 'react';
-import { Layout } from './Layout';
+import { Admin, Resource } from 'react-admin';
+import { useEffect, useReducer } from 'react';
 import { dataProvider } from './dataProvider';
 import { authProvider } from './Login/Authenticator';
 import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
-import { Contacts } from './Contacts';
-import { Companies } from './Companies';
-import { Stats } from './Stats';
 import RegisterPage from './Register';
-import { DonacionesPorUsuario } from './admin/adminPage';
-import { PostCreate, PostEdit, PostList } from './post-test';
-import { MyLayout } from './design/dashboardLayout';
 import { DonationList } from './DonationList'; 
-import { DonationCreate } from './DonationCreate';
-import { DonationEdit } from './DonationEdit';
-
+import { MyLayout } from './design/dashboardLayout';
+import { PostCreate, PostEdit, PostList } from './post-test'; 
+import { Contacts } from './Contacts'; 
+import { Companies } from './Companies'; 
+import { Stats } from './Stats'; 
+import { DonacionesPorUsuario } from './admin/adminPage'; 
+import Checkout from './Checkout'; 
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
@@ -33,7 +27,6 @@ interface Action {
   payload: string | null;
 }
 
-// Define the reducer function
 const permissionsReducer = (state: State, action: Action) => {
     switch (action.type) {
         case SET_PERMISSIONS:
@@ -50,6 +43,7 @@ export const App = () => {
 
   useEffect(() => {
     const handleLoginSuccess = () => {
+<<<<<<< HEAD:react-proyecto/src/App.tsx
       //const role = localStorage.getItem('role');
       const authString = localStorage.getItem('auth');
       if (!authString) {
@@ -62,6 +56,10 @@ export const App = () => {
         console.log("Login success detected. Role from localStorage: ", role);
         dispatch({ type: SET_PERMISSIONS, payload: role });
       }
+=======
+      const role = localStorage.getItem('role');
+      dispatch({ type: SET_PERMISSIONS, payload: role });
+>>>>>>> main:React-Admin/src/App.tsx
     };
 
     window.addEventListener('login-success', handleLoginSuccess);
@@ -83,10 +81,9 @@ export const App = () => {
       const updatedRole = auth.tipo_usuario;
       
       if (updatedRole !== state.permissions) {
-        console.log("Rol actualizado detectado. Rol actual: ", updatedRole);
         dispatch({ type: UPDATE_PERMISSIONS, payload: updatedRole });
       }
-    }, 0);
+    }, 1000); 
 
     return () => clearInterval(intervalId);
   }, [state.permissions]);
@@ -97,6 +94,7 @@ export const App = () => {
     <Router>
       <Routes>
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/checkout" element={<Checkout />} /> {/* Añadido el componente Checkout */}
         <Route
           path="*"
           element={
@@ -107,14 +105,19 @@ export const App = () => {
               loginPage={LoginPage} 
               dashboard={Dashboard}
             >
-              <Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} />
-              <Resource name="contacts" list={Contacts} />
-              <Resource name="companies" list={Companies} />
-              <Resource name="stats" list={Stats} />
-              <Resource name="donations" list={DonationList} edit={DonationEdit} create={DonationCreate} />
+              {/* Recursos disponibles solo para usuarios admin */}
               {state.permissions === 'admin' && (
-                <Resource name="user_donations" list={DonacionesPorUsuario} />
+                <>
+                  <Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} />
+                  <Resource name="contacts" list={Contacts} />
+                  <Resource name="companies" list={Companies} />
+                  <Resource name="stats" list={Stats} />
+                  <Resource name="user_donations" list={DonacionesPorUsuario} />
+                </>
               )}
+              
+              {/* Recursos disponibles para todos los usuarios */}
+              <Resource name="donations" list={DonationList}/>
             </Admin>
           }
         />
