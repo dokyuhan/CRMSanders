@@ -9,14 +9,14 @@ import RegisterPage from './Register';
 import { DonationList } from './DonationList'; 
 import { DonationCreate } from './DonationCreate';
 import { DonationEdit } from './DonationEdit';
-import { MyLayout } from './design/dashboardLayout'; // Layout personalizado para react-admin
-import { PostCreate, PostEdit, PostList } from './post-test'; // Recursos solo para admin
-import { Contacts } from './Contacts'; // Recursos solo para admin
-import { Companies } from './Companies'; // Recursos solo para admin
-import { Stats } from './Stats'; // Recursos solo para admin
-import { DonacionesPorUsuario } from './admin/adminPage'; // Recurso solo para admin
+import { MyLayout } from './design/dashboardLayout';
+import { PostCreate, PostEdit, PostList } from './post-test'; 
+import { Contacts } from './Contacts'; 
+import { Companies } from './Companies'; 
+import { Stats } from './Stats'; 
+import { DonacionesPorUsuario } from './admin/adminPage'; 
+import Checkout from './Checkout'; 
 
-// Reducer para gestionar permisos
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
 
@@ -73,6 +73,7 @@ export const App = () => {
     <Router>
       <Routes>
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/checkout" element={<Checkout />} /> {/* Añadido el componente Checkout */}
         <Route
           path="*"
           element={

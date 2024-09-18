@@ -10,11 +10,9 @@ import 'dotenv/config';
 const app = express();
 const PORT = process.env.PORT || 3003;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Database connection pool
 const pool = mysql.createPool({
     connectionLimit: 10,
     host: process.env.DB_HOST || 'localhost',
@@ -109,7 +107,6 @@ app.post("/login", async (req, res) => {
         const isMatch = await bcrypt.compare(contrasena, user.contrasena);
 
         if (isMatch) {
-            // Devolver el tipo de usuario si la autenticación es exitosa
             res.status(200).json({ msg: 'Inicio de sesión exitoso', tipo_usuario: user.tipo_usuario });
         } else {
             res.status(400).json({ msg: 'Contraseña incorrecta' });
@@ -137,7 +134,6 @@ app.get("/donations", async (req, res) => {
     }
 });
 
-// Crear una nueva donación
 app.post("/donations", async (req, res) => {
     const { usuario_id, monto, metodo_pago } = req.body;
     
@@ -154,7 +150,6 @@ app.post("/donations", async (req, res) => {
     }
 });
 
-// Actualizar una donación
 app.put("/donations/:id", async (req, res) => {
     const { id } = req.params;
     const { usuario_id, monto, metodo_pago } = req.body;
@@ -172,7 +167,6 @@ app.put("/donations/:id", async (req, res) => {
     }
 });
 
-// Eliminar una donación
 app.delete("/donations/:id", async (req, res) => {
     const { id } = req.params;
 
@@ -184,6 +178,33 @@ app.delete("/donations/:id", async (req, res) => {
         res.status(500).send('Error del servidor');
     }
 });
+
+app.post("/donate", async (req, res) => {
+    const { usuario_id, monto, metodo_pago } = req.body;
+    
+    try {
+        if (!usuario_id || !monto || !metodo_pago) {
+            return res.status(400).json({ msg: 'Todos los campos son requeridos' });
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO donaciones (usuario_id, monto, metodo_pago) VALUES (?, ?, ?)',
+            [usuario_id, monto, metodo_pago]
+        );
+
+        res.status(201).json({ 
+            id: result.insertId, 
+            usuario_id, 
+            monto, 
+            metodo_pago, 
+            fecha_donacion: new Date() 
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
 
 app.listen(PORT, async () => {
     console.log(`Server running on port ${PORT}`);

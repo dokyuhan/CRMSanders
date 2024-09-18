@@ -9,6 +9,9 @@
     "format": "prettier --write ./src"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^5.16.7",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
     "i": "^0.3.7",
