@@ -1,9 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 const authenticateJWT = (req, res, next) => {
-    console.log("All headers received:", JSON.stringify(req.headers, null, 2));
-    
-    // Normalize header key to lowercase to avoid case-sensitivity issues
+    console.log("All headers received:", req.headers);
     const authHeader = req.headers['authorization'] || req.headers['Authorization'];
 
     console.log("Authorization header:", authHeader);  // For debugging

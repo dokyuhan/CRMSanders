@@ -1,22 +1,28 @@
 import { AuthProvider } from "react-admin";
-import axiosInstance from "./axiosConfig";
+import axios from "./axiosConfig";
 
 export const authProvider: AuthProvider = {
     login: async (params: { username: string; password: string }) => {
         const { username, password } = params;
     
         try {
-            const response = await axiosInstance.post("login", {
+            const response = await axios.post("login", {
                 email: username,
                 password: password,
             });
             
             console.log("Full response from backend:", response);
-            const json = response.data;
-            console.log("json: ", json);
+            const { token, tipo_usuario } = response.data;
+            
+            console.log("Token from backend: ", token);
+            console.log("Role from backend: ", tipo_usuario);
+            console.log("Username from frontend: ", username);
 
-            if (json.token) {
-                localStorage.setItem('auth', JSON.stringify({ ...json }));
+            if (token) {
+                localStorage.setItem("token", token);
+                console.log("Stored token:", localStorage.getItem('token'));
+                localStorage.setItem("username", username);
+                localStorage.setItem("role", tipo_usuario);
                 window.dispatchEvent(new CustomEvent('login-success'));
             } else {
                 throw new Error("Token not provided by the backend");
@@ -25,22 +31,27 @@ export const authProvider: AuthProvider = {
             return Promise.reject(error);
         }
     },
-    logout: () => { // Elimina el token de autenticación al cerrar sesión
-        localStorage.removeItem('auth');
+    logout: () => {
+        localStorage.removeItem("username");
+        localStorage.removeItem("role");
+        localStorage.removeItem("token");
         return Promise.resolve();
     },
-    checkAuth: () => { // Obtiene el token de local storage
-        return localStorage.getItem('auth') ? Promise.resolve() : Promise.reject();
-    },
-    checkError: ({ status }: { status: number }) => {
+    checkError: (error: any) => {
+        const { status } = error;
         if (status === 401 || status === 403) {
-            localStorage.removeItem('auth');
+            localStorage.removeItem("username");
+            localStorage.removeItem("role");
+            localStorage.removeItem("token");
             return Promise.reject();
         }
         return Promise.resolve();
     },
-    getPermissions: () => { // obtiene el rol de localstorage
-        const auth = JSON.parse(localStorage.getItem('auth') || '{}');
-        return auth ? Promise.resolve(auth.role) : Promise.reject();
+    checkAuth: () => {
+        return localStorage.getItem("username") ? Promise.resolve() : Promise.reject();
+    },
+    getPermissions: () => {
+        const role = localStorage.getItem("role");
+        return role ? Promise.resolve(role) : Promise.reject("No role found");
     },
 };
