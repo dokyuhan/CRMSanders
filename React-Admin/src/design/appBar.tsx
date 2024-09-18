@@ -20,12 +20,6 @@ export const MyAppBar: React.FC<AppBarProps> = (props) => (
             <IconButton color="inherit">
                 <NotificationsIcon />
             </IconButton>
-            {/* Menú del usuario personalizado con icono */}
-            <UserMenu icon={<AccountCircleIcon />}>
-                <MenuItemLink to="/profile" primaryText="Mi Perfil" />
-                <MenuItemLink to="/settings" primaryText="Configuración" />
-                <MenuItemLink to="/logout" primaryText="Cerrar Sesión" />
-            </UserMenu>
         </Box>
     </AppBar>
 );
