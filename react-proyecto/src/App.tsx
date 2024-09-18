@@ -43,8 +43,23 @@ export const App = () => {
 
   useEffect(() => {
     const handleLoginSuccess = () => {
+<<<<<<< HEAD:react-proyecto/src/App.tsx
+      //const role = localStorage.getItem('role');
+      const authString = localStorage.getItem('auth');
+      if (!authString) {
+        console.error("No auth data found in localStorage");
+        return;
+      }
+      else {
+        const auth = JSON.parse(authString);
+        const role = auth.tipo_usuario;
+        console.log("Login success detected. Role from localStorage: ", role);
+        dispatch({ type: SET_PERMISSIONS, payload: role });
+      }
+=======
       const role = localStorage.getItem('role');
       dispatch({ type: SET_PERMISSIONS, payload: role });
+>>>>>>> main:React-Admin/src/App.tsx
     };
 
     window.addEventListener('login-success', handleLoginSuccess);
@@ -56,7 +71,15 @@ export const App = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      const updatedRole = localStorage.getItem('role');
+      const authString = localStorage.getItem('auth');
+      if (!authString) {
+        console.error("No auth data found in localStorage");
+        return;
+      }
+
+      const auth = JSON.parse(authString);
+      const updatedRole = auth.tipo_usuario;
+      
       if (updatedRole !== state.permissions) {
         dispatch({ type: UPDATE_PERMISSIONS, payload: updatedRole });
       }
