@@ -8,7 +8,7 @@ import cors from "cors";
 import 'dotenv/config';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3003;
 
 // Middleware
 app.use(cors());
@@ -22,6 +22,46 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD || 'cisco', 
     database: process.env.DB_DATABASE || 'crmSanders', 
 });
+
+async function createAdminUsers() {
+    const admins = [
+        {
+            nombre: 'admin1',
+            contrasena: 'admin1',
+            correo: 'admin1@gmail.com',
+            tipo_usuario: 'admin'
+        },
+        {
+            nombre: 'admin2',
+            contrasena: 'admin2',
+            correo: 'admin2@gmail.com',
+            tipo_usuario: 'admin'
+        }
+    ];
+
+    for (const admin of admins) {
+        try {
+            const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ? OR nombre = ?', [admin.correo, admin.nombre]);
+
+            if (rows.length === 0) {
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(admin.contrasena, salt);
+                const hashedCorreo = await bcrypt.hash(admin.correo, salt);
+
+                await pool.query(
+                    'CALL registrar_usuario(?, ?, ?, ?)',
+                    [admin.nombre, hashedPassword, hashedCorreo, admin.tipo_usuario]
+                );
+
+                console.log(`Usuario ${admin.nombre} registrado correctamente.`);
+            } else {
+                console.log(`Usuario ${admin.nombre} o el correo ya existen.`);
+            }
+        } catch (err) {
+            console.error(`Error creando usuario ${admin.nombre}:`, err.message);
+        }
+    }
+}
 
 app.post("/register", async (req, res) => {
     const { username: nombre, password: contrasena, email: correo } = req.body;
@@ -58,7 +98,6 @@ app.post("/login", async (req, res) => {
     console.log("Datos recibidos en /login:", req.body);
     
     try {
-        // Buscar al usuario por el correo (sin hash)
         const [rows] = await pool.query('SELECT * FROM usuarios WHERE nombre = ?', [correo]);
         console.log("Usuarios encontrados con el correo dado:", rows);
         
@@ -97,7 +136,6 @@ app.get("/donations", async (req, res) => {
         res.status(500).send('Error del servidor');
     }
 });
-
 
 // Crear una nueva donación
 app.post("/donations", async (req, res) => {
@@ -190,5 +228,8 @@ app.get("/donaciones", async (req, res) => {
 
 
 
+app.listen(PORT, async () => {
+    console.log(`Server running on port ${PORT}`);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    await createAdminUsers();
+});
