@@ -12,7 +12,7 @@ const httpClient = (url: string, options: HttpOptions = {}) => {
     return fetchUtils.fetchJson(url, options);
 };
 
-export const dataProvider = jsonServerProvider('http://localhost:3003', httpClient);
+export const dataProvider = jsonServerProvider('https://localhost:3003', httpClient);
 
 /*
 import axios from 'axios';
