@@ -7,6 +7,8 @@ import bcrypt from "bcryptjs";
 import cors from "cors";
 import 'dotenv/config';
 import jwt from 'jsonwebtoken';
+import https from 'https';
+import fs from 'fs';
 //require('dotenv').config();
 import authenticateJWT from './token.js';
 
@@ -169,7 +171,7 @@ app.post("/donations", authenticateJWT, async (req, res) => {
     }
 });
 
-app.put("/donations/:id", async (req, res) => {
+app.put("/donations/:id", authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const { usuario_id, monto, metodo_pago } = req.body;
 
@@ -191,7 +193,7 @@ app.put("/donations/:id", async (req, res) => {
     }
 });
 
-app.delete("/donations/:id", async (req, res) => {
+app.delete("/donations/:id", authenticateJWT, async (req, res) => {
     const { id } = req.params;
 
     if (!id) {
@@ -209,7 +211,7 @@ app.delete("/donations/:id", async (req, res) => {
 });
 
 // Endpoint para mostrar estadísticas de donaciones
-app.get("/donaciones", async (req, res) => {
+app.get("/donaciones", authenticateJWT, async (req, res) => {
     try {
         const [donationsByMethod] = await pool.query(`
             SELECT metodo_pago, SUM(monto) as total
@@ -251,7 +253,7 @@ app.get("/donaciones", async (req, res) => {
 
 
 
-app.post("/donate", async (req, res) => {
+app.post("/donate", authenticateJWT, async (req, res) => {
     const { usuario_id, monto, metodo_pago } = req.body;
     
     try {
@@ -279,7 +281,7 @@ app.post("/donate", async (req, res) => {
 });
 
 // Endpoint para mostrar estadísticas de donaciones
-app.get("/donaciones", async (req, res) => {
+app.get("/donaciones", authenticateJWT, async (req, res) => {
     try {
         const [donationsByMethod] = await pool.query(`
             SELECT metodo_pago, SUM(monto) as total
@@ -321,7 +323,7 @@ app.get("/donaciones", async (req, res) => {
 
 
 
-app.post("/donate", async (req, res) => {
+app.post("/donate", authenticateJWT, async (req, res) => {
     const { usuario_id, monto, metodo_pago } = req.body;
     
     try {
@@ -347,9 +349,23 @@ app.post("/donate", async (req, res) => {
     }
 });
 
+const privateKey = fs.readFileSync('../Cert/server.key', 'utf8');
+const certificate = fs.readFileSync('../Cert/server.crt', 'utf8');
+const ca = fs.readFileSync('../Cert/ca/ca.crt', 'utf8')
 
+const credentials = { key: privateKey, cert: certificate, ca: ca};
+
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.listen(PORT, async () => {
+    console.log(`HTTPS Server running on port ${PORT}`);
+    await createAdminUsers();
+});
+
+/*
 app.listen(PORT, async () => {
     console.log(`Server running on port ${PORT}`);
 
     await createAdminUsers();
 });
+*/

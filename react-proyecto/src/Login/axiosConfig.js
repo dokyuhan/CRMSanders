@@ -4,7 +4,7 @@ import axios from 'axios';
 // This function configures and returns an Axios instance with an interceptor
 const createAxiosInstance = () => {
   const axiosInstance = axios.create({
-      baseURL: 'http://localhost:3003/',
+      baseURL: 'https://localhost:3003/',
       headers: {
           'Content-Type': 'application/json',
       }
