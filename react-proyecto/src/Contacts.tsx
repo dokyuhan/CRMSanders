@@ -20,7 +20,7 @@ const Contacts: React.FC = () => {
     useEffect(() => {
         const fetchContacts = async () => {
             try {
-                const response = await axios.get('http://localhost:3003/contacts');
+                const response = await axios.get('https://localhost:3003/contacts');
                 setContacts(response.data.data); 
                 setLoading(false);
             } catch (err) {
