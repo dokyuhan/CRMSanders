@@ -13,12 +13,11 @@ import { Companies } from './Companies';
 import { Stats } from './Stats';
 import { DonacionesPorUsuario } from './admin/adminPage';
 import Checkout from './Checkout';
-import ContactManager from './ContactManager'; 
 import BusinessIcon from '@mui/icons-material/Business';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ContactsIcon from '@mui/icons-material/Contacts';
-
-
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
+import Contacts from './Contacts';
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
@@ -95,7 +94,7 @@ export const App = () => {
         <Route path="/checkout" element={<Checkout />} />
         <Route
           path="/contact-manager"
-          element={<ContactManager />} 
+          element={<Contacts />} 
         />
         <Route
           path="*"
@@ -110,10 +109,10 @@ export const App = () => {
               {/* Recursos disponibles solo para usuarios admin */}
               {state.permissions === 'admin' && (
                 <>
-                  <Resource name="companies" list={Companies} />
-                  <Resource name="stats" list={Stats} />
-                  <Resource name="contacts" list={ContactManager} />
-                  <Resource name="donations" list={DonationList} />
+                  <Resource name="companies" list={Companies} icon={BusinessIcon}/>
+                  <Resource name="stats" list={Stats} icon= {BarChartIcon}/>
+                  <Resource name="contacts" list={Contacts} icon={ContactsIcon}/>
+                  <Resource name="donations" list={DonationList} icon={VolunteerActivismIcon}/>
                 </>
               )}              
             </Admin>

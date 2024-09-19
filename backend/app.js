@@ -350,6 +350,7 @@ app.post("/donate", async (req, res) => {
 app.get("/contacts", async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM contactos');
+        console.log(rows)
         res.json({ data: rows });
     } catch (err) {
         console.error("Error en /contacts GET route:", err.message);
@@ -374,6 +375,7 @@ app.get("/contacts/:id", async (req, res) => {
 
 
 app.post("/contacts", async (req, res) => {
+    console.log("petición aceptada")
     const { nombre, telefono, correo, direccion } = req.body;
     try {
         const [result] = await pool.query(
