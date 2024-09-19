@@ -6,14 +6,19 @@ import { authProvider } from './Login/Authenticator';
 import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
-import { DonationList } from './DonationList'; 
+import { DonationList } from './DonationList';
 import { MyLayout } from './design/dashboardLayout';
-import { PostCreate, PostEdit, PostList } from './post-test'; 
-import { Contacts } from './Contacts'; 
-import { Companies } from './Companies'; 
-import { Stats } from './Stats'; 
-import { DonacionesPorUsuario } from './admin/adminPage'; 
-import Checkout from './Checkout'; 
+import { PostCreate, PostEdit, PostList } from './post-test';
+import { Companies } from './Companies';
+import { Stats } from './Stats';
+import { DonacionesPorUsuario } from './admin/adminPage';
+import Checkout from './Checkout';
+import ContactManager from './ContactManager'; 
+import BusinessIcon from '@mui/icons-material/Business';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ContactsIcon from '@mui/icons-material/Contacts';
+
+
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
@@ -28,14 +33,14 @@ interface Action {
 }
 
 const permissionsReducer = (state: State, action: Action) => {
-    switch (action.type) {
-        case SET_PERMISSIONS:
-            return { ...state, permissions: action.payload };
-        case UPDATE_PERMISSIONS:
-            return { ...state, permissions: action.payload };
-        default:
-            return state;
-    }
+  switch (action.type) {
+    case SET_PERMISSIONS:
+      return { ...state, permissions: action.payload };
+    case UPDATE_PERMISSIONS:
+      return { ...state, permissions: action.payload };
+    default:
+      return state;
+  }
 };
 
 export const App = () => {
@@ -43,16 +48,14 @@ export const App = () => {
 
   useEffect(() => {
     const handleLoginSuccess = () => {
-      //const role = localStorage.getItem('role');
       const authString = localStorage.getItem('auth');
       if (!authString) {
-        console.error("No auth data found in localStorage");
+        console.error('No auth data found in localStorage');
         return;
-      }
-      else {
+      } else {
         const auth = JSON.parse(authString);
         const role = auth.tipo_usuario;
-        console.log("Login success detected. Role from localStorage: ", role);
+        console.log('Login success detected. Role from localStorage: ', role);
         dispatch({ type: SET_PERMISSIONS, payload: role });
       }
     };
@@ -68,51 +71,51 @@ export const App = () => {
     const intervalId = setInterval(() => {
       const authString = localStorage.getItem('auth');
       if (!authString) {
-        console.error("No auth data found in localStorage");
+        console.error('No auth data found in localStorage');
         return;
       }
 
       const auth = JSON.parse(authString);
       const updatedRole = auth.tipo_usuario;
-      
+
       if (updatedRole !== state.permissions) {
         dispatch({ type: UPDATE_PERMISSIONS, payload: updatedRole });
       }
-    }, 1000); 
+    }, 1000);
 
     return () => clearInterval(intervalId);
   }, [state.permissions]);
 
-  console.log("Rendering App with permissions: ", state.permissions);
+  console.log('Rendering App with permissions: ', state.permissions);
 
   return (
     <Router>
       <Routes>
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/checkout" element={<Checkout />} /> {/* Añadido el componente Checkout */}
+        <Route path="/checkout" element={<Checkout />} />
+        <Route
+          path="/contact-manager"
+          element={<ContactManager />} 
+        />
         <Route
           path="*"
           element={
-            <Admin 
-              layout={MyLayout} 
-              dataProvider={dataProvider} 
-              authProvider={authProvider} 
-              loginPage={LoginPage} 
+            <Admin
+              layout={MyLayout}
+              dataProvider={dataProvider}
+              authProvider={authProvider}
+              loginPage={LoginPage}
               dashboard={Dashboard}
             >
               {/* Recursos disponibles solo para usuarios admin */}
               {state.permissions === 'admin' && (
                 <>
-                  <Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} />
-                  <Resource name="contacts" list={Contacts} />
                   <Resource name="companies" list={Companies} />
                   <Resource name="stats" list={Stats} />
-                  <Resource name="user_donations" list={DonacionesPorUsuario} />
+                  <Resource name="contacts" list={ContactManager} />
+                  <Resource name="donations" list={DonationList} />
                 </>
-              )}
-              
-              {/* Recursos disponibles para todos los usuarios */}
-              <Resource name="donations" list={DonationList}/>
+              )}              
             </Admin>
           }
         />

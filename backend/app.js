@@ -347,6 +347,74 @@ app.post("/donate", async (req, res) => {
     }
 });
 
+app.get("/contacts", async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM contactos');
+        res.json({ data: rows });
+    } catch (err) {
+        console.error("Error en /contacts GET route:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+
+app.get("/contacts/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [rows] = await pool.query('SELECT * FROM contactos WHERE id = ?', [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ msg: 'Contacto no encontrado' });
+        }
+        res.json({ data: rows[0] });
+    } catch (err) {
+        console.error("Error en /contacts/:id GET route:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+
+app.post("/contacts", async (req, res) => {
+    const { nombre, telefono, correo, direccion } = req.body;
+    try {
+        const [result] = await pool.query(
+            'INSERT INTO contactos (nombre, telefono, correo, direccion) VALUES (?, ?, ?, ?)',
+            [nombre, telefono, correo, direccion]
+        );
+        res.status(201).json({ id: result.insertId, nombre, telefono, correo, direccion });
+    } catch (err) {
+        console.error("Error en /contacts POST route:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+
+app.put("/contacts/:id", async (req, res) => {
+    const { id } = req.params;
+    const { nombre, telefono, correo, direccion } = req.body;
+
+    try {
+        await pool.query(
+            'UPDATE contactos SET nombre = ?, telefono = ?, correo = ?, direccion = ? WHERE id = ?',
+            [nombre, telefono, correo, direccion, id]
+        );
+        res.status(200).json({ id, nombre, telefono, correo, direccion });
+    } catch (err) {
+        console.error("Error en /contacts/:id PUT route:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+app.delete("/contacts/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM contactos WHERE id = ?', [id]);
+        res.status(200).json({ msg: 'Contacto eliminado' });
+    } catch (err) {
+        console.error("Error en /contacts/:id DELETE route:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
 
 app.listen(PORT, async () => {
     console.log(`Server running on port ${PORT}`);
