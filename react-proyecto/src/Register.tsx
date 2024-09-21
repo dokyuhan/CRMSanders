@@ -12,7 +12,7 @@ const RegisterPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await fetch('http://localhost:3003/register', { 
+      const response = await fetch('https://localhost:3003/register', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, TextField, FormControl, FormControlLabel, Radio, RadioGroup, Typography, Box, Card, CardContent, Alert } from '@mui/material';
 import axios from 'axios';
+import { dataProvider } from './dataProvider';
 
 const PaymentForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -10,12 +11,17 @@ const PaymentForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post('http://localhost:3003/donate', {
-        usuario_id: 1, 
-        monto: data.amount,
-        metodo_pago: paymentMethod,
+      // Use the dataProvider.create method to send a POST request
+      const { data: responseData } = await dataProvider.create('donate', {
+        data: {
+          usuario_id: 1,
+          monto: data.amount,
+          metodo_pago: paymentMethod,
+        }
       });
-      setConfirmation(response.data);
+
+      setConfirmation(responseData);
+      console.log('response:', responseData);
     } catch (error) {
       console.error('Error al enviar los datos:', error);
     }
