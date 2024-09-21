@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Admin, Resource } from 'react-admin';
-import { useEffect, useReducer, useRef} from 'react';
+import { useEffect, useReducer} from 'react';
 import { dataProvider } from './dataProvider';
 import { authProvider } from './Login/Authenticator';
 import { Dashboard } from './dashboard';
@@ -30,7 +30,7 @@ interface Action {
 const permissionsReducer = (state: State, action: Action) => {
     switch (action.type) {
         case SET_PERMISSIONS:
-            //return { ...state, permissions: action.payload };
+            return { ...state, permissions: action.payload };
         case UPDATE_PERMISSIONS:
           localStorage.setItem('payloadRole', JSON.stringify(action.payload));
             return { ...state, permissions: action.payload };
