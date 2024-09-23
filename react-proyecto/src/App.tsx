@@ -1,26 +1,22 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import {
-  Admin,
-  Resource
-} from 'react-admin';
-import { useEffect, useState, useReducer } from 'react';
-import { Layout } from './Layout';
+import { Admin, Resource } from 'react-admin';
+import { useEffect, useReducer} from 'react';
 import { dataProvider } from './dataProvider';
 import { authProvider } from './Login/Authenticator';
 import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
-import { Contacts } from './Contacts';
-import { Companies } from './Companies';
-import { Stats } from './Stats';
 import RegisterPage from './Register';
-import { DonacionesPorUsuario } from './admin/adminPage';
-import { PostCreate, PostEdit, PostList } from './post-test';
-import { MyLayout } from './design/dashboardLayout';
 import { DonationList } from './DonationList'; 
 import { DonationCreate } from './DonationCreate';
 import { DonationEdit } from './DonationEdit';
 import { i18nProvider } from './Polyglot';
-
+import { MyLayout } from './design/dashboardLayout';
+import { PostCreate, PostEdit, PostList } from './post-test'; 
+import { Contacts } from './Contacts'; 
+import { Companies } from './Companies'; 
+import { Stats } from './Stats'; 
+import { DonacionesPorUsuario } from './admin/adminPage'; 
+import Checkout from './Checkout'; 
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
@@ -34,12 +30,12 @@ interface Action {
   payload: string | null;
 }
 
-// Define the reducer function
 const permissionsReducer = (state: State, action: Action) => {
     switch (action.type) {
         case SET_PERMISSIONS:
             return { ...state, permissions: action.payload };
         case UPDATE_PERMISSIONS:
+          localStorage.setItem('payloadRole', JSON.stringify(action.payload));
             return { ...state, permissions: action.payload };
         default:
             return state;
@@ -47,13 +43,21 @@ const permissionsReducer = (state: State, action: Action) => {
 };
 
 export const App = () => {
-  const [state, dispatch] = useReducer(permissionsReducer, { permissions: null });
+  const initPermissions = JSON.parse(localStorage.getItem('authRole') || 'null');
+  const [state, dispatch] = useReducer(permissionsReducer, { permissions: initPermissions });
 
   useEffect(() => {
     const handleLoginSuccess = () => {
-      const role = localStorage.getItem('role');
-      console.log("Login success detected. Role from localStorage: ", role);
-      dispatch({ type: SET_PERMISSIONS, payload: role });
+      let auth = JSON.parse(localStorage.getItem('auth') || '{}');
+      if (!auth) {
+        console.error("No auth data found in localStorage");
+        return;
+      }
+      else {
+        const role = auth.tipo_usuario;
+        console.log("Login success detected. Role from localStorage: ", role);
+        dispatch({ type: SET_PERMISSIONS, payload: role });
+      }
     };
 
     window.addEventListener('login-success', handleLoginSuccess);
@@ -65,12 +69,18 @@ export const App = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      const updatedRole = localStorage.getItem('role');
+      let auth = JSON.parse(localStorage.getItem('auth') || '{}');
+      if (!auth) {
+        console.error("No auth data found in localStorage");
+        return;
+      }
+
+      const updatedRole = auth.tipo_usuario;
       if (updatedRole !== state.permissions) {
-        console.log("Rol actualizado detectado. Rol actual: ", updatedRole);
+        console.log("Updating permissions to: ", updatedRole);
         dispatch({ type: UPDATE_PERMISSIONS, payload: updatedRole });
       }
-    }, 0);
+    }, 1000); 
 
     return () => clearInterval(intervalId);
   }, [state.permissions]);
@@ -81,6 +91,7 @@ export const App = () => {
     <Router>
       <Routes>
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/checkout" element={<Checkout />} /> {/* Añadido el componente Checkout */}
         <Route
           path="*"
           element={
@@ -92,15 +103,20 @@ export const App = () => {
               dashboard={Dashboard}
               i18nProvider={i18nProvider}
             >
-              <Resource name="Posts" list={PostList} edit={PostEdit} create={PostCreate} />
-              <Resource name="Contactos" list={Contacts} />
-              <Resource name="Empresas" list={Companies} />
-              <Resource name="Estadísticas" list={Stats} />
-              <Resource name="donations" list={DonationList} edit={DonationEdit} create={DonationCreate} />
+              {/* Recursos disponibles solo para usuarios admin */}
               {state.permissions === 'admin' && (
-                <Resource name="user_donations" list={DonacionesPorUsuario} />
+                <>
+                  <Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} />
+                  <Resource name="contacts" list={Contacts} />
+                  <Resource name="companies" list={Companies} />
+                  <Resource name="stats" list={Stats} />
+                  {/* <Resource name="user_donations" list={DonacionesPorUsuario} /> */}
+                </>
               )}
-            </Admin> 
+              
+              {/* Recursos disponibles para todos los usuarios */}
+              <Resource name="donations" list={DonationList}/>
+            </Admin>
           }
         />
       </Routes>

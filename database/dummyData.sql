@@ -19,6 +19,5 @@ INSERT INTO donaciones (usuario_id, monto, metodo_pago, fecha_donacion) VALUES
 (7, 120.00, 'PayPal', '2024-09-07 17:45:00'),
 (8, 60.00, 'Transferencia Bancaria', '2024-09-08 10:05:00'),
 (9, 90.25, 'Tarjeta de Débito', '2024-09-09 12:50:00'),
-(10, 150.00, 'Tarjeta de Crédito', '2024-09-10 15:30:00'),
-(11, 50.00, 'Tarjeta de Crédito', '2024-09-01 10:30:00'),;
+(10, 150.00, 'Tarjeta de Crédito', '2024-09-10 15:30:00');
 

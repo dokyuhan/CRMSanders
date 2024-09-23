@@ -4,7 +4,8 @@
   "main": "app",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,9 +16,10 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "i": "^0.3.7",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.6"
   }
 }

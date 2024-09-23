@@ -6,22 +6,73 @@ import bodyParser from "body-parser";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 import 'dotenv/config';
+import jwt from 'jsonwebtoken';
+import https from 'https';
+import fs from 'fs';
+//require('dotenv').config();
+import authenticateJWT from './token.js';
 
 const app = express();
 const PORT = process.env.PORT || 3003;
 
-// Middleware
-app.use(cors());
+//app.use(cors());
+app.use(cors({
+    origin: 'https://localhost:5173',
+    //origin: 'http://localhost:3000',
+    exposedHeaders: ['X-Total-Count'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 app.use(bodyParser.json());
 
-// Database connection pool
 const pool = mysql.createPool({
     connectionLimit: 10,
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'user1', 
-    password: process.env.DB_PASSWORD || 'cisco', 
-    database: process.env.DB_DATABASE || 'crmSanders', 
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER, 
+    password: process.env.DB_PASSWORD, 
+    database: process.env.DB_DATABASE, 
 });
+
+async function createAdminUsers() {
+    const admins = [
+        {
+            nombre: 'admin1',
+            contrasena: 'admin1',
+            correo: 'admin1@gmail.com',
+            tipo_usuario: 'admin'
+        },
+        {
+            nombre: 'admin2',
+            contrasena: 'admin2',
+            correo: 'admin2@gmail.com',
+            tipo_usuario: 'admin'
+        }
+    ];
+
+    for (const admin of admins) {
+        try {
+            const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ? OR nombre = ?', [admin.correo, admin.nombre]);
+
+            if (rows.length === 0) {
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(admin.contrasena, salt);
+                const hashedCorreo = await bcrypt.hash(admin.correo, salt);
+
+                await pool.query(
+                    'CALL registrar_usuario(?, ?, ?, ?)',
+                    [admin.nombre, hashedPassword, hashedCorreo, admin.tipo_usuario]
+                );
+
+                console.log(`Usuario ${admin.nombre} registrado correctamente.`);
+            } else {
+                console.log(`Usuario ${admin.nombre} o el correo ya existen.`);
+            }
+        } catch (err) {
+            console.error(`Error creando usuario ${admin.nombre}:`, err.message);
+        }
+    }
+}
 
 app.post("/register", async (req, res) => {
     const { username: nombre, password: contrasena, email: correo } = req.body;
@@ -29,7 +80,7 @@ app.post("/register", async (req, res) => {
     console.log("Datos recibidos en /register:", req.body);
     
     try {
-        const [rows] = await pool.query('SELECT * FROM usuarios WHERE nombre = ?', [nombre]);
+        const [rows] = await pool.query('SELECT * FROM usuarios WHERE nombre = ?', [correo]);
         console.log("Usuarios encontrados con el nombre dado:", rows);
         
         if (rows.length > 0) {
@@ -56,22 +107,31 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
     const { email: correo, password: contrasena } = req.body;
     console.log("Datos recibidos en /login:", req.body);
-    
+
     try {
-        // Buscar al usuario por el correo (sin hash)
         const [rows] = await pool.query('SELECT * FROM usuarios WHERE nombre = ?', [correo]);
         console.log("Usuarios encontrados con el correo dado:", rows);
-        
+
         if (rows.length === 0) {
             return res.status(400).json({ msg: 'Usuario no encontrado' });
         }
 
         const user = rows[0];
         const isMatch = await bcrypt.compare(contrasena, user.contrasena);
+        console.log("Contraseña correcta:", isMatch);
 
         if (isMatch) {
-            // Devolver el tipo de usuario si la autenticación es exitosa
-            res.status(200).json({ msg: 'Inicio de sesión exitoso', tipo_usuario: user.tipo_usuario });
+            // Creacion del token del usuario
+            const token = jwt.sign(
+                { userId: user.id, role: user.tipo_usuario }, 
+                process.env.JWT_SECRET, 
+                { expiresIn: '1h' } // Token expira en 1 hora
+            );
+
+            console.log("Token generado:", token);
+            console.log("tipo_usuario:", user.tipo_usuario);
+            //res.json({ tipo_usuario: user.tipo_usuario, token });
+            res.status(200).json({ token, tipo_usuario: user.tipo_usuario, username: user.nombre });
         } else {
             res.status(400).json({ msg: 'Contraseña incorrecta' });
         }
@@ -81,18 +141,21 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.get("/donations", async (req, res) => {
+app.get("/donations", authenticateJWT, async (req, res) => {
+    console.log("Accessing donations route with user:", req.user);
     try {
         const [rows] = await pool.query('SELECT * FROM donaciones');
         
         const [countResult] = await pool.query('SELECT COUNT(*) as count FROM donaciones');
         const totalCount = countResult[0].count;
-
+        
         res.setHeader('X-Total-Count', totalCount);
         res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
         
-        res.json(rows);
+        //res.json(rows);
+        res.json({ data: rows, total: totalCount });
     } catch (err) {
+        console.error("Error in /donations GET route:", err);
         console.error(err.message);
         res.status(500).send('Error del servidor');
     }
@@ -100,7 +163,8 @@ app.get("/donations", async (req, res) => {
 
 
 // Crear una nueva donación
-app.post("/donations", async (req, res) => {
+app.post("/donations", authenticateJWT, async (req, res) => {
+    console.log("Accessing donations route with user:", req.user);
     const { usuario_id, monto, metodo_pago } = req.body;
     
     try {
@@ -111,15 +175,19 @@ app.post("/donations", async (req, res) => {
 
         res.status(201).json({ id: result.insertId, usuario_id, monto, metodo_pago, fecha_donacion: new Date() });
     } catch (err) {
+        console.error("Error in /donations POST route:", err);
         console.error(err.message);
         res.status(500).send('Error del servidor');
     }
 });
 
-// Actualizar una donación
-app.put("/donations/:id", async (req, res) => {
+app.put("/donations/:id", authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const { usuario_id, monto, metodo_pago } = req.body;
+
+    if (!usuario_id || !monto || !metodo_pago) {
+        return res.status(400).json({ msg: 'All fields are required for update' });
+    }
 
     try {
         await pool.query(
@@ -129,23 +197,190 @@ app.put("/donations/:id", async (req, res) => {
 
         res.status(200).json({ id, usuario_id, monto, metodo_pago });
     } catch (err) {
+        console.error("Error in /donations PUT route:", err);
         console.error(err.message);
         res.status(500).send('Error del servidor');
     }
 });
 
-// Eliminar una donación
-app.delete("/donations/:id", async (req, res) => {
+app.delete("/donations/:id", authenticateJWT, async (req, res) => {
     const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({ msg: 'Donation ID is required' });
+    }
 
     try {
         await pool.query('DELETE FROM donaciones WHERE id = ?', [id]);
         res.status(200).json({ msg: 'Donación eliminada' });
+    } catch (err) {
+        console.error("Error in /donations DELETE route:", err);
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+// Endpoint para mostrar estadísticas de donaciones
+app.get("/donaciones", authenticateJWT, async (req, res) => {
+    try {
+        const [donationsByMethod] = await pool.query(`
+            SELECT metodo_pago, SUM(monto) as total
+            FROM donaciones
+            GROUP BY metodo_pago
+        `);
+
+        const [donationsPerDay] = await pool.query(`
+            SELECT DATE(fecha_donacion) as fecha, COUNT(*) as count
+            FROM donaciones
+            GROUP BY fecha
+            ORDER BY fecha
+        `);
+
+        const [cumulativeDonations] = await pool.query(`
+            SELECT DATE(fecha_donacion) as fecha, SUM(monto) as daily_total
+            FROM donaciones
+            GROUP BY fecha
+            ORDER BY fecha
+        `);
+
+        let cumulativeSum = 0;
+        const cumulativeData = cumulativeDonations.map(row => {
+            cumulativeSum += parseFloat(row.daily_total);
+            return { fecha: row.fecha, acumulado: cumulativeSum };
+        });
+
+        res.json({
+            donationsByMethod,
+            donationsPerDay,
+            cumulativeData
+        });
+    } catch (err) {
+        console.error("Error en /donaciones-estadisticas:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+
+
+
+app.post("/donate", authenticateJWT, async (req, res) => {
+    console.log("Accessing donations route with user:", req.user);
+    const { usuario_id, monto, metodo_pago } = req.body;
+    
+    try {
+        if (!usuario_id || !monto || !metodo_pago) {
+            return res.status(400).json({ msg: 'Todos los campos son requeridos' });
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO donaciones (usuario_id, monto, metodo_pago) VALUES (?, ?, ?)',
+            [usuario_id, monto, metodo_pago]
+        );
+
+        res.status(201).json({ 
+            id: result.insertId, 
+            usuario_id, 
+            monto, 
+            metodo_pago, 
+            fecha_donacion: new Date() 
+        });
+    } catch (err) {
+        console.error("Error in /donations DELETE route:", err);
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+// Endpoint para mostrar estadísticas de donaciones
+app.get("/donaciones", authenticateJWT, async (req, res) => {
+    try {
+        const [donationsByMethod] = await pool.query(`
+            SELECT metodo_pago, SUM(monto) as total
+            FROM donaciones
+            GROUP BY metodo_pago
+        `);
+
+        const [donationsPerDay] = await pool.query(`
+            SELECT DATE(fecha_donacion) as fecha, COUNT(*) as count
+            FROM donaciones
+            GROUP BY fecha
+            ORDER BY fecha
+        `);
+
+        const [cumulativeDonations] = await pool.query(`
+            SELECT DATE(fecha_donacion) as fecha, SUM(monto) as daily_total
+            FROM donaciones
+            GROUP BY fecha
+            ORDER BY fecha
+        `);
+
+        let cumulativeSum = 0;
+        const cumulativeData = cumulativeDonations.map(row => {
+            cumulativeSum += parseFloat(row.daily_total);
+            return { fecha: row.fecha, acumulado: cumulativeSum };
+        });
+
+        res.json({
+            donationsByMethod,
+            donationsPerDay,
+            cumulativeData
+        });
+    } catch (err) {
+        console.error("Error en /donaciones-estadisticas:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+
+
+
+app.post("/donate", authenticateJWT, async (req, res) => {
+    const { usuario_id, monto, metodo_pago } = req.body;
+    
+    try {
+        if (!usuario_id || !monto || !metodo_pago) {
+            return res.status(400).json({ msg: 'Todos los campos son requeridos' });
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO donaciones (usuario_id, monto, metodo_pago) VALUES (?, ?, ?)',
+            [usuario_id, monto, metodo_pago]
+        );
+
+        res.status(201).json({ 
+            id: result.insertId, 
+            usuario_id, 
+            monto, 
+            metodo_pago, 
+            fecha_donacion: new Date() 
+        });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error del servidor');
     }
 });
 
+//Creacion de las constantes para las llaves de HTTPS
+const privateKey = fs.readFileSync('../Cert/server.key', 'utf8');
+const certificate = fs.readFileSync('../Cert/server.crt', 'utf8');
+const ca = fs.readFileSync('../Cert/ca/ca.crt', 'utf8')
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const credentials = { key: privateKey, cert: certificate, ca: ca};
+
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.listen(PORT, async () => {
+    console.log(`HTTPS Server running on port ${PORT}`);
+    try {
+        await createAdminUsers();
+    } catch (error) {
+        console.error("Error creating admin users:", error);
+    }
+});
+/*
+app.listen(PORT, async () => {
+    console.log(`Server running on port ${PORT}`);
+
+    await createAdminUsers();
+});
+*/
