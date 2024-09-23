@@ -11,12 +11,15 @@ import { DonationCreate } from './DonationCreate';
 import { DonationEdit } from './DonationEdit';
 import { i18nProvider } from './Polyglot';
 import { MyLayout } from './design/dashboardLayout';
-import { PostCreate, PostEdit, PostList } from './post-test'; 
-import { Contacts } from './Contacts'; 
 import { Companies } from './Companies'; 
 import { Stats } from './Stats'; 
 import { DonacionesPorUsuario } from './admin/adminPage'; 
 import Checkout from './Checkout'; 
+import Contacts from './Contacts';
+import ContactsIcon from '@mui/icons-material/Contacts';
+import BusinessIcon from '@mui/icons-material/Business';
+import InsightsIcon from '@mui/icons-material/Insights';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
@@ -106,16 +109,14 @@ export const App = () => {
               {/* Recursos disponibles solo para usuarios admin */}
               {state.permissions === 'admin' && (
                 <>
-                  <Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} />
-                  <Resource name="contacts" list={Contacts} />
-                  <Resource name="companies" list={Companies} />
-                  <Resource name="stats" list={Stats} />
-                  {/* <Resource name="user_donations" list={DonacionesPorUsuario} /> */}
+                  <Resource name="contacts" list={Contacts} icon={ContactsIcon}/>
+                  <Resource name="companies" list={Companies} icon={BusinessIcon}/>
+                  <Resource name="stats" list={Stats} icon={InsightsIcon} />
                 </>
               )}
               
               {/* Recursos disponibles para todos los usuarios */}
-              <Resource name="donations" list={DonationList}/>
+              <Resource name="donations" list={DonationList} icon={VolunteerActivismIcon}/>
             </Admin>
           }
         />

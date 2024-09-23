@@ -76,6 +76,7 @@ async function createAdminUsers() {
 }
 
 app.post("/register", async (req, res) => {
+    console.log("Petición aceptada")
     const { username: nombre, password: contrasena, email: correo } = req.body;
     const tipo_usuario = 'donador'; 
     console.log("Datos recibidos en /register:", req.body);
@@ -361,6 +362,16 @@ app.post("/donate", authenticateJWT, async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error del servidor');
+    }
+});
+
+app.get('/contacts', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM contactos');
+        res.json({ data: rows });
+    } catch (error) {
+        console.error('Error fetching contacts:', error);
+        res.status(500).json({ error: 'Error al obtener los contactos' });
     }
 });
 
