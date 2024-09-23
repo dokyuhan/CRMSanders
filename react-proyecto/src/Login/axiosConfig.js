@@ -3,6 +3,7 @@ import axios from 'axios';
 const createAxiosInstance = () => {
   const axiosInstance = axios.create({
       baseURL: 'https://localhost:3003/',
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
       }
