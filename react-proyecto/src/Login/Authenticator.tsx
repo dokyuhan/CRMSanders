@@ -15,7 +15,7 @@ export const authProvider: AuthProvider = {
             const json = response.data;
             console.log("json: ", json);
 
-            if (json.token) {
+            if (response.status === 200) {
                 localStorage.setItem('auth', JSON.stringify({ ...json }));
                 window.dispatchEvent(new CustomEvent('login-success'));
             } else {
