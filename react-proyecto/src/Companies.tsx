@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, List, ListItem, ListItemText } from "@mu
 
 export const Companies = () => (
     <Card>
-        <CardHeader title="Company List" />
+        <CardHeader title="Lista de Empresas" />
         <CardContent>
             <List>
                 <ListItem>

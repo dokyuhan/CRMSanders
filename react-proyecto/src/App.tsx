@@ -7,6 +7,9 @@ import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
 import { DonationList } from './DonationList'; 
+import { DonationCreate } from './DonationCreate';
+import { DonationEdit } from './DonationEdit';
+import { i18nProvider } from './Polyglot';
 import { MyLayout } from './design/dashboardLayout';
 import { PostCreate, PostEdit, PostList } from './post-test'; 
 import { Contacts } from './Contacts'; 
@@ -98,6 +101,7 @@ export const App = () => {
               authProvider={authProvider} 
               loginPage={LoginPage} 
               dashboard={Dashboard}
+              i18nProvider={i18nProvider}
             >
               {/* Recursos disponibles solo para usuarios admin */}
               {state.permissions === 'admin' && (

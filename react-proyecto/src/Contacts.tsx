@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, List, ListItem, ListItemText } from "@mu
 
 export const Contacts = () => (
     <Card>
-        <CardHeader title="Contact List" />
+        <CardHeader title="Lista de Contactos" />
         <CardContent>
             <List>
                 <ListItem>
