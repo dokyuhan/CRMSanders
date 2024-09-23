@@ -15,7 +15,15 @@ import authenticateJWT from './token.js';
 const app = express();
 const PORT = process.env.PORT || 3003;
 
-app.use(cors());
+//app.use(cors());
+app.use(cors({
+    origin: 'https://localhost:5173',
+    //origin: 'http://localhost:3000',
+    exposedHeaders: ['X-Total-Count'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 app.use(bodyParser.json());
 
 const pool = mysql.createPool({
@@ -135,6 +143,7 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/donations", authenticateJWT, async (req, res) => {
+    console.log("Accessing donations route with user:", req.user);
     try {
         const [rows] = await pool.query('SELECT * FROM donaciones');
         
@@ -156,6 +165,7 @@ app.get("/donations", authenticateJWT, async (req, res) => {
 
 // Crear una nueva donación
 app.post("/donations", authenticateJWT, async (req, res) => {
+    console.log("Accessing donations route with user:", req.user);
     const { usuario_id, monto, metodo_pago } = req.body;
     
     try {
@@ -255,6 +265,7 @@ app.get("/donaciones", authenticateJWT, async (req, res) => {
 
 
 app.post("/donate", authenticateJWT, async (req, res) => {
+    console.log("Accessing donations route with user:", req.user);
     const { usuario_id, monto, metodo_pago } = req.body;
     
     try {
@@ -360,6 +371,7 @@ app.get('/contacts', async (req, res) => {
     }
 });
 
+//Creacion de las constantes para las llaves de HTTPS
 const privateKey = fs.readFileSync('../Cert/server.key', 'utf8');
 const certificate = fs.readFileSync('../Cert/server.crt', 'utf8');
 const ca = fs.readFileSync('../Cert/ca/ca.crt', 'utf8')
@@ -370,9 +382,12 @@ const httpsServer = https.createServer(credentials, app);
 
 httpsServer.listen(PORT, async () => {
     console.log(`HTTPS Server running on port ${PORT}`);
-    await createAdminUsers();
+    try {
+        await createAdminUsers();
+    } catch (error) {
+        console.error("Error creating admin users:", error);
+    }
 });
-
 /*
 app.listen(PORT, async () => {
     console.log(`Server running on port ${PORT}`);

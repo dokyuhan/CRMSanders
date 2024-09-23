@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Admin, Resource } from 'react-admin';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer} from 'react';
 import { dataProvider } from './dataProvider';
 import { authProvider } from './Login/Authenticator';
 import { Dashboard } from './dashboard';
@@ -35,6 +35,7 @@ const permissionsReducer = (state: State, action: Action) => {
         case SET_PERMISSIONS:
             return { ...state, permissions: action.payload };
         case UPDATE_PERMISSIONS:
+          localStorage.setItem('payloadRole', JSON.stringify(action.payload));
             return { ...state, permissions: action.payload };
         default:
             return state;
@@ -42,18 +43,17 @@ const permissionsReducer = (state: State, action: Action) => {
 };
 
 export const App = () => {
-  const [state, dispatch] = useReducer(permissionsReducer, { permissions: null });
+  const initPermissions = JSON.parse(localStorage.getItem('authRole') || 'null');
+  const [state, dispatch] = useReducer(permissionsReducer, { permissions: initPermissions });
 
   useEffect(() => {
     const handleLoginSuccess = () => {
-      //const role = localStorage.getItem('role');
-      const authString = localStorage.getItem('auth');
-      if (!authString) {
+      let auth = JSON.parse(localStorage.getItem('auth') || '{}');
+      if (!auth) {
         console.error("No auth data found in localStorage");
         return;
       }
       else {
-        const auth = JSON.parse(authString);
         const role = auth.tipo_usuario;
         console.log("Login success detected. Role from localStorage: ", role);
         dispatch({ type: SET_PERMISSIONS, payload: role });
@@ -69,16 +69,15 @@ export const App = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      const authString = localStorage.getItem('auth');
-      if (!authString) {
+      let auth = JSON.parse(localStorage.getItem('auth') || '{}');
+      if (!auth) {
         console.error("No auth data found in localStorage");
         return;
       }
 
-      const auth = JSON.parse(authString);
       const updatedRole = auth.tipo_usuario;
-      
       if (updatedRole !== state.permissions) {
+        console.log("Updating permissions to: ", updatedRole);
         dispatch({ type: UPDATE_PERMISSIONS, payload: updatedRole });
       }
     }, 1000); 
