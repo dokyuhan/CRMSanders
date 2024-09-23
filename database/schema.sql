@@ -2,6 +2,7 @@ DROP DATABASE IF EXISTS crmSanders;
 CREATE DATABASE IF NOT EXISTS crmSanders;
 USE  crmSanders;
 
+
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
@@ -18,6 +19,16 @@ CREATE TABLE IF NOT EXISTS donaciones (
     fecha_donacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
+CREATE TABLE IF NOT EXISTS contactos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    telefono VARCHAR(15),
+    direccion VARCHAR(255),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 DELIMITER $$
 
@@ -53,3 +64,6 @@ BEGIN
 END $$
 
 DELIMITER ;
+select * from usuarios; 
+
+
