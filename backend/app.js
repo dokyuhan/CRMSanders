@@ -9,6 +9,7 @@ import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import https from 'https';
 import fs from 'fs';
+import cookieParser from 'cookie-parser';
 //require('dotenv').config();
 import authenticateJWT from './token.js';
 
@@ -17,14 +18,14 @@ const PORT = process.env.PORT || 3003;
 
 //app.use(cors());
 app.use(cors({
-    origin: 'https://localhost:5173',
-    //origin: 'http://localhost:3000',
+    origin: ['https://localhost:5173'],
     exposedHeaders: ['X-Total-Count'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 const pool = mysql.createPool({
     connectionLimit: 10,
@@ -131,8 +132,11 @@ app.post("/login", async (req, res) => {
 
             console.log("Token generado:", token);
             console.log("tipo_usuario:", user.tipo_usuario);
-            //res.json({ tipo_usuario: user.tipo_usuario, token });
-            res.status(200).json({ token, tipo_usuario: user.tipo_usuario, username: user.nombre });
+
+            res.cookie('jwt', token, { httpOnly: true, secure: true, sameSite: 'None', path: '/' });
+            console.log("Token stored in HttpOnly cookie", token);
+
+            res.status(200).json({ tipo_usuario: user.tipo_usuario, username: user.nombre });
         } else {
             res.status(400).json({ msg: 'Contraseña incorrecta' });
         }

@@ -8,6 +8,8 @@ const PaymentForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [paymentMethod, setPaymentMethod] = useState('credit');
   const [confirmation, setConfirmation] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
     try {
@@ -24,7 +26,9 @@ const PaymentForm = () => {
       console.log('response:', responseData);
     } catch (error) {
       console.error('Error al enviar los datos:', error);
+      setError('Failed to process payment. Please try again.');
     }
+    setLoading(false);
   };
 
   return (
@@ -117,8 +121,12 @@ const PaymentForm = () => {
             sx={{ mb: 2 }}
           />
 
+          {error && (
+              <Alert severity="error">{error}</Alert>
+          )}
+
           <Button type="submit" variant="contained" color="primary" fullWidth>
-            Pagar
+            {loading ? 'Processing...' : 'Pagar'}
           </Button>
         </form>
 
