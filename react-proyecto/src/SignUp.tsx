@@ -3,42 +3,46 @@ import { useForm } from 'react-hook-form';
 import { Button, TextField, Typography, Card, CardContent, Alert } from '@mui/material';
 import { useNotify } from 'react-admin'; 
 import { dataProvider } from './dataProvider'; 
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate para redirigir
 import './css/SignUp.css';
 
 const SignUp = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const notify = useNotify(); 
+  const notify = useNotify();
+  const navigate = useNavigate(); // Usa useNavigate para la redirección
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
 
   const onSubmit = async (data: any) => {
-    setLoading(true); 
-    setError(null); 
+    setLoading(true);
+    setError(null);
 
     try {
-    
       const { data: responseData } = await dataProvider.create('registerDonor', {
         data: {
           name: data.firstName,
           surname: data.lastName,
           email: data.email,
           password: data.password,
-        }
+        },
       });
 
-     
       notify('Cuenta creada exitosamente');
-    } catch (error) {
+
+      // Redirige al usuario a la página de donaciones después del registro
+      navigate('/SignIn'); 
+
+    } catch (error: any) {
       console.error('Error en el registro:', error);
       setError('Error al registrarse. Por favor, inténtalo de nuevo.');
       notify('Error en el registro: ' + error.message);
     }
-    
-    setLoading(false); 
+
+    setLoading(false);
   };
 
   return (
-    <div className='background'>
+    <div className="background">
       <Card sx={{ maxWidth: 400, margin: 'auto', padding: 2 }}>
         <CardContent>
           <Typography variant="h4" component="h1" gutterBottom>

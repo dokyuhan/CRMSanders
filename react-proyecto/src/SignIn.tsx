@@ -1,18 +1,20 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, TextField, Typography, Card, CardContent, Alert } from '@mui/material';
-import { useNotify } from 'react-admin'; 
-import './css/SignIn.css'; 
+import { useNotify } from 'react-admin';
+import { useNavigate } from 'react-router-dom';
+import './css/SignIn.css';
 
 const SignIn = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const notify = useNotify(); 
+  const notify = useNotify();
+  const navigate = useNavigate();
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
 
   const onSubmit = async (data: any) => {
-    setLoading(true); 
-    setError(null); 
+    setLoading(true);
+    setError(null);
 
     try {
       const response = await fetch('https://localhost:3003/loginDonor', {
@@ -21,7 +23,7 @@ const SignIn = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: data.email, 
+          email: data.email,
           password: data.password,
         }),
       });
@@ -33,6 +35,9 @@ const SignIn = () => {
       const responseData = await response.json();
       localStorage.setItem('auth', JSON.stringify(responseData));
       notify('Inicio de sesión exitoso');
+      
+      navigate('/donate');
+
     } catch (error: any) {
       console.error('Error en el inicio de sesión:', error);
       setError(error.message || 'Error desconocido');
