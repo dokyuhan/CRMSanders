@@ -1,13 +1,19 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useLogin, useNotify } from 'react-admin'; // Importa useLogin y useNotify
 import './css/SignIn.css'; 
 
 export default function SignIn() {
   const { register, handleSubmit } = useForm();
+  const login = useLogin(); // Inicializa useLogin
+  const notify = useNotify(); // Inicializa useNotify
 
-  const onSubmit = (data: any) => {
-    console.log("SignIn Data:", data);
-    // Lógica para enviar los datos al backend y autenticar al usuario
+  const onSubmit = async (data: any) => {
+    try {
+      await login({ username: data.email, password: data.password }); // Envía los datos al login
+    } catch (error) {
+      notify('Credenciales inválidas'); // Notifica en caso de error
+    }
   };
 
   return (

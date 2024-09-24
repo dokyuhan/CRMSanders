@@ -10,11 +10,12 @@ CREATE TABLE IF NOT EXISTS usuarios (
     tipo_usuario ENUM('admin', 'colaborador') NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS donadores (
+CREATE TABLE IF NOT EXISTS donors (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL,
-    correo VARCHAR(100) NOT NULL UNIQUE,
-    contrasena VARCHAR(100) NOT NULL
+    name VARCHAR(50) NOT NULL,
+    surname VARCHAR(50) NOT NULL,
+    mail VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS donaciones (

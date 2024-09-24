@@ -10,7 +10,6 @@ import jwt from 'jsonwebtoken';
 import https from 'https';
 import fs from 'fs';
 import cookieParser from 'cookie-parser';
-//require('dotenv').config();
 import authenticateJWT from './token.js';
 
 const app = express();
@@ -75,6 +74,119 @@ async function createAdminUsers() {
     }
 }
 
+//---------------------------------Get routes---------------------------------
+app.get("/donations", authenticateJWT, async (req, res) => {
+    console.log("Accessing donations route with user:", req.user);
+    try {
+        const [rows] = await pool.query('SELECT * FROM donaciones');
+        
+        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM donaciones');
+        const totalCount = countResult[0].count;
+        
+        res.setHeader('X-Total-Count', totalCount);
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
+        
+        //res.json(rows);
+        res.json({ data: rows, total: totalCount });
+    } catch (err) {
+        console.error("Error in /donations GET route:", err);
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+// Endpoint para mostrar estadísticas de donaciones
+app.get("/donaciones", authenticateJWT, async (req, res) => {
+    try {
+        const [donationsByMethod] = await pool.query(`
+            SELECT metodo_pago, SUM(monto) as total
+            FROM donaciones
+            GROUP BY metodo_pago
+        `);
+
+        const [donationsPerDay] = await pool.query(`
+            SELECT DATE(fecha_donacion) as fecha, COUNT(*) as count
+            FROM donaciones
+            GROUP BY fecha
+            ORDER BY fecha
+        `);
+
+        const [cumulativeDonations] = await pool.query(`
+            SELECT DATE(fecha_donacion) as fecha, SUM(monto) as daily_total
+            FROM donaciones
+            GROUP BY fecha
+            ORDER BY fecha
+        `);
+
+        let cumulativeSum = 0;
+        const cumulativeData = cumulativeDonations.map(row => {
+            cumulativeSum += parseFloat(row.daily_total);
+            return { fecha: row.fecha, acumulado: cumulativeSum };
+        });
+
+        res.json({
+            donationsByMethod,
+            donationsPerDay,
+            cumulativeData
+        });
+    } catch (err) {
+        console.error("Error en /donaciones-estadisticas:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+// Endpoint para mostrar estadísticas de donaciones
+app.get("/donaciones", authenticateJWT, async (req, res) => {
+    try {
+        const [donationsByMethod] = await pool.query(`
+            SELECT metodo_pago, SUM(monto) as total
+            FROM donaciones
+            GROUP BY metodo_pago
+        `);
+
+        const [donationsPerDay] = await pool.query(`
+            SELECT DATE(fecha_donacion) as fecha, COUNT(*) as count
+            FROM donaciones
+            GROUP BY fecha
+            ORDER BY fecha
+        `);
+
+        const [cumulativeDonations] = await pool.query(`
+            SELECT DATE(fecha_donacion) as fecha, SUM(monto) as daily_total
+            FROM donaciones
+            GROUP BY fecha
+            ORDER BY fecha
+        `);
+
+        let cumulativeSum = 0;
+        const cumulativeData = cumulativeDonations.map(row => {
+            cumulativeSum += parseFloat(row.daily_total);
+            return { fecha: row.fecha, acumulado: cumulativeSum };
+        });
+
+        res.json({
+            donationsByMethod,
+            donationsPerDay,
+            cumulativeData
+        });
+    } catch (err) {
+        console.error("Error en /donaciones-estadisticas:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+app.get('/contacts', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM contactos');
+        res.json({ data: rows });
+    } catch (error) {
+        console.error('Error fetching contacts:', error);
+        res.status(500).json({ error: 'Error al obtener los contactos' });
+    }
+});
+
+
+//---------------------------------Post routes---------------------------------
 app.post("/register", async (req, res) => {
     console.log("Petición aceptada")
     const { username: nombre, password: contrasena, email: correo } = req.body;
@@ -146,198 +258,6 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.get("/donations", authenticateJWT, async (req, res) => {
-    console.log("Accessing donations route with user:", req.user);
-    try {
-        const [rows] = await pool.query('SELECT * FROM donaciones');
-        
-        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM donaciones');
-        const totalCount = countResult[0].count;
-        
-        res.setHeader('X-Total-Count', totalCount);
-        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
-        
-        //res.json(rows);
-        res.json({ data: rows, total: totalCount });
-    } catch (err) {
-        console.error("Error in /donations GET route:", err);
-        console.error(err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
-
-
-// Crear una nueva donación
-app.post("/donations", authenticateJWT, async (req, res) => {
-    console.log("Accessing donations route with user:", req.user);
-    const { usuario_id, monto, metodo_pago } = req.body;
-    
-    try {
-        const [result] = await pool.query(
-            'INSERT INTO donaciones (usuario_id, monto, metodo_pago) VALUES (?, ?, ?)',
-            [usuario_id, monto, metodo_pago]
-        );
-
-        res.status(201).json({ id: result.insertId, usuario_id, monto, metodo_pago, fecha_donacion: new Date() });
-    } catch (err) {
-        console.error("Error in /donations POST route:", err);
-        console.error(err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
-
-app.put("/donations/:id", authenticateJWT, async (req, res) => {
-    const { id } = req.params;
-    const { usuario_id, monto, metodo_pago } = req.body;
-
-    if (!usuario_id || !monto || !metodo_pago) {
-        return res.status(400).json({ msg: 'All fields are required for update' });
-    }
-
-    try {
-        await pool.query(
-            'UPDATE donaciones SET usuario_id = ?, monto = ?, metodo_pago = ? WHERE id = ?',
-            [usuario_id, monto, metodo_pago, id]
-        );
-
-        res.status(200).json({ id, usuario_id, monto, metodo_pago });
-    } catch (err) {
-        console.error("Error in /donations PUT route:", err);
-        console.error(err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
-
-app.delete("/donations/:id", authenticateJWT, async (req, res) => {
-    const { id } = req.params;
-
-    if (!id) {
-        return res.status(400).json({ msg: 'Donation ID is required' });
-    }
-
-    try {
-        await pool.query('DELETE FROM donaciones WHERE id = ?', [id]);
-        res.status(200).json({ msg: 'Donación eliminada' });
-    } catch (err) {
-        console.error("Error in /donations DELETE route:", err);
-        console.error(err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
-
-// Endpoint para mostrar estadísticas de donaciones
-app.get("/donaciones", authenticateJWT, async (req, res) => {
-    try {
-        const [donationsByMethod] = await pool.query(`
-            SELECT metodo_pago, SUM(monto) as total
-            FROM donaciones
-            GROUP BY metodo_pago
-        `);
-
-        const [donationsPerDay] = await pool.query(`
-            SELECT DATE(fecha_donacion) as fecha, COUNT(*) as count
-            FROM donaciones
-            GROUP BY fecha
-            ORDER BY fecha
-        `);
-
-        const [cumulativeDonations] = await pool.query(`
-            SELECT DATE(fecha_donacion) as fecha, SUM(monto) as daily_total
-            FROM donaciones
-            GROUP BY fecha
-            ORDER BY fecha
-        `);
-
-        let cumulativeSum = 0;
-        const cumulativeData = cumulativeDonations.map(row => {
-            cumulativeSum += parseFloat(row.daily_total);
-            return { fecha: row.fecha, acumulado: cumulativeSum };
-        });
-
-        res.json({
-            donationsByMethod,
-            donationsPerDay,
-            cumulativeData
-        });
-    } catch (err) {
-        console.error("Error en /donaciones-estadisticas:", err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
-
-
-
-
-app.post("/donate", authenticateJWT, async (req, res) => {
-    console.log("Accessing donations route with user:", req.user);
-    const { usuario_id, monto, metodo_pago } = req.body;
-    
-    try {
-        if (!usuario_id || !monto || !metodo_pago) {
-            return res.status(400).json({ msg: 'Todos los campos son requeridos' });
-        }
-
-        const [result] = await pool.query(
-            'INSERT INTO donaciones (usuario_id, monto, metodo_pago) VALUES (?, ?, ?)',
-            [usuario_id, monto, metodo_pago]
-        );
-
-        res.status(201).json({ 
-            id: result.insertId, 
-            usuario_id, 
-            monto, 
-            metodo_pago, 
-            fecha_donacion: new Date() 
-        });
-    } catch (err) {
-        console.error("Error in /donations DELETE route:", err);
-        console.error(err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
-
-// Endpoint para mostrar estadísticas de donaciones
-app.get("/donaciones", authenticateJWT, async (req, res) => {
-    try {
-        const [donationsByMethod] = await pool.query(`
-            SELECT metodo_pago, SUM(monto) as total
-            FROM donaciones
-            GROUP BY metodo_pago
-        `);
-
-        const [donationsPerDay] = await pool.query(`
-            SELECT DATE(fecha_donacion) as fecha, COUNT(*) as count
-            FROM donaciones
-            GROUP BY fecha
-            ORDER BY fecha
-        `);
-
-        const [cumulativeDonations] = await pool.query(`
-            SELECT DATE(fecha_donacion) as fecha, SUM(monto) as daily_total
-            FROM donaciones
-            GROUP BY fecha
-            ORDER BY fecha
-        `);
-
-        let cumulativeSum = 0;
-        const cumulativeData = cumulativeDonations.map(row => {
-            cumulativeSum += parseFloat(row.daily_total);
-            return { fecha: row.fecha, acumulado: cumulativeSum };
-        });
-
-        res.json({
-            donationsByMethod,
-            donationsPerDay,
-            cumulativeData
-        });
-    } catch (err) {
-        console.error("Error en /donaciones-estadisticas:", err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
-
-
-
 
 app.post("/donate", authenticateJWT, async (req, res) => {
     const { donador_id, monto, metodo_pago } = req.body;
@@ -371,16 +291,76 @@ app.post("/donate", authenticateJWT, async (req, res) => {
     }
 });
 
-
-app.get('/contacts', async (req, res) => {
+app.post("/donations", authenticateJWT, async (req, res) => {
+    console.log("Accessing donations route with user:", req.user);
+    const { usuario_id, monto, metodo_pago } = req.body;
+    
     try {
-        const [rows] = await pool.query('SELECT * FROM contactos');
-        res.json({ data: rows });
-    } catch (error) {
-        console.error('Error fetching contacts:', error);
-        res.status(500).json({ error: 'Error al obtener los contactos' });
+        const [result] = await pool.query(
+            'INSERT INTO donaciones (usuario_id, monto, metodo_pago) VALUES (?, ?, ?)',
+            [usuario_id, monto, metodo_pago]
+        );
+
+        res.status(201).json({ id: result.insertId, usuario_id, monto, metodo_pago, fecha_donacion: new Date() });
+    } catch (err) {
+        console.error("Error in /donations POST route:", err);
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
     }
 });
+
+app.post('/registerDonor', async (req,res)=> {
+    
+
+});
+
+app.post('loginDonor', async (req,res)=>{
+
+});
+
+//---------------------------------Put routes---------------------------------
+
+app.put("/donations/:id", authenticateJWT, async (req, res) => {
+    const { id } = req.params;
+    const { usuario_id, monto, metodo_pago } = req.body;
+
+    if (!usuario_id || !monto || !metodo_pago) {
+        return res.status(400).json({ msg: 'All fields are required for update' });
+    }
+
+    try {
+        await pool.query(
+            'UPDATE donaciones SET usuario_id = ?, monto = ?, metodo_pago = ? WHERE id = ?',
+            [usuario_id, monto, metodo_pago, id]
+        );
+
+        res.status(200).json({ id, usuario_id, monto, metodo_pago });
+    } catch (err) {
+        console.error("Error in /donations PUT route:", err);
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+//---------------------------------Delete routes---------------------------------
+
+app.delete("/donations/:id", authenticateJWT, async (req, res) => {
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({ msg: 'Donation ID is required' });
+    }
+
+    try {
+        await pool.query('DELETE FROM donaciones WHERE id = ?', [id]);
+        res.status(200).json({ msg: 'Donación eliminada' });
+    } catch (err) {
+        console.error("Error in /donations DELETE route:", err);
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
 
 //Creacion de las constantes para las llaves de HTTPS
 const privateKey = fs.readFileSync('../Cert/server.key', 'utf8');
