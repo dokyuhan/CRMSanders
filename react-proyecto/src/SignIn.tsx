@@ -2,7 +2,6 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, TextField, Typography, Card, CardContent, Alert } from '@mui/material';
 import { useNotify } from 'react-admin'; 
-import { dataProvider } from './dataProvider'; 
 import './css/SignIn.css'; 
 
 const SignIn = () => {
@@ -16,19 +15,30 @@ const SignIn = () => {
     setError(null); 
 
     try {
-      const { data: responseData } = await dataProvider.login({
-        mail: data.email, 
-        password: data.password,
+      const response = await fetch('https://localhost:3003/loginDonor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email, 
+          password: data.password,
+        }),
       });
 
-     
+      if (!response.ok) {
+        throw new Error('Credenciales inválidas');
+      }
+
+      const responseData = await response.json();
+      localStorage.setItem('auth', JSON.stringify(responseData));
       notify('Inicio de sesión exitoso');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error en el inicio de sesión:', error);
-      setError('Credenciales inválidas');
+      setError(error.message || 'Error desconocido');
       notify('Error en el inicio de sesión: ' + error.message);
     }
-    
+
     setLoading(false);
   };
 
@@ -41,7 +51,7 @@ const SignIn = () => {
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
-              label="Email"
+              label="Correo electrónico"
               variant="outlined"
               fullWidth
               {...register('email', { required: 'El correo es requerido' })}

@@ -51,8 +51,12 @@ button:hover {
     background-color: #b22222; 
 }
 
-p {
+form p {
     text-align: center;
     margin-top: 1rem;
-    color: white; 
+    color: black; 
+}
+
+form a{
+    font-weight: bold;
 }

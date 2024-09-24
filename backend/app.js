@@ -310,22 +310,22 @@ app.post("/donations", authenticateJWT, async (req, res) => {
 });
 
 app.post('/registerDonor', async (req, res) => {
-    const { name, surname, mail, password } = req.body;
-    if (!name || !surname || !mail || !password) {
+    const { name, surname, email, password } = req.body;
+    if (!name || !surname || !email || !password) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
     }
 
     try {
-        const [existingDonor] = await pool.query('SELECT * FROM donors WHERE mail = ?', [mail]);
+        const [existingDonor] = await pool.query('SELECT * FROM donors WHERE email = ?', [email]);
         if (existingDonor.length > 0) {
             return res.status(409).json({ message: 'El correo electrónico ya está registrado.' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const [result] = await pool.query('INSERT INTO donors (name, surname, mail, password) VALUES (?, ?, ?, ?)', [name, surname, mail, hashedPassword]);
+        const [result] = await pool.query('INSERT INTO donors (name, surname, email, password) VALUES (?, ?, ?, ?)', [name, surname, email, hashedPassword]);
 
-        res.status(201).json({ id: result.insertId, name, surname, mail });
+        res.status(201).json({ id: result.insertId, name, surname, email });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al registrar el donante.' });
@@ -333,28 +333,26 @@ app.post('/registerDonor', async (req, res) => {
 });
 
 app.post('/loginDonor', async (req, res) => {
-    const { mail, password } = req.body;
+    const { email, password } = req.body;
 
-    
-    if (!mail || !password) {
+    if (!email || !password) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
     }
 
     try {
+        const [donor] = await pool.query('SELECT * FROM donors WHERE email = ?', [email]);
+        console.log("Usuarios encontrados con el correo dado:", donor);
         
-        const [donor] = await pool.query('SELECT * FROM donors WHERE mail = ?', [mail]);
         if (donor.length === 0) {
             return res.status(401).json({ message: 'Credenciales inválidas.' });
         }
 
-        
         const isPasswordValid = await bcrypt.compare(password, donor[0].password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Credenciales inválidas.' });
         }
 
-        
-        const token = jwt.sign({ id: donor[0].id, mail: donor[0].mail }, 'tu_secreto', { expiresIn: '1h' });
+        const token = jwt.sign({ id: donor[0].id, email: donor[0].email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.status(200).json({ message: 'Inicio de sesión exitoso', token });
     } catch (error) {
@@ -362,6 +360,7 @@ app.post('/loginDonor', async (req, res) => {
         res.status(500).json({ message: 'Error al iniciar sesión.' });
     }
 });
+
 
 //---------------------------------Put endpoints---------------------------------
 
