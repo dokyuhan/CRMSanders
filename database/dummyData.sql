@@ -8,7 +8,7 @@ INSERT INTO usuarios (nombre, contrasena, correo, tipo_usuario) VALUES
 ('Usuario7', '1234', 'usuario7@mail.com', 'donador'),
 ('Usuario8', '1234', 'usuario8@mail.com', 'donador'),
 ('Usuario9', '1234', 'usuario9@mail.com', 'donador'),
-('Usuario10', '1234', 'usuario10@mail.com', 'donador');
+('Usuario10','1234', 'usuario10@mail.com', 'donador');
 
 INSERT INTO donaciones (usuario_id, monto, metodo_pago, fecha_donacion) VALUES
 (2, 100.00, 'PayPal', '2024-09-02 14:45:00'),
