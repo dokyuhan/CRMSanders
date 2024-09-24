@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS donaciones (
     monto DECIMAL(10, 2) NOT NULL,
     metodo_pago VARCHAR(50) NOT NULL,
     fecha_donacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (donador_id) REFERENCES donadores(id)
+    FOREIGN KEY (donador_id) REFERENCES donors(id)
 );
 
 CREATE TABLE IF NOT EXISTS contactos (
@@ -82,6 +82,3 @@ BEGIN
 END $$
 DELIMITER ;
 
-SELECT * FROM usuarios;
-
-SELECT * FROM donadores;
