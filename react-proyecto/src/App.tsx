@@ -20,7 +20,9 @@ import ContactsIcon from '@mui/icons-material/Contacts';
 import BusinessIcon from '@mui/icons-material/Business';
 import InsightsIcon from '@mui/icons-material/Insights';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
-
+import SignUp from './SignUp';
+import SignIn from './SignIn';
+import DonatePage from './Donate'; 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
 
@@ -95,6 +97,9 @@ export const App = () => {
       <Routes>
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/checkout" element={<Checkout />} /> {/* Añadido el componente Checkout */}
+        <Route path="/donate" element={<DonatePage />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<SignIn />} />
         <Route
           path="*"
           element={
