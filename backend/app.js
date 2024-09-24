@@ -309,13 +309,58 @@ app.post("/donations", authenticateJWT, async (req, res) => {
     }
 });
 
-app.post('/registerDonor', async (req,res)=> {
-    
+app.post('/registerDonor', async (req, res) => {
+    const { name, surname, mail, password } = req.body;
+    if (!name || !surname || !mail || !password) {
+        return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
+    }
 
+    try {
+        const [existingDonor] = await pool.query('SELECT * FROM donors WHERE mail = ?', [mail]);
+        if (existingDonor.length > 0) {
+            return res.status(409).json({ message: 'El correo electrónico ya está registrado.' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const [result] = await pool.query('INSERT INTO donors (name, surname, mail, password) VALUES (?, ?, ?, ?)', [name, surname, mail, hashedPassword]);
+
+        res.status(201).json({ id: result.insertId, name, surname, mail });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al registrar el donante.' });
+    }
 });
 
-app.post('loginDonor', async (req,res)=>{
+app.post('/loginDonor', async (req, res) => {
+    const { mail, password } = req.body;
 
+    
+    if (!mail || !password) {
+        return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
+    }
+
+    try {
+        
+        const [donor] = await pool.query('SELECT * FROM donors WHERE mail = ?', [mail]);
+        if (donor.length === 0) {
+            return res.status(401).json({ message: 'Credenciales inválidas.' });
+        }
+
+        
+        const isPasswordValid = await bcrypt.compare(password, donor[0].password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Credenciales inválidas.' });
+        }
+
+        
+        const token = jwt.sign({ id: donor[0].id, mail: donor[0].mail }, 'tu_secreto', { expiresIn: '1h' });
+
+        res.status(200).json({ message: 'Inicio de sesión exitoso', token });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al iniciar sesión.' });
+    }
 });
 
 //---------------------------------Put endpoints---------------------------------

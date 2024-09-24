@@ -1,18 +1,34 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useLogin, useNotify } from 'react-admin'; 
+import { useNotify } from 'react-admin';
 import './css/SignIn.css'; 
 
 export default function SignIn() {
   const { register, handleSubmit } = useForm();
-  const login = useLogin(); 
   const notify = useNotify(); 
 
   const onSubmit = async (data: any) => {
     try {
-      await login({ username: data.email, password: data.password });
+      const response = await fetch('/api/SignIn', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email, 
+          password: data.password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al iniciar sesión');
+      }
+
+      const responseData = await response.json();
+      notify(responseData.message); 
     } catch (error) {
-      notify('Credenciales inválidas');
+      notify('Error en el inicio de sesión: ' + error.message);
     }
   };
 
@@ -24,10 +40,10 @@ export default function SignIn() {
           <label>Email:</label>
           <input type="email" {...register('email')} required />
 
-          <label>Password:</label>
+          <label>Contraseña:</label>
           <input type="password" {...register('password')} required />
 
-          <button type="submit">Login</button>
+          <button type="submit">Iniciar sesión</button>
 
           <p>No tienes una cuenta? <a href="/SignUp">Regístrate</a></p>
         </form>

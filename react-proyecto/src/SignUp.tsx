@@ -9,26 +9,28 @@ export default function SignUp() {
 
   const onSubmit = async (data: any) => {
     try {
-     
-      console.log("SignUp Data:", data);
-      
-     
-      const response = await fetch('/api/register', {
+      const payload = {
+        name: data.firstName,
+        surname: data.lastName,
+        mail: data.email,
+        password: data.password,
+      };
+
+      const response = await fetch('/SignUp', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error('Error al registrarse');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al registrarse');
       }
 
-      
       notify('Cuenta creada exitosamente');
     } catch (error) {
-     
       notify('Error en el registro: ' + error.message);
     }
   };
@@ -53,7 +55,7 @@ export default function SignUp() {
 
             <button type="submit">Registrarse</button>
             
-            <p>Ya tienes una cuenta? <a href="/SignIn">Inicia sesión</a></p>
+            <p>¿Ya tienes una cuenta? <a href="/SignIn">Inicia sesión</a></p>
           </form>
         </div>
       </div>
