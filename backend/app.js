@@ -166,67 +166,9 @@ app.get("/donations", authenticateJWT, async (req, res) => {
     }
 });
 
-
-// Crear una nueva donación
-app.post("/donations", authenticateJWT, async (req, res) => {
-    console.log("Accessing donations route with user:", req.user);
-    const { usuario_id, monto, metodo_pago } = req.body;
-    
-    try {
-        const [result] = await pool.query(
-            'INSERT INTO donaciones (usuario_id, monto, metodo_pago) VALUES (?, ?, ?)',
-            [usuario_id, monto, metodo_pago]
-        );
-
-        res.status(201).json({ id: result.insertId, usuario_id, monto, metodo_pago, fecha_donacion: new Date() });
-    } catch (err) {
-        console.error("Error in /donations POST route:", err);
-        console.error(err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
-
-app.put("/donations/:id", authenticateJWT, async (req, res) => {
-    const { id } = req.params;
-    const { usuario_id, monto, metodo_pago } = req.body;
-
-    if (!usuario_id || !monto || !metodo_pago) {
-        return res.status(400).json({ msg: 'All fields are required for update' });
-    }
-
-    try {
-        await pool.query(
-            'UPDATE donaciones SET usuario_id = ?, monto = ?, metodo_pago = ? WHERE id = ?',
-            [usuario_id, monto, metodo_pago, id]
-        );
-
-        res.status(200).json({ id, usuario_id, monto, metodo_pago });
-    } catch (err) {
-        console.error("Error in /donations PUT route:", err);
-        console.error(err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
-
-app.delete("/donations/:id", authenticateJWT, async (req, res) => {
-    const { id } = req.params;
-
-    if (!id) {
-        return res.status(400).json({ msg: 'Donation ID is required' });
-    }
-
-    try {
-        await pool.query('DELETE FROM donaciones WHERE id = ?', [id]);
-        res.status(200).json({ msg: 'Donación eliminada' });
-    } catch (err) {
-        console.error("Error in /donations DELETE route:", err);
-        console.error(err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
-
 // Endpoint para mostrar estadísticas de donaciones
 app.get("/donaciones", authenticateJWT, async (req, res) => {
+    console.log("Petición aceptada");
     try {
         const [donationsByMethod] = await pool.query(`
             SELECT metodo_pago, SUM(monto) as total
@@ -254,16 +196,24 @@ app.get("/donaciones", authenticateJWT, async (req, res) => {
             return { fecha: row.fecha, acumulado: cumulativeSum };
         });
 
+        // Aquí calculas el total de donaciones
+        const totalDonationsCount = donationsPerDay.length;
+
+        // Establecer el encabezado X-Total-Count
+        res.set('X-Total-Count', totalDonationsCount);
+        
+        // Enviar la respuesta
         res.json({
             donationsByMethod,
             donationsPerDay,
             cumulativeData
         });
     } catch (err) {
-        console.error("Error en /donaciones-estadisticas:", err.message);
+        console.error("Error en /donaciones:", err.message);
         res.status(500).send('Error del servidor');
     }
 });
+
 
 
 
@@ -325,6 +275,11 @@ app.get("/donaciones", authenticateJWT, async (req, res) => {
             return { fecha: row.fecha, acumulado: cumulativeSum };
         });
 
+        const totalRecords = Math.max(donationsByMethod.length, donationsPerDay.length, cumulativeData.length); // Total de registros
+
+        res.setHeader('X-Total-Count', totalRecords); // Añade el header 'X-Total-Count'
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count'); // Exponer el header para CORS
+
         res.json({
             donationsByMethod,
             donationsPerDay,
@@ -335,6 +290,7 @@ app.get("/donaciones", authenticateJWT, async (req, res) => {
         res.status(500).send('Error del servidor');
     }
 });
+
 
 
 

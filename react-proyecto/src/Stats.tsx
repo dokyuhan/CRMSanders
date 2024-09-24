@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, List, ListItem, ListItemText } from "@mui/material";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 import axios from 'axios';
+import { dataProvider } from './dataProvider';
 
 
 export const Stats = () => {
@@ -11,13 +12,21 @@ export const Stats = () => {
         cumulativeData: [],
     });
 
+    const [error, setError] = useState<string | null>(null);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:3003/donaciones');
-                setData(response.data);
+                // Usa dataProvider para hacer la solicitud
+                const { data: responseData } = await dataProvider.getList('donaciones', {
+                    pagination: { page: 1, perPage: 10 },
+                    sort: { field: 'id', order: 'DESC' },
+                    filter: {}
+                });
+
+                setData(responseData);
             } catch (err) {
                 console.error('Error fetching statistics:', err);
+                setError('Error al obtener las estadísticas');
             }
         };
 
