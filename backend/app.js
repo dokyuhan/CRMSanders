@@ -167,7 +167,7 @@ app.get("/donations", authenticateJWT, async (req, res) => {
 });
 
 // Endpoint para mostrar estadísticas de donaciones
-app.get("/donaciones", authenticateJWT, async (req, res) => {
+app.get("/stats", authenticateJWT, async (req, res) => {
     console.log("Petición aceptada");
     try {
         const [donationsByMethod] = await pool.query(`
@@ -196,20 +196,17 @@ app.get("/donaciones", authenticateJWT, async (req, res) => {
             return { fecha: row.fecha, acumulado: cumulativeSum };
         });
 
-        // Aquí calculas el total de donaciones
         const totalDonationsCount = donationsPerDay.length;
 
-        // Establecer el encabezado X-Total-Count
         res.set('X-Total-Count', totalDonationsCount);
         
-        // Enviar la respuesta
         res.json({
             donationsByMethod,
             donationsPerDay,
             cumulativeData
         });
     } catch (err) {
-        console.error("Error en /donaciones:", err.message);
+        console.error("Error en donaciones:", err.message);
         res.status(500).send('Error del servidor');
     }
 });

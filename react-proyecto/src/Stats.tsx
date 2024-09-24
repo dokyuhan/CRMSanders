@@ -16,8 +16,7 @@ export const Stats = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Usa dataProvider para hacer la solicitud
-                const { data: responseData } = await dataProvider.getList('donaciones', {
+                const { data: responseData } = await dataProvider.getList('stats', {
                     pagination: { page: 1, perPage: 10 },
                     sort: { field: 'id', order: 'DESC' },
                     filter: {}
