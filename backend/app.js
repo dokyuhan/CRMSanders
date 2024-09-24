@@ -365,7 +365,7 @@ app.post("/donate", authenticateJWT, async (req, res) => {
     }
 });
 
-app.get('/contacts', async (req, res) => {
+app.get('/contacts', authenticateJWT, async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM contactos');
         res.json({ data: rows });
