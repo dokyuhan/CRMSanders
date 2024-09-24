@@ -109,14 +109,15 @@ export const App = () => {
               {/* Recursos disponibles solo para usuarios admin */}
               {state.permissions === 'admin' && (
                 <>
-                  <Resource name="contactos" list={Contacts} icon={ContactsIcon}/>
-                  <Resource name="Compañias" list={Companies} icon={BusinessIcon}/>
+                  
                   <Resource name="Estadísticas" list={Stats} icon={InsightsIcon} />
                 </>
               )}
               
               {/* Recursos disponibles para todos los usuarios */}
               <Resource name="Donaciones" list={DonationList} icon={VolunteerActivismIcon}/>
+              <Resource name="contactos" list={Contacts} icon={ContactsIcon}/>
+              <Resource name="Compañias" list={Companies} icon={BusinessIcon}/>
             </Admin>
           }
         />
