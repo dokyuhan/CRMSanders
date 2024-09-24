@@ -1,5 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import './css/SignUp.css';
 
 export default function SignUp() {
   const { register, handleSubmit } = useForm();
@@ -11,22 +12,30 @@ export default function SignUp() {
 
   return (
     <>
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <label>First Name:</label>
-        <input {...register('firstName')} required />
-        
-        <label>Last Name:</label>
-        <input {...register('lastName')} required />
+        <div className='background'>
 
-        <label>Email:</label>
-        <input type="email" {...register('email')} required />
+            <div className='signUpform'>
+                <h2>Registrarse</h2>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <label>Nombre:</label>
+                    <input {...register('firstName')} placeholder='Juan' required />
+                    
+                    <label>Apellido:</label>
+                    <input {...register('lastName')} placeholder='Perez' required />
 
-        <label>Password:</label>
-        <input type="password" {...register('password')} required />
+                    <label>Correo electrónico:</label>
+                    <input type="email" {...register('email')} placeholder='juanperez@mail.com'required />
 
-        <button type="submit">Register</button>
-      </form>
+                    <label>Contraseña:</label>
+                    <input type="password" {...register('password')} placeholder='••••••'required />
+
+                    <button type="submit">Registrarse</button>
+                    
+                    <p>Ya tienes una cuenta? <a href="/SignIn">Inicia sesión</a></p>
+                </form>
+            </div>
+        </div>
+      
     </>
   );
 }
