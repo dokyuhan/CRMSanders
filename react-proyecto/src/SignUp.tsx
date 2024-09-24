@@ -1,34 +1,34 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useNotify } from 'react-admin'; // Importa useNotify
+import { useNotify } from 'react-admin';
 import './css/SignUp.css';
 
 export default function SignUp() {
   const { register, handleSubmit } = useForm();
-  const notify = useNotify(); // Inicializa useNotify
+  const notify = useNotify(); 
 
   const onSubmit = async (data: any) => {
     try {
-      // Aquí debes agregar la lógica para enviar los datos al backend
+     
       console.log("SignUp Data:", data);
       
-      // Ejemplo de una solicitud de registro (ajusta según tu backend)
+     
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data), // Envía los datos del formulario
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
         throw new Error('Error al registrarse');
       }
 
-      // Notificación de éxito
+      
       notify('Cuenta creada exitosamente');
     } catch (error) {
-      // Manejo de errores
+     
       notify('Error en el registro: ' + error.message);
     }
   };

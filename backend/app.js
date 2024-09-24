@@ -74,7 +74,7 @@ async function createAdminUsers() {
     }
 }
 
-//---------------------------------Get routes---------------------------------
+//---------------------------------Get endpoints---------------------------------
 app.get("/donations", authenticateJWT, async (req, res) => {
     console.log("Accessing donations route with user:", req.user);
     try {
@@ -186,7 +186,7 @@ app.get('/contacts', async (req, res) => {
 });
 
 
-//---------------------------------Post routes---------------------------------
+//---------------------------------Post endpoints---------------------------------
 app.post("/register", async (req, res) => {
     console.log("Petición aceptada")
     const { username: nombre, password: contrasena, email: correo } = req.body;
@@ -318,7 +318,7 @@ app.post('loginDonor', async (req,res)=>{
 
 });
 
-//---------------------------------Put routes---------------------------------
+//---------------------------------Put endpoints---------------------------------
 
 app.put("/donations/:id", authenticateJWT, async (req, res) => {
     const { id } = req.params;
@@ -342,7 +342,7 @@ app.put("/donations/:id", authenticateJWT, async (req, res) => {
     }
 });
 
-//---------------------------------Delete routes---------------------------------
+//---------------------------------Delete endpoints---------------------------------
 
 app.delete("/donations/:id", authenticateJWT, async (req, res) => {
     const { id } = req.params;
