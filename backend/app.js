@@ -203,17 +203,17 @@ app.post("/login", async (req, res) => {
 
         if (isMatch) {
             // Creacion del token del usuario
-            const token = jwt.sign(
+            const tokena = jwt.sign(
                 { userId: user.id, role: user.tipo_usuario }, 
                 process.env.JWT_SECRET, 
                 { expiresIn: '1h' } // Token expira en 1 hora
             );
 
-            console.log("Token generado:", token);
+            console.log("Token generado:", tokena);
             console.log("tipo_usuario:", user.tipo_usuario);
 
-            res.cookie('jwt', token, { httpOnly: true, secure: true, sameSite: 'None', path: '/' });
-            console.log("Token stored in HttpOnly cookie", token);
+            res.cookie('jwtA', tokena, { httpOnly: true, secure: true, sameSite: 'None', path: '/' });
+            console.log("Token stored in HttpOnly cookie", tokena);
 
             res.status(200).json({ tipo_usuario: user.tipo_usuario, username: user.nombre });
         } else {
@@ -319,9 +319,10 @@ app.post('/loginDonor', async (req, res) => {
             return res.status(401).json({ message: 'Credenciales inválidas.' });
         }
 
-        const token = jwt.sign({ id: donor[0].id, email: donor[0].email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const tokenu = jwt.sign({ id: donor[0].id, email: donor[0].email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.cookie('jwtU', tokenu, { httpOnly: true, secure: true, sameSite: 'None', path: '/' });
 
-        res.status(200).json({ message: 'Inicio de sesión exitoso', token });
+        res.status(200).json({ message: 'Inicio de sesión exitoso' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al iniciar sesión.' });
