@@ -141,7 +141,7 @@ app.get("/stats", authenticateJWT, async (req, res) => {
     }
 });
 
-
+// Endpoint para mostrar los contactos
 app.get('/contacts', async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM contactos');
