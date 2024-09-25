@@ -289,8 +289,8 @@ app.post('/registerDonor', async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        const [result] = await pool.query('INSERT INTO donors (name, surname, email, password) VALUES (?, ?, ?, ?)', [name, surname, email, hashedPassword]);
+        const hashedEmail = await bcrypt.hash(email, 10); 
+        const [result] = await pool.query('INSERT INTO donors (name, surname, email, password) VALUES (?, ?, ?, ?)', [name, surname, hashedEmail, hashedPassword]);
 
         res.status(201).json({ id: result.insertId, name, surname, email });
     } catch (error) {
@@ -298,6 +298,7 @@ app.post('/registerDonor', async (req, res) => {
         res.status(500).json({ message: 'Error al registrar el donante.' });
     }
 });
+
 
 app.post('/loginDonor', async (req, res) => {
     const { email, password } = req.body;
@@ -307,19 +308,27 @@ app.post('/loginDonor', async (req, res) => {
     }
 
     try {
-        const [donor] = await pool.query('SELECT * FROM donors WHERE email = ?', [email]);
-        console.log("Usuarios encontrados con el correo dado:", donor);
-        
-        if (donor.length === 0) {
+        const [donors] = await pool.query('SELECT * FROM donors');
+
+        let donor = null;
+        for (let d of donors) {
+            const isEmailMatch = await bcrypt.compare(email, d.email); 
+            if (isEmailMatch) {
+                donor = d;  
+                break;
+            }
+        }
+
+        if (!donor) {
             return res.status(401).json({ message: 'Credenciales inválidas.' });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, donor[0].password);
+        const isPasswordValid = await bcrypt.compare(password, donor.password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Credenciales inválidas.' });
         }
 
-        const token = jwt.sign({ id: donor[0].id, email: donor[0].email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: donor.id, email: donor.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.status(200).json({ message: 'Inicio de sesión exitoso', token });
     } catch (error) {
@@ -327,6 +336,8 @@ app.post('/loginDonor', async (req, res) => {
         res.status(500).json({ message: 'Error al iniciar sesión.' });
     }
 });
+
+
 
 
 
