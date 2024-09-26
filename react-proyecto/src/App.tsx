@@ -23,6 +23,7 @@ import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import SignUp from './SignUp';
 import SignIn from './SignIn';
 import DonatePage from './Donate'; 
+import Donadores from './Donadores';
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
 
@@ -116,6 +117,7 @@ export const App = () => {
                 <>
                   
                   <Resource name="Estadísticas" list={Stats} icon={InsightsIcon} />
+                  <Resource name="Donadores" list={Donadores} />
                 </>
               )}
               
