@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Container, Typography, Grid, Card, CardContent, Box, CircularProgress, Alert } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import EventIcon from '@mui/icons-material/Event';
 import PaymentIcon from '@mui/icons-material/Payment';
+import { dataProvider } from './dataProvider'; 
 
 interface Donacion {
-    donacion_id: number;
+    id: number;
     donador_nombre: string;
     donador_correo: string;
     donacion_monto: number;
@@ -22,11 +22,18 @@ const Donadores: React.FC = () => {
 
     useEffect(() => {
         const fetchDonaciones = async () => {
+            setLoading(true);
             try {
-                const response = await axios.get('https://localhost:3003/donacionesdonadores');
-                setDonaciones(response.data.data);
+                const response = await dataProvider.getList<Donacion>('donacionesdonadores', {
+                    pagination: { page: 1, perPage: 10 },
+                    sort: { field: 'id', order: 'ASC' },
+                    filter: {},
+                });
+                setDonaciones(Array.isArray(response.data.data) ? response.data.data : []);
                 setLoading(false);
             } catch (err) {
+                console.error('Error fetching donaciones:', err);
+                setError('Error al cargar las donaciones');
                 setLoading(false);
             }
         };
@@ -34,8 +41,13 @@ const Donadores: React.FC = () => {
         fetchDonaciones();
     }, []);
 
-    if (loading) return <Container sx={{ textAlign: 'center', mt: 4 }}><CircularProgress /></Container>;
-    if (error) return <Container sx={{ textAlign: 'center', mt: 4 }}><Alert severity="error">{error}</Alert></Container>;
+    if (loading) {
+        return <Container sx={{ textAlign: 'center', mt: 4 }}><CircularProgress /></Container>;
+    }
+
+    if (error) {
+        return <Container sx={{ textAlign: 'center', mt: 4 }}><Alert severity="error">{error}</Alert></Container>;
+    }
 
     return (
         <Container sx={{ mt: 4 }}>
@@ -43,8 +55,8 @@ const Donadores: React.FC = () => {
                 Lista de donadores
             </Typography>
             <Grid container spacing={3}>
-                {donaciones.map(donacion => (
-                    <Grid item xs={12} sm={6} md={4} key={donacion.donacion_id}>
+                {donaciones.map((donacion) => (
+                    <Grid item xs={12} sm={6} md={4} key={donacion.id}>
                         <Card 
                             variant="outlined" 
                             sx={{ 
