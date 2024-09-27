@@ -337,6 +337,27 @@ app.post('/loginDonor', async (req, res) => {
     }
 });
 
+app.get("/donacionesdonadores", authenticateJWT, async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM Donacionesdonadores');
+        console.log([rows])
+
+        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM DonacionesDonadores');
+        const totalCount = countResult[0].count;
+
+        res.setHeader('X-Total-Count', totalCount);
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
+        
+        res.json({ data: rows, total: totalCount });
+    } catch (err) {
+        console.error("Error in /donacionesDetalladas GET route:", err);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+
+
+
 
 
 
