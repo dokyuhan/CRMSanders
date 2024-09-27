@@ -96,4 +96,4 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
-select * from donors;
+select * from donors; 
