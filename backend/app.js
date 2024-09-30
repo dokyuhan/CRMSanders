@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const pool = mysql.createPool({
-    connectionLimit: 10,
+    connectionLimit: process.env.CON_LIMIT,
     host: process.env.DB_HOST,
     user: process.env.DB_USER, 
     password: process.env.DB_PASSWORD, 
@@ -37,16 +37,16 @@ const pool = mysql.createPool({
 async function createAdminUsers() {
     const admins = [
         {
-            nombre: 'admin1',
-            contrasena: 'admin1',
-            correo: 'admin1@gmail.com',
-            tipo_usuario: 'admin'
+            nombre: process.env.ADMIN1_NAME,
+            contrasena: process.env.ADMIN1_PASSWORD,
+            correo: process.env.ADMIN1_EMAIL,
+            tipo_usuario: process.env.ADMIN_ROLE
         },
         {
-            nombre: 'admin2',
-            contrasena: 'admin2',
-            correo: 'admin2@gmail.com',
-            tipo_usuario: 'admin'
+            nombre: process.env.ADMIN2_NAME,
+            contrasena: process.env.ADMIN2_PASSWORD,
+            correo: process.env.ADMIN2_EMAIL,
+            tipo_usuario: process.env.ADMIN_ROLE
         }
     ];
 
@@ -75,6 +75,7 @@ async function createAdminUsers() {
 }
 
 //---------------------------------Get endpoints---------------------------------
+//admin
 app.get("/donations", authenticateJWT, async (req, res) => {
     console.log("Accessing donations route with user:", req.user);
     try {
@@ -96,6 +97,7 @@ app.get("/donations", authenticateJWT, async (req, res) => {
 });
 
 // Endpoint para mostrar estadísticas de donaciones
+//admin
 app.get("/stats", authenticateJWT, async (req, res) => {
     try {
         const [donationsByMethod] = await pool.query(`
@@ -142,6 +144,7 @@ app.get("/stats", authenticateJWT, async (req, res) => {
 });
 
 // Endpoint para mostrar los contactos
+//admin y usuario
 app.get('/contacts', async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM contactos');
@@ -154,6 +157,7 @@ app.get('/contacts', async (req, res) => {
 
 
 //---------------------------------Post endpoints---------------------------------
+//admin
 app.post("/register", async (req, res) => {
     console.log("Petición aceptada")
     const { username: nombre, password: contrasena, email: correo } = req.body;
@@ -185,6 +189,7 @@ app.post("/register", async (req, res) => {
     }
 });
 
+//admin
 app.post("/login", async (req, res) => {
     const { email: correo, password: contrasena } = req.body;
     console.log("Datos recibidos en /login:", req.body);
@@ -225,7 +230,7 @@ app.post("/login", async (req, res) => {
     }
 });
 
-
+//admin
 app.post("/donate", authenticateJWT, async (req, res) => {
     const { donador_id, monto, metodo_pago } = req.body;
     
@@ -258,6 +263,7 @@ app.post("/donate", authenticateJWT, async (req, res) => {
     }
 });
 
+//admin
 app.post("/donations", authenticateJWT, async (req, res) => {
     console.log("Accessing donations route with user:", req.user);
     const { usuario_id, monto, metodo_pago } = req.body;
@@ -276,6 +282,7 @@ app.post("/donations", authenticateJWT, async (req, res) => {
     }
 });
 
+//usuario
 app.post('/registerDonor', async (req, res) => {
     const { name, surname, email, password } = req.body;
     if (!name || !surname || !email || !password) {
@@ -299,7 +306,7 @@ app.post('/registerDonor', async (req, res) => {
     }
 });
 
-
+//usuario
 app.post('/loginDonor', async (req, res) => {
     const { email, password } = req.body;
 
@@ -337,6 +344,7 @@ app.post('/loginDonor', async (req, res) => {
     }
 });
 
+//usuario
 app.get("/donacionesdonadores", authenticateJWT, async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM Donacionesdonadores');
@@ -354,8 +362,6 @@ app.get("/donacionesdonadores", authenticateJWT, async (req, res) => {
         res.status(500).send('Error del servidor');
     }
 });
-
-
 
 //---------------------------------Create Contact---------------------------------
 app.post('/contacts', authenticateJWT, async (req, res) => {
@@ -426,13 +432,6 @@ app.get('/contacts/:id', async (req, res) => {
         res.status(500).json({ message: 'Error al obtener el contacto.' });
     }
 });
-
-
-
-
-
-
-
 
 //Creacion de las constantes para las llaves de HTTPS
 const privateKey = fs.readFileSync('../Cert/server.key', 'utf8');
