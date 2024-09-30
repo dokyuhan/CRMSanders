@@ -96,4 +96,26 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
-select * from donors; 
+
+DELIMITER $$
+CREATE PROCEDURE actualizar_contacto(
+    IN p_id INT,
+    IN p_nombre VARCHAR(100),
+    IN p_apellido VARCHAR(100),
+    IN p_telefono VARCHAR(15),
+    IN p_email VARCHAR(255),
+    IN p_direccion VARCHAR(255)
+)
+BEGIN
+    UPDATE contactos
+    SET nombre = p_nombre, apellido = p_apellido, telefono = p_telefono, email = p_email, direccion = p_direccion
+    WHERE id = p_id;
+
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Contacto no encontrado.';
+    END IF;
+END $$
+DELIMITER ;
+
+
+select * from usuarios; 
