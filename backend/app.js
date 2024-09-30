@@ -357,6 +357,75 @@ app.get("/donacionesdonadores", authenticateJWT, async (req, res) => {
 
 
 
+//---------------------------------Create Contact---------------------------------
+app.post('/contacts', authenticateJWT, async (req, res) => {
+    const { nombre, telefono, email, direccion, apellido } = req.body;
+
+    if (!nombre || !telefono || !email || !direccion || !apellido) {
+        return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
+    }
+
+    try {
+        const [result] = await pool.query(
+            'INSERT INTO contactos (nombre, telefono, email, direccion, apellido) VALUES (?, ?, ?, ?, ?)',
+            [nombre, telefono, email, direccion,apellido]
+        );
+
+        res.status(201).json({ 
+            id: result.insertId, 
+            nombre, 
+            telefono, 
+            email 
+        });
+    } catch (error) {
+        console.error('Error al crear contacto:', error);
+        res.status(500).json({ message: 'Error al crear el contacto.' });
+    }
+});
+
+//---------------------------------Edit Contact---------------------------------
+app.put('/contacts/:id', authenticateJWT, async (req, res) => {
+    const { id } = req.params;
+    const { nombre, apellido, telefono, email, direccion } = req.body;
+
+    if (!nombre || !apellido || !telefono || !email || !direccion) {
+        return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
+    }
+
+    try {
+        const [result] = await pool.query(
+            'CALL actualizar_contacto(?, ?, ?, ?, ?, ?)',
+            [id, nombre, apellido, telefono, email, direccion]
+        );
+
+        res.status(200).json({ message: 'Contacto actualizado correctamente.' });
+    } catch (error) {
+        if (error.sqlState === '45000') {
+            return res.status(404).json({ message: 'Contacto no encontrado.' });
+        }
+        console.error('Error al actualizar contacto:', error);
+        res.status(500).json({ message: 'Error al actualizar el contacto.' });
+    }
+});
+
+
+
+app.get('/contacts/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [rows] = await pool.query('SELECT * FROM contactos WHERE id = ?', [id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'Contacto no encontrado.' });
+        }
+
+        res.json(rows[0]);
+    } catch (error) {
+        console.error('Error al obtener contacto:', error);
+        res.status(500).json({ message: 'Error al obtener el contacto.' });
+    }
+});
 
 
 
