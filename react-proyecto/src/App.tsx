@@ -52,6 +52,8 @@ const permissionsReducer = (state: State, action: Action) => {
 export const App = () => {
   const initPermissions = JSON.parse(localStorage.getItem('authRole') || 'null');
   const [state, dispatch] = useReducer(permissionsReducer, { permissions: initPermissions });
+  const [isSidebar, setIsSidebar] = useState(true);
+  const [logged, setLogged] = useState(false);
 
   useEffect(() => {
     const handleLoginSuccess = () => {
@@ -103,6 +105,7 @@ export const App = () => {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/create-contact" element={<CreateContact />} />
         <Route path="/edit-contact/:id" element={<EditContact />} />
+        <Route path="/contacts" element={<Contacts />} />
         <Route
           path="/*"
           element={
@@ -120,25 +123,6 @@ export const App = () => {
                 </main>
               </div>
             </div>
-            <Admin
-              layout={MyLayout}
-              dataProvider={dataProvider}
-              authProvider={authProvider}
-              loginPage={LoginPage}
-              dashboard={Dashboard}
-              i18nProvider={i18nProvider}
-            >
-              {/* Recursos disponibles solo para usuarios admin */}
-              {state.permissions === 'admin' && (
-                <>
-                  <Resource name="Estadísticas" list={Stats} icon={InsightsIcon} />
-                  <Resource name="Donadores" list={Donadores} />
-                </>
-              )}
-              {/* Recursos disponibles para todos los usuarios */}
-              <Resource name="contactos" list={Contacts} icon={ContactsIcon} />
-              <Resource name="Compañias" list={Companies} icon={BusinessIcon} />
-            </Admin>
           }
         />
       </Routes>

@@ -75,14 +75,14 @@ const Sidebar: React.FC = () => {
           />
           <Item
             title="Contactos"
-            to="/donations"
+            to="/contacts"
             icon={<ContactsOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
           />
           <Item
             title="Estadísticas"
-            to="/iwachu"
+            to="/stats"
             icon={<PeopleOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
