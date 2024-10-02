@@ -76,7 +76,7 @@ async function createAdminUsers() {
 
 //---------------------------------Get endpoints---------------------------------
 //admin
-app.get("/donations", authenticateJWT, async (req, res) => {
+app.get("/donations", authenticateJWT(['admin']), async (req, res) => {
     console.log("Accessing donations route with user:", req.user);
     try {
         const [rows] = await pool.query('SELECT * FROM donaciones');
@@ -98,7 +98,7 @@ app.get("/donations", authenticateJWT, async (req, res) => {
 
 // Endpoint para mostrar estadísticas de donaciones
 //admin
-app.get("/stats", authenticateJWT, async (req, res) => {
+app.get("/stats", authenticateJWT(['admin']), async (req, res) => {
     try {
         const [donationsByMethod] = await pool.query(`
             SELECT metodo_pago, SUM(monto) as total
@@ -145,7 +145,7 @@ app.get("/stats", authenticateJWT, async (req, res) => {
 
 // Endpoint para mostrar los contactos
 //admin y usuario
-app.get('/contacts', async (req, res) => {
+app.get('/contacts', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM contactos');
         res.json({ data: rows });
@@ -231,7 +231,7 @@ app.post("/login", async (req, res) => {
 });
 
 //admin
-app.post("/donate", authenticateJWT, async (req, res) => {
+app.post("/donate", authenticateJWT(['admin']), async (req, res) => {
     const { donador_id, monto, metodo_pago } = req.body;
     
     try {
@@ -264,7 +264,7 @@ app.post("/donate", authenticateJWT, async (req, res) => {
 });
 
 //admin
-app.post("/donations", authenticateJWT, async (req, res) => {
+app.post("/donations", authenticateJWT(['admin']), async (req, res) => {
     console.log("Accessing donations route with user:", req.user);
     const { usuario_id, monto, metodo_pago } = req.body;
     
@@ -345,7 +345,7 @@ app.post('/loginDonor', async (req, res) => {
 });
 
 //usuario
-app.get("/donacionesdonadores", authenticateJWT, async (req, res) => {
+app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM Donacionesdonadores');
         console.log([rows])
@@ -364,7 +364,7 @@ app.get("/donacionesdonadores", authenticateJWT, async (req, res) => {
 });
 
 //---------------------------------Create Contact---------------------------------
-app.post('/contacts', authenticateJWT, async (req, res) => {
+app.post('/contacts', authenticateJWT(['admin']), async (req, res) => {
     const { nombre, telefono, email, direccion, apellido } = req.body;
 
     if (!nombre || !telefono || !email || !direccion || !apellido) {
@@ -390,7 +390,7 @@ app.post('/contacts', authenticateJWT, async (req, res) => {
 });
 
 //---------------------------------Edit Contact---------------------------------
-app.put('/contacts/:id', authenticateJWT, async (req, res) => {
+app.put('/contacts/:id', authenticateJWT(['admin']), async (req, res) => {
     const { id } = req.params;
     const { nombre, apellido, telefono, email, direccion } = req.body;
 
@@ -413,8 +413,6 @@ app.put('/contacts/:id', authenticateJWT, async (req, res) => {
         res.status(500).json({ message: 'Error al actualizar el contacto.' });
     }
 });
-
-
 
 app.get('/contacts/:id', async (req, res) => {
     const { id } = req.params;
