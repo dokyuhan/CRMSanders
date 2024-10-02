@@ -1,28 +1,24 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Admin, Resource } from 'react-admin';
-import { useEffect, useReducer} from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { dataProvider } from './dataProvider';
 import { authProvider } from './Login/Authenticator';
 import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
-import { DonationList } from './DonationList'; 
-import { DonationCreate } from './DonationCreate';
-import { DonationEdit } from './DonationEdit';
-import { i18nProvider } from './Polyglot';
-import { MyLayout } from './design/dashboardLayout';
-import { Companies } from './Companies'; 
-import { Stats } from './Stats'; 
-import { DonacionesPorUsuario } from './admin/adminPage'; 
-import Checkout from './Checkout'; 
-import Contacts from './Contacts';
+import { DonationList } from './DonationList';
+import Checkout from './Checkout';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import BusinessIcon from '@mui/icons-material/Business';
 import InsightsIcon from '@mui/icons-material/Insights';
-import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import SignUp from './SignUp';
 import SignIn from './SignIn';
-import DonatePage from './Donate'; 
+import DonatePage from './Donate';
+import Topbar from './global/Topbar';
+import Sidebar from './global/Sidebar';
+import NotFound from './NotFound';
+import Contacts from './Contacts';
+
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
 
@@ -36,33 +32,32 @@ interface Action {
 }
 
 const permissionsReducer = (state: State, action: Action) => {
-    switch (action.type) {
-        case SET_PERMISSIONS:
-            return { ...state, permissions: action.payload };
-        case UPDATE_PERMISSIONS:
-          localStorage.setItem('payloadRole', JSON.stringify(action.payload));
-            return { ...state, permissions: action.payload };
-        default:
-            return state;
-    }
+  switch (action.type) {
+    case SET_PERMISSIONS:
+      return { ...state, permissions: action.payload };
+    case UPDATE_PERMISSIONS:
+      localStorage.setItem('payloadRole', JSON.stringify(action.payload));
+      return { ...state, permissions: action.payload };
+    default:
+      return state;
+  }
 };
 
 export const App = () => {
   const initPermissions = JSON.parse(localStorage.getItem('authRole') || 'null');
   const [state, dispatch] = useReducer(permissionsReducer, { permissions: initPermissions });
+  const [isSidebar, setIsSidebar] = useState(true);
+  const [logged, setLogged] = useState(false);
 
   useEffect(() => {
     const handleLoginSuccess = () => {
       let auth = JSON.parse(localStorage.getItem('auth') || '{}');
       if (!auth) {
-        console.error("No auth data found in localStorage");
+        console.error('No auth data found in localStorage');
         return;
       }
-      else {
-        const role = auth.tipo_usuario;
-        console.log("Login success detected. Role from localStorage: ", role);
-        dispatch({ type: SET_PERMISSIONS, payload: role });
-      }
+      const role = auth.tipo_usuario;
+      dispatch({ type: SET_PERMISSIONS, payload: role });
     };
 
     window.addEventListener('login-success', handleLoginSuccess);
@@ -76,57 +71,46 @@ export const App = () => {
     const intervalId = setInterval(() => {
       let auth = JSON.parse(localStorage.getItem('auth') || '{}');
       if (!auth) {
-        console.error("No auth data found in localStorage");
+        console.error('No auth data found in localStorage');
         return;
       }
 
       const updatedRole = auth.tipo_usuario;
       if (updatedRole !== state.permissions) {
-        console.log("Updating permissions to: ", updatedRole);
         dispatch({ type: UPDATE_PERMISSIONS, payload: updatedRole });
       }
-    }, 1000); 
+    }, 1000);
 
     return () => clearInterval(intervalId);
   }, [state.permissions]);
-
-  console.log("Rendering App with permissions: ", state.permissions);
-
+  
   return (
     <Router>
       <Routes>
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/checkout" element={<Checkout />} /> {/* Añadido el componente Checkout */}
-        <Route path="/donate" element={<DonatePage />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
         <Route
-          path="*"
+          path="/*"
           element={
-            <Admin 
-              layout={MyLayout} 
-              dataProvider={dataProvider} 
-              authProvider={authProvider} 
-              loginPage={LoginPage} 
-              dashboard={Dashboard}
-              i18nProvider={i18nProvider}
-            >
-              {/* Recursos disponibles solo para usuarios admin */}
-              {state.permissions === 'admin' && (
-                <>
-                  
-                  <Resource name="Estadísticas" list={Stats} icon={InsightsIcon} />
-                </>
-              )}
-              
-              {/* Recursos disponibles para todos los usuarios */}
-              <Resource name="Donaciones" list={DonationList} icon={VolunteerActivismIcon}/>
-              <Resource name="contactos" list={Contacts} icon={ContactsIcon}/>
-              <Resource name="Compañias" list={Companies} icon={BusinessIcon}/>
-            </Admin>
+            <div className="flex h-screen">
+              <Sidebar />
+              <div className="flex-1 flex flex-col">
+                <Topbar setIsSidebar={setIsSidebar} />
+                <main className="flex-1 overflow-y-auto p-4 bg-gray-600">
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/donate" element={<DonatePage />} />
+                    <Route path="/donations" element={<Contacts/>} />
+                    <Route path="/checkout" element={<Checkout />} />
+                  </Routes>
+                </main>
+              </div>
+            </div>
           }
         />
       </Routes>
     </Router>
-  );
+  );  
 };
