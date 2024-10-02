@@ -1,19 +1,15 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Admin, Resource } from 'react-admin';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { dataProvider } from './dataProvider';
 import { authProvider } from './Login/Authenticator';
 import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
-import { DonationList } from './DonationList';
-import { DonationCreate } from './DonationCreate';
-import { DonationEdit } from './DonationEdit';
 import { i18nProvider } from './Polyglot';
 import { MyLayout } from './design/dashboardLayout';
 import { Companies } from './Companies';
 import { Stats } from './Stats';
-import { DonacionesPorUsuario } from './admin/adminPage';
 import Checkout from './Checkout';
 import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact'; 
@@ -21,10 +17,12 @@ import EditContact from './Contactos/EditContacts';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import BusinessIcon from '@mui/icons-material/Business';
 import InsightsIcon from '@mui/icons-material/Insights';
-import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import SignUp from './SignUp';
 import SignIn from './SignIn';
 import DonatePage from './Donate';
+import Topbar from './global/Topbar';
+import Sidebar from './global/Sidebar';
+import NotFound from './NotFound';
 import Donadores from './Donadores';
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
@@ -54,6 +52,8 @@ const permissionsReducer = (state: State, action: Action) => {
 export const App = () => {
   const initPermissions = JSON.parse(localStorage.getItem('authRole') || 'null');
   const [state, dispatch] = useReducer(permissionsReducer, { permissions: initPermissions });
+  const [isSidebar, setIsSidebar] = useState(true);
+  const [logged, setLogged] = useState(false);
 
   useEffect(() => {
     const handleLoginSuccess = () => {
@@ -98,37 +98,34 @@ export const App = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/create-contact" element={<CreateContact />} />
         <Route path="/edit-contact/:id" element={<EditContact />} />
+        <Route path="/contacts" element={<Contacts />} />
         <Route
-          path="*"
+          path="/*"
           element={
-            <Admin
-              layout={MyLayout}
-              dataProvider={dataProvider}
-              authProvider={authProvider}
-              loginPage={LoginPage}
-              dashboard={Dashboard}
-              i18nProvider={i18nProvider}
-            >
-              {/* Recursos disponibles solo para usuarios admin */}
-              {state.permissions === 'admin' && (
-                <>
-                  <Resource name="Estadísticas" list={Stats} icon={InsightsIcon} />
-                  <Resource name="Donadores" list={Donadores} />
-                </>
-              )}
-              {/* Recursos disponibles para todos los usuarios */}
-              <Resource name="contactos" list={Contacts} icon={ContactsIcon} />
-              <Resource name="Compañias" list={Companies} icon={BusinessIcon} />
-            </Admin>
+            <div className="flex h-screen">
+              <Sidebar />
+              <div className="flex-1 flex flex-col">
+                <Topbar setIsSidebar={setIsSidebar} />
+                <main className="flex-1 overflow-y-auto p-4 bg-gray-600">
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/donate" element={<DonatePage />} />
+                    <Route path="/donations" element={<Contacts/>} />
+                    <Route path="/checkout" element={<Checkout />} />
+                  </Routes>
+                </main>
+              </div>
+            </div>
           }
         />
       </Routes>
     </Router>
-  );
+  );  
 };
