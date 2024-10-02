@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const pool = mysql.createPool({
-    connectionLimit: 10,
+    connectionLimit: process.env.CON_LIMIT,
     host: process.env.DB_HOST,
     user: process.env.DB_USER, 
     password: process.env.DB_PASSWORD, 
@@ -37,16 +37,16 @@ const pool = mysql.createPool({
 async function createAdminUsers() {
     const admins = [
         {
-            nombre: 'admin1',
-            contrasena: 'admin1',
-            correo: 'admin1@gmail.com',
-            tipo_usuario: 'admin'
+            nombre: process.env.ADMIN1_NAME,
+            contrasena: process.env.ADMIN1_PASSWORD,
+            correo: process.env.ADMIN1_EMAIL,
+            tipo_usuario: process.env.ADMIN_ROLE
         },
         {
-            nombre: 'admin2',
-            contrasena: 'admin2',
-            correo: 'admin2@gmail.com',
-            tipo_usuario: 'admin'
+            nombre: process.env.ADMIN2_NAME,
+            contrasena: process.env.ADMIN2_PASSWORD,
+            correo: process.env.ADMIN2_EMAIL,
+            tipo_usuario: process.env.ADMIN_ROLE
         }
     ];
 
@@ -75,7 +75,8 @@ async function createAdminUsers() {
 }
 
 //---------------------------------Get endpoints---------------------------------
-app.get("/donations", authenticateJWT, async (req, res) => {
+//admin
+app.get("/donations", authenticateJWT(['admin']), async (req, res) => {
     console.log("Accessing donations route with user:", req.user);
     try {
         const [rows] = await pool.query('SELECT * FROM donaciones');
@@ -96,7 +97,8 @@ app.get("/donations", authenticateJWT, async (req, res) => {
 });
 
 // Endpoint para mostrar estadísticas de donaciones
-app.get("/stats", authenticateJWT, async (req, res) => {
+//admin
+app.get("/stats", authenticateJWT(['admin']), async (req, res) => {
     try {
         const [donationsByMethod] = await pool.query(`
             SELECT metodo_pago, SUM(monto) as total
@@ -142,7 +144,8 @@ app.get("/stats", authenticateJWT, async (req, res) => {
 });
 
 // Endpoint para mostrar los contactos
-app.get('/contacts', async (req, res) => {
+//admin y usuario
+app.get('/contacts', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM contactos');
         res.json({ data: rows });
@@ -154,6 +157,7 @@ app.get('/contacts', async (req, res) => {
 
 
 //---------------------------------Post endpoints---------------------------------
+//admin
 app.post("/register", async (req, res) => {
     console.log("Petición aceptada")
     const { username: nombre, password: contrasena, email: correo } = req.body;
@@ -185,6 +189,7 @@ app.post("/register", async (req, res) => {
     }
 });
 
+//admin
 app.post("/login", async (req, res) => {
     const { email: correo, password: contrasena } = req.body;
     console.log("Datos recibidos en /login:", req.body);
@@ -225,8 +230,8 @@ app.post("/login", async (req, res) => {
     }
 });
 
-
-app.post("/donate", authenticateJWT, async (req, res) => {
+//admin
+app.post("/donate", authenticateJWT(['admin']), async (req, res) => {
     const { donador_id, monto, metodo_pago } = req.body;
     
     try {
@@ -258,7 +263,8 @@ app.post("/donate", authenticateJWT, async (req, res) => {
     }
 });
 
-app.post("/donations", authenticateJWT, async (req, res) => {
+//admin
+app.post("/donations", authenticateJWT(['admin']), async (req, res) => {
     console.log("Accessing donations route with user:", req.user);
     const { usuario_id, monto, metodo_pago } = req.body;
     
@@ -276,6 +282,7 @@ app.post("/donations", authenticateJWT, async (req, res) => {
     }
 });
 
+//usuario
 app.post('/registerDonor', async (req, res) => {
     const { name, surname, email, password } = req.body;
     if (!name || !surname || !email || !password) {
@@ -299,7 +306,7 @@ app.post('/registerDonor', async (req, res) => {
     }
 });
 
-
+//usuario
 app.post('/loginDonor', async (req, res) => {
     const { email, password } = req.body;
 
@@ -337,12 +344,92 @@ app.post('/loginDonor', async (req, res) => {
     }
 });
 
+//usuario
+app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM Donacionesdonadores');
+        console.log([rows])
 
+        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM DonacionesDonadores');
+        const totalCount = countResult[0].count;
 
+        res.setHeader('X-Total-Count', totalCount);
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
+        
+        res.json({ data: rows, total: totalCount });
+    } catch (err) {
+        console.error("Error in /donacionesDetalladas GET route:", err);
+        res.status(500).send('Error del servidor');
+    }
+});
 
+//---------------------------------Create Contact---------------------------------
+app.post('/contacts', authenticateJWT(['admin']), async (req, res) => {
+    const { nombre, telefono, email, direccion, apellido } = req.body;
 
+    if (!nombre || !telefono || !email || !direccion || !apellido) {
+        return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
+    }
 
+    try {
+        const [result] = await pool.query(
+            'INSERT INTO contactos (nombre, telefono, email, direccion, apellido) VALUES (?, ?, ?, ?, ?)',
+            [nombre, telefono, email, direccion,apellido]
+        );
 
+        res.status(201).json({ 
+            id: result.insertId, 
+            nombre, 
+            telefono, 
+            email 
+        });
+    } catch (error) {
+        console.error('Error al crear contacto:', error);
+        res.status(500).json({ message: 'Error al crear el contacto.' });
+    }
+});
+
+//---------------------------------Edit Contact---------------------------------
+app.put('/contacts/:id', authenticateJWT(['admin']), async (req, res) => {
+    const { id } = req.params;
+    const { nombre, apellido, telefono, email, direccion } = req.body;
+
+    if (!nombre || !apellido || !telefono || !email || !direccion) {
+        return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
+    }
+
+    try {
+        const [result] = await pool.query(
+            'CALL actualizar_contacto(?, ?, ?, ?, ?, ?)',
+            [id, nombre, apellido, telefono, email, direccion]
+        );
+
+        res.status(200).json({ message: 'Contacto actualizado correctamente.' });
+    } catch (error) {
+        if (error.sqlState === '45000') {
+            return res.status(404).json({ message: 'Contacto no encontrado.' });
+        }
+        console.error('Error al actualizar contacto:', error);
+        res.status(500).json({ message: 'Error al actualizar el contacto.' });
+    }
+});
+
+app.get('/contacts/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [rows] = await pool.query('SELECT * FROM contactos WHERE id = ?', [id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'Contacto no encontrado.' });
+        }
+
+        res.json(rows[0]);
+    } catch (error) {
+        console.error('Error al obtener contacto:', error);
+        res.status(500).json({ message: 'Error al obtener el contacto.' });
+    }
+});
 
 //Creacion de las constantes para las llaves de HTTPS
 const privateKey = fs.readFileSync('../Cert/server.key', 'utf8');

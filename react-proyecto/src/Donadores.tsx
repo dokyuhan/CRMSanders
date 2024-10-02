@@ -1,52 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Container, Typography, Grid, Card, CardContent, Box, CircularProgress, Alert, Icon } from '@mui/material';
+import { Container, Typography, Grid, Card, CardContent, Box, CircularProgress, Alert } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
-import HomeIcon from '@mui/icons-material/Home';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import EventIcon from '@mui/icons-material/Event';
+import PaymentIcon from '@mui/icons-material/Payment';
+import { dataProvider } from './dataProvider'; 
 
-interface Contact {
+interface Donacion {
     id: number;
-    nombre: string;
-    apellido: string;
-    email: string;
-    telefono: string;
-    direccion: string;
-    fecha_creacion: string;
+    donador_nombre: string;
+    donador_correo: string;
+    donacion_monto: number;
+    donacion_metodo_pago: string;
+    donacion_fecha: string;
 }
 
-const Contacts: React.FC = () => {
-    const [contacts, setContacts] = useState<Contact[]>([]);
+const Donadores: React.FC = () => {
+    const [donaciones, setDonaciones] = useState<Donacion[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchContacts = async () => {
+        const fetchDonaciones = async () => {
+            setLoading(true);
             try {
-                const response = await axios.get('https://localhost:3003/contacts');
-                setContacts(response.data.data);
+                const response = await dataProvider.getList<Donacion>('donacionesdonadores', {
+                    pagination: { page: 1, perPage: 10 },
+                    sort: { field: 'id', order: 'ASC' },
+                    filter: {},
+                });
+                setDonaciones(Array.isArray(response.data.data) ? response.data.data : []);
                 setLoading(false);
             } catch (err) {
-                setError('Error al obtener los contactos');
+                console.error('Error fetching donaciones:', err);
+                setError('Error al cargar las donaciones');
                 setLoading(false);
             }
         };
 
-        fetchContacts();
+        fetchDonaciones();
     }, []);
 
-    if (loading) return <Container sx={{ textAlign: 'center', mt: 4 }}><CircularProgress /></Container>;
-    if (error) return <Container sx={{ textAlign: 'center', mt: 4 }}><Alert severity="error">{error}</Alert></Container>;
+    if (loading) {
+        return <Container sx={{ textAlign: 'center', mt: 4 }}><CircularProgress /></Container>;
+    }
+
+    if (error) {
+        return <Container sx={{ textAlign: 'center', mt: 4 }}><Alert severity="error">{error}</Alert></Container>;
+    }
 
     return (
         <Container sx={{ mt: 4 }}>
             <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
-                Lista de Contactos
+                Lista de donadores
             </Typography>
             <Grid container spacing={3}>
-                {contacts.map(contact => (
-                    <Grid item xs={12} sm={6} md={4} key={contact.id}>
+                {donaciones.map((donacion) => (
+                    <Grid item xs={12} sm={6} md={4} key={donacion.id}>
                         <Card 
                             variant="outlined" 
                             sx={{ 
@@ -57,30 +67,30 @@ const Contacts: React.FC = () => {
                         >
                             <CardContent>
                                 <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', mb: 2 }}>
-                                    {contact.nombre} {contact.apellido}
+                                    {donacion.donador_nombre}
                                 </Typography>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                                     <EmailIcon color="primary" sx={{ mr: 1 }} />
                                     <Typography variant="body2" color="textSecondary">
-                                        {contact.email}
+                                        {donacion.donador_correo}
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                    <PhoneIcon color="primary" sx={{ mr: 1 }} />
+                                    <AttachMoneyIcon color="primary" sx={{ mr: 1 }} />
                                     <Typography variant="body2" color="textSecondary">
-                                        {contact.telefono}
+                                        Monto: ${donacion.donacion_monto}
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                    <HomeIcon color="primary" sx={{ mr: 1 }} />
+                                    <PaymentIcon color="primary" sx={{ mr: 1 }} />
                                     <Typography variant="body2" color="textSecondary">
-                                        {contact.direccion}
+                                        Método de pago: {donacion.donacion_metodo_pago}
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     <EventIcon color="primary" sx={{ mr: 1 }} />
                                     <Typography variant="body2" color="textSecondary">
-                                        Fecha de creación: {new Date(contact.fecha_creacion).toLocaleString()}
+                                        Fecha de donación: {new Date(donacion.donacion_fecha).toLocaleString()}
                                     </Typography>
                                 </Box>
                             </CardContent>
@@ -92,4 +102,4 @@ const Contacts: React.FC = () => {
     );
 };
 
-export default Contacts;
+export default Donadores;

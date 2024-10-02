@@ -6,8 +6,14 @@ import { authProvider } from './Login/Authenticator';
 import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
-import { DonationList } from './DonationList';
+import { i18nProvider } from './Polyglot';
+import { MyLayout } from './design/dashboardLayout';
+import { Companies } from './Companies';
+import { Stats } from './Stats';
 import Checkout from './Checkout';
+import Contacts from './Contactos/Contacts';
+import CreateContact from './Contactos/CreateContact'; 
+import EditContact from './Contactos/EditContacts'; 
 import ContactsIcon from '@mui/icons-material/Contacts';
 import BusinessIcon from '@mui/icons-material/Business';
 import InsightsIcon from '@mui/icons-material/Insights';
@@ -17,7 +23,7 @@ import DonatePage from './Donate';
 import Topbar from './global/Topbar';
 import Sidebar from './global/Sidebar';
 import NotFound from './NotFound';
-import Contacts from './Contacts';
+import Donadores from './Donadores';
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
@@ -46,8 +52,6 @@ const permissionsReducer = (state: State, action: Action) => {
 export const App = () => {
   const initPermissions = JSON.parse(localStorage.getItem('authRole') || 'null');
   const [state, dispatch] = useReducer(permissionsReducer, { permissions: initPermissions });
-  const [isSidebar, setIsSidebar] = useState(true);
-  const [logged, setLogged] = useState(false);
 
   useEffect(() => {
     const handleLoginSuccess = () => {
@@ -55,9 +59,11 @@ export const App = () => {
       if (!auth) {
         console.error('No auth data found in localStorage');
         return;
+      } else {
+        const role = auth.tipo_usuario;
+        console.log('Login success detected. Role from localStorage: ', role);
+        dispatch({ type: SET_PERMISSIONS, payload: role });
       }
-      const role = auth.tipo_usuario;
-      dispatch({ type: SET_PERMISSIONS, payload: role });
     };
 
     window.addEventListener('login-success', handleLoginSuccess);
@@ -77,20 +83,26 @@ export const App = () => {
 
       const updatedRole = auth.tipo_usuario;
       if (updatedRole !== state.permissions) {
+        console.log('Updating permissions to: ', updatedRole);
         dispatch({ type: UPDATE_PERMISSIONS, payload: updatedRole });
       }
     }, 1000);
 
     return () => clearInterval(intervalId);
   }, [state.permissions]);
-  
+
+  console.log('Rendering App with permissions: ', state.permissions);
+
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/checkout" element={<Checkout />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/create-contact" element={<CreateContact />} />
+        <Route path="/edit-contact/:id" element={<EditContact />} />
         <Route
           path="/*"
           element={
@@ -108,6 +120,25 @@ export const App = () => {
                 </main>
               </div>
             </div>
+            <Admin
+              layout={MyLayout}
+              dataProvider={dataProvider}
+              authProvider={authProvider}
+              loginPage={LoginPage}
+              dashboard={Dashboard}
+              i18nProvider={i18nProvider}
+            >
+              {/* Recursos disponibles solo para usuarios admin */}
+              {state.permissions === 'admin' && (
+                <>
+                  <Resource name="Estadísticas" list={Stats} icon={InsightsIcon} />
+                  <Resource name="Donadores" list={Donadores} />
+                </>
+              )}
+              {/* Recursos disponibles para todos los usuarios */}
+              <Resource name="contactos" list={Contacts} icon={ContactsIcon} />
+              <Resource name="Compañias" list={Companies} icon={BusinessIcon} />
+            </Admin>
           }
         />
       </Routes>

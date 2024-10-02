@@ -37,6 +37,21 @@ CREATE TABLE IF NOT EXISTS contactos (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE VIEW Donacionesdonadores AS
+SELECT
+    d.id AS donacion_id,
+    donors.id AS donador_id,
+    donors.name AS donador_nombre,
+    donors.email AS donador_correo,
+    d.monto AS donacion_monto,
+    d.metodo_pago AS donacion_metodo_pago,
+    d.fecha_donacion AS donacion_fecha
+FROM
+    donaciones d
+JOIN
+    donors ON d.donador_id = donors.id;
+
+
 DELIMITER $$
 CREATE PROCEDURE registrar_usuario(
     IN p_nombre VARCHAR(50),
@@ -82,3 +97,25 @@ BEGIN
 END $$
 DELIMITER ;
 
+DELIMITER $$
+CREATE PROCEDURE actualizar_contacto(
+    IN p_id INT,
+    IN p_nombre VARCHAR(100),
+    IN p_apellido VARCHAR(100),
+    IN p_telefono VARCHAR(15),
+    IN p_email VARCHAR(255),
+    IN p_direccion VARCHAR(255)
+)
+BEGIN
+    UPDATE contactos
+    SET nombre = p_nombre, apellido = p_apellido, telefono = p_telefono, email = p_email, direccion = p_direccion
+    WHERE id = p_id;
+
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Contacto no encontrado.';
+    END IF;
+END $$
+DELIMITER ;
+
+
+select * from usuarios; 
