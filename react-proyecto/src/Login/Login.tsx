@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
-import { useLogin, useNotify } from 'react-admin';
-import { Link } from 'react-router-dom';
+import { useNotify } from 'react-admin';
+import { Link, useNavigate} from 'react-router-dom';
+import { authProvider } from './Authenticator';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const login = useLogin();
+  const navigate = useNavigate();
   const notify = useNotify();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      await login({ username, password });
+      await authProvider.login({ username, password });
+      console.log('Login successful');
+
+      navigate('/');
     } catch (error) {
       notify('Invalid credentials');
     }

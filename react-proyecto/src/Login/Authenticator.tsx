@@ -22,11 +22,13 @@ export const authProvider: AuthProvider = {
                 throw new Error("Token not provided by the backend");
             }
         } catch (error) {
+            console.error('Error en el inicio de sesión:', error);
             return Promise.reject(error);
         }
     },
     logout: () => { // Elimina el token de autenticación al cerrar sesión
         localStorage.removeItem('auth');
+        console.log('Logout successful');
         return Promise.resolve();
     },
     checkAuth: () => { // Obtiene el token de local storage
