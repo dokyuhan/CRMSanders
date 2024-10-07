@@ -7,16 +7,10 @@ CREATE TABLE IF NOT EXISTS usuarios (
     nombre VARCHAR(50) NOT NULL,
     contrasena VARCHAR(100) NOT NULL,  
     correo VARCHAR(100) NOT NULL UNIQUE,  
-    tipo_usuario ENUM('admin', 'colaborador') NOT NULL
+    tipo_usuario ENUM('admin', 'colaborador','donador') NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS donors (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    surname VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL
-);
+
 
 CREATE TABLE IF NOT EXISTS donaciones (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,7 +18,7 @@ CREATE TABLE IF NOT EXISTS donaciones (
     monto DECIMAL(10, 2) NOT NULL,
     metodo_pago VARCHAR(50) NOT NULL,
     fecha_donacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (donador_id) REFERENCES donors(id)
+    FOREIGN KEY (donador_id) REFERENCES usuarios(id)
 );
 
 CREATE TABLE IF NOT EXISTS contactos (
@@ -37,19 +31,20 @@ CREATE TABLE IF NOT EXISTS contactos (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE VIEW Donacionesdonadores AS
+CREATE VIEW DonacionesUsuarios AS
 SELECT
     d.id AS donacion_id,
-    donors.id AS donador_id,
-    donors.name AS donador_nombre,
-    donors.email AS donador_correo,
+    u.id AS usuario_id,
+    u.nombre AS usuario_nombre,
+    u.correo AS usuario_correo,
     d.monto AS donacion_monto,
     d.metodo_pago AS donacion_metodo_pago,
     d.fecha_donacion AS donacion_fecha
 FROM
     donaciones d
 JOIN
-    donors ON d.donador_id = donors.id;
+    usuarios u ON d.donador_id = u.id;
+
 
 
 DELIMITER $$
@@ -57,7 +52,7 @@ CREATE PROCEDURE registrar_usuario(
     IN p_nombre VARCHAR(50),
     IN p_contrasena VARCHAR(100),  
     IN p_correo VARCHAR(100),
-    IN p_tipo_usuario ENUM('admin', 'colaborador')
+    IN p_tipo_usuario ENUM('admin', 'colaborador','donador')
 )
 BEGIN
     INSERT INTO usuarios (nombre, contrasena, correo, tipo_usuario)
@@ -117,5 +112,6 @@ BEGIN
 END $$
 DELIMITER ;
 
+select * from usuarios;
 
-select * from usuarios; 
+ 
