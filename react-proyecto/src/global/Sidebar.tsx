@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
-import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
-import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import QueryStatsIcon from "@mui/icons-material/QueryStats";
+import DonationIcon from '@mui/icons-material/VolunteerActivism';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import GroupsIcon from '@mui/icons-material/Groups';
 
 interface ItemProps {
   title: string;
@@ -30,8 +30,8 @@ const Sidebar: React.FC = () => {
   const [selected, setSelected] = useState<string>("Dashboard");
   const [imageIndex, setImageIndex] = useState<number>(0);
   const images = [
-    "https://robohash.org/EP",
-    "https://ui-avatars.com/api/?name=Eduardo+Porto"
+    "https://ui-avatars.com/api/?name=Eduardo+Porto",
+    "https://robohash.org/EP"
   ];
 
   const handleImageClick = () => {
@@ -69,7 +69,7 @@ const Sidebar: React.FC = () => {
           <Item
             title="Donaciones"
             to="/donate"
-            icon={<PeopleOutlinedIcon />}
+            icon={<DonationIcon />}
             selected={selected}
             setSelected={setSelected}
           />
@@ -81,9 +81,16 @@ const Sidebar: React.FC = () => {
             setSelected={setSelected}
           />
           <Item
-            title="Estadísticas"
+            title="Estadisticas"
             to="/stats"
-            icon={<PeopleOutlinedIcon />}
+            icon={<QueryStatsIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          <Item
+            title="Donadores"
+            to="/donadores"
+            icon={<GroupsIcon />}
             selected={selected}
             setSelected={setSelected}
           />
@@ -91,7 +98,7 @@ const Sidebar: React.FC = () => {
           <Item
             title="Compañias"
             to="/iwachu"
-            icon={<PeopleOutlinedIcon />}
+            icon={<ApartmentIcon />}
             selected={selected}
             setSelected={setSelected}
           />
