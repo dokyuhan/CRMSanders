@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Container, Typography, Grid, Card, CardContent, Box, CircularProgress, Alert, Button } from '@mui/material';
 import { Link } from 'react-router-dom'; 
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
 import EventIcon from '@mui/icons-material/Event';
+import { dataProvider } from '../dataProvider';
 
 interface Contact {
     id: number;
@@ -25,10 +25,16 @@ const Contacts: React.FC = () => {
     useEffect(() => {
         const fetchContacts = async () => {
             try {
-                const response = await axios.get('https://localhost:3003/contacts');
-                setContacts(response.data.data);
+                const { data } = await dataProvider.getList('contacts', {
+                    pagination: { page: 1, perPage: 10 },
+                    sort: { field: 'id', order: 'ASC' },
+                    filter: {},
+                });
+
+                setContacts(data);
                 setLoading(false);
             } catch (err) {
+                console.error("Error fetching contacts:", err);
                 setError('Error al obtener los contactos');
                 setLoading(false);
             }
