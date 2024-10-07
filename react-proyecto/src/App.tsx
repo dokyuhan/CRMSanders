@@ -24,14 +24,16 @@ import Topbar from './global/Topbar';
 import Sidebar from './global/Sidebar';
 import NotFound from './NotFound';
 import Donadores from './Donadores';
+import Cookies from 'js-cookie';
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
+const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
 const LOGOUT = 'LOGOUT';
 
 const Home: React.FC = () => {
   const [isSidebarOpen, setIsSidebar] = useState(false);
-  const authData = JSON.parse(localStorage.getItem('auth') || '{}');
-  const auth = authData.tipo_usuario;
+  const userData = Cookies.get('user_data');
+  const auth = userData ? JSON.parse(userData).role : null;
   console.log('User role:', auth);
 
   return (
@@ -78,6 +80,7 @@ const permissionsReducer = (state: State, action: Action): State => {
     case SET_PERMISSIONS:
       return { ...state, permissions: action.payload, authenticated: !!action.payload };
     case LOGOUT:
+      Cookies.remove('user_data');
       return { ...state, permissions: null, authenticated: false };
     default:
       return state;
@@ -86,44 +89,41 @@ const permissionsReducer = (state: State, action: Action): State => {
 
 export const App = () => {
   console.log('App component is mounting');
-  const authData = localStorage.getItem('auth');
-  const auth = authData ? JSON.parse(authData) : null;
   const [state, dispatch] = useReducer(permissionsReducer, {
-    permissions: auth ? auth.tipo_usuario : null,
-    authenticated: !!auth
+    permissions: null,
+    authenticated: false
   });
+
 
   useEffect(() => {
     const handleLoginSuccess = () => {
-      const authData = localStorage.getItem('auth');
-      console.log('Auth data found:', authData);
-      const auth = authData ? JSON.parse(authData) : null;
-      if (auth) {
-        dispatch({ type: SET_PERMISSIONS, payload: auth.tipo_usuario });
-      } else {
-        console.error('No auth data found in localStorage');
-      }
+        setTimeout(() => { // Agrega un pequeño retraso para asegurar que la cookie esté lista
+            const userData = Cookies.get('user_data');
+            if (userData) {
+                const { role } = JSON.parse(userData);
+                console.log("Role found after login: ", role);
+                dispatch({ type: SET_PERMISSIONS, payload: role });
+            } else {
+                console.error('No user data found in cookies immediately after login');
+            }
+        }, 500); // Ajusta este tiempo si es necesario
     };
 
     window.addEventListener('login-success', handleLoginSuccess);
     return () => {
-      window.removeEventListener('login-success', handleLoginSuccess);
-    };
+        window.removeEventListener('login-success', handleLoginSuccess);
+      };
   }, []);
 
   useEffect(() => {
-    authProvider.checkAuth().then(() => {
-      authProvider.getPermissions().then((permissions: string | null) => {
-        console.log('Permissions found:', permissions);
-        dispatch({ type: SET_PERMISSIONS, payload: permissions });
-      }).catch(() => {
-        console.log('No permissions found');
+    // Verifica la cookie al cargar el componente para manejar recargas de la página
+    const userData = Cookies.get('user_data');
+    if (userData) {
+        const { role } = JSON.parse(userData);
+        dispatch({ type: SET_PERMISSIONS, payload: role });
+    } else {
         dispatch({ type: LOGOUT, payload: null });
-      });
-    }).catch(() => {
-      console.log('Not authenticated');
-      dispatch({ type: LOGOUT, payload: null });
-    });
+    }
   }, []);
 
   console.log('Rendering App with permissions: ', state.permissions);
