@@ -37,18 +37,38 @@ const pool = mysql.createPool({
 async function createAdminUsers() {
     const admins = [
         {
-            nombre: "admin1",
-            contrasena: "admin1",
-            correo: "admin1@gmail.com",
-            tipo_usuario: "admin"
+            nombre: process.env.ADMIN1_NAME,
+            contrasena: process.env.ADMIN1_PASSWORD,
+            correo: process.env.ADMIN1_EMAIL,
+            tipo_usuario: process.env.ADMIN_ROLE
         },
         {
-            nombre: "admin2",
-            contrasena: "admin2",
-            correo: "admin2@gmail.com",
-            tipo_usuario: "admin"
+            nombre: process.env.ADMIN2_NAME,
+            contrasena: process.env.ADMIN2_PASSWORD,
+            correo: process.env.ADMIN2_EMAIL,
+            tipo_usuario: process.env.ADMIN_ROLE
         },
     ];
+  
+    for (const admin of admins) {
+        try {
+            const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ? OR nombre = ?', [admin.correo, admin.nombre]);
+            if (rows.length === 0) {
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(admin.contrasena, salt);
+                const hashedCorreo = await bcrypt.hash(admin.correo, salt);
+                await pool.query(
+                    'CALL registrar_usuario(?, ?, ?, ?)',
+                    [admin.nombre, hashedPassword, hashedCorreo, admin.tipo_usuario]
+                );
+                console.log(`Usuario ${admin.nombre} registrado correctamente.`);
+            } else {
+                console.log(`Usuario ${admin.nombre} o el correo ya existen.`);
+            }
+        } catch (err) {
+            console.error(`Error creando usuario ${admin.nombre}:`, err.message);
+        }
+    }
 }
 
 //---------------------------------Get endpoints---------------------------------
@@ -122,7 +142,7 @@ app.get("/stats", authenticateJWT(['admin']), async (req, res) => {
 
 // Endpoint para mostrar los contactos
 //admin y usuario
-app.get('/contacts', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
+app.get('/contacts', authenticateJWT(['admin', 'colaborador','donador']), async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM contactos');
         res.json({ data: rows });
@@ -138,7 +158,7 @@ app.get('/contacts', authenticateJWT(['admin', 'colaborador']), async (req, res)
 app.post("/register", async (req, res) => {
     console.log("Petición aceptada")
     const { username: nombre, password: contrasena, email: correo } = req.body;
-    const tipo_usuario = 'colaborador'; 
+    const tipo_usuario = 'donador'; 
     console.log("Datos recibidos en /register:", req.body);
     
     try {
