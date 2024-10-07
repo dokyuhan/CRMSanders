@@ -6,6 +6,7 @@ const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [registrationSuccess, setRegistrationSuccess] = useState(false); 
   const notify = useNotify();
   const redirect = useRedirect();
 
@@ -23,29 +24,43 @@ const RegisterPage: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        notify('Registration successful');
-        redirect('/login');
+        setRegistrationSuccess(true); 
+        notify('Registro exitoso'); 
+        setTimeout(() => {
+          redirect('/login');
+        }, 2000);
       } else {
-        notify(data.msg || 'Registration failed');
+        notify(data.msg || 'Error en el registro');
       }
     } catch (error) {
-      notify('Registration failed');
+      notify('Error en el registro');
     }
   };
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{
+          background: 'linear-gradient(135deg, #f0f0f0 50%, #c4c4c4 50%)', 
+        }}
+      >
         <form 
           onSubmit={handleSubmit}
           className="bg-white bg-opacity-80 p-8 rounded-lg shadow-md w-full max-w-lg flex flex-col"
         >
+          {registrationSuccess && ( 
+            <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-md text-center">
+              ¡Registro exitoso! Redirigiendo al inicio de sesión...
+            </div>
+          )}
+
           <div className="flex flex-col w-full">
             <input
               className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
               value={username}
               onChange={e => setUsername(e.target.value)}
-              placeholder="Username"
+              placeholder="Usuario"
               type="text"
               required
             />
@@ -53,7 +68,7 @@ const RegisterPage: React.FC = () => {
               className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="Password"
+              placeholder="Contraseña"
               type="password"
               required
             />
@@ -61,19 +76,19 @@ const RegisterPage: React.FC = () => {
               className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="Email"
+              placeholder="Correo electrónico"
               type="email"
             />
             <button
               type="submit"
               className="w-full py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-transform transform hover:translate-y-0.5 duration-300"
             >
-              Register
+              Registrar
             </button>
             <p className="mt-4 text-center text-gray-700 text-sm">
-              Regresar al inicio de sesión?{' '}
+              ¿Ya tienes una cuenta?{' '}
               <Link to="/login" className="font-semibold text-gray-900 hover:underline">
-                Log In
+                Inicia sesión
               </Link>
             </p>
           </div>
