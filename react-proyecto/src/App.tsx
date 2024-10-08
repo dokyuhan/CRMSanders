@@ -46,15 +46,19 @@ const Home: React.FC = () => {
               <main className="flex-1 overflow-y-auto p-4 bg-gray-600">
                 <Routes>
                   <Route path="/" element={ <Dashboard />} />
-                  {auth === 'admin' && (
+                  <Route path="/donate" element={<DonatePage />} />
+                  <Route path="/donations" element={<Contacts/>} />
+                  <Route path="/checkout" element={<PaymentForm />} />
+                  {(auth === 'admin' || auth === 'colaborador') && (
                     <>
-                      <Route path="/donate" element={<DonatePage />} />
-                      <Route path="/donations" element={<Contacts/>} />
-                      <Route path="/checkout" element={<PaymentForm />} />
-                      <Route path="/create-contact" element={<CreateContact />} />
-                      <Route path="/edit-contact/:id" element={<EditContact />} />
                       <Route path="/contacts" element={<Contacts />} />
                       <Route path="/companies" element={<Companies />} />
+                      <Route path="/create-contact" element={<CreateContact />} />
+                      <Route path="/edit-contact/:id" element={<EditContact />} />
+                    </>
+                  )}
+                  {auth === 'admin' && (
+                    <>
                     </>
                   )}
                 </Routes>

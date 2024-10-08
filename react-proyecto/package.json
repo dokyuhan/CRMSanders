@@ -15,7 +15,6 @@
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
-    "i": "^0.3.7",
     "js-cookie": "^3.0.5",
     "postcss": "^8.4.47",
     "ra-data-json-server": "^5.1.0",
@@ -25,7 +24,11 @@
     "react-router-dom": "^6.26.1",
     "recharts": "^2.12.7",
     "styled-components": "^6.1.13",
-    "tailwindcss": "^3.4.11"
+    "tailwindcss": "^3.4.11",
+    "formidable": "^3.0.0",
+    "mkdirp": "^1.0.0",
+    "express": "^4.17.1",
+    "connect": "^3.7.0"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
