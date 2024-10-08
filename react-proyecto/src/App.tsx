@@ -30,7 +30,7 @@ const LOGOUT = 'LOGOUT';
 
 const Home: React.FC = () => {
   const [isSidebarOpen, setIsSidebar] = useState(false);
-  const userData = Cookies.get('role');
+  const userData = Cookies.get('user_role');
   const auth = userData ? JSON.parse(userData).role : null;
   console.log('User role:', auth);
 

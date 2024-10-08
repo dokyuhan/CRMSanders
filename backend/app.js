@@ -221,8 +221,6 @@ app.post("/login", async (req, res) => {
             console.log("id", user.id);
 
             res.cookie('jwt', token, { httpOnly: true, secure: true, sameSite: 'None', path: '/' });
-            res.cookie('user_role', user.tipo_usuario, { expires: Session, secure: true, sameSite: 'Strict', path: '/' });
-            res.cookie('user_ID', user.id.toString(), { expires: Session, secure: true, sameSite: 'Strict', path: '/' });
             console.log("Token stored in HttpOnly cookie", token);
 
             res.status(200).json({ tipo_usuario: user.tipo_usuario, user_id: user.id });
