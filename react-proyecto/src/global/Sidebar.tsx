@@ -7,6 +7,7 @@ import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import DonationIcon from '@mui/icons-material/VolunteerActivism';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import GroupsIcon from '@mui/icons-material/Groups';
+import Cookies from 'js-cookie';
 
 interface ItemProps {
   title: string;
@@ -37,6 +38,9 @@ const Sidebar: React.FC = () => {
   const handleImageClick = () => {
     setImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
+
+  const userData = Cookies.get('user_role');
+  const auth = userData ? JSON.parse(userData).role : null;
 
   return (
     <div className="bg-gray-800 w-64 transition-all duration-300">
@@ -73,35 +77,44 @@ const Sidebar: React.FC = () => {
             selected={selected}
             setSelected={setSelected}
           />
-          <Item
-            title="Contactos"
-            to="/contacts"
-            icon={<ContactsOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Estadisticas"
-            to="/stats"
-            icon={<QueryStatsIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Donadores"
-            to="/donadores"
-            icon={<GroupsIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <span className="text-gray-300 mt-4 mb-2 ml-4 block">Contactos</span>
-          <Item
-            title="Compañias"
-            to="/iwachu"
-            icon={<ApartmentIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
+
+          { auth === 'admin' || auth === 'colaboradores' && (
+            <>
+              <Item
+                title="Contactos"
+                to="/contacts"
+                icon={<ContactsOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </>
+          )}
+          { auth === 'admin' && (
+            <>
+              <Item
+                title="Estadisticas"
+                to="/stats"
+                icon={<QueryStatsIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Donadores"
+                to="/donadores"
+                icon={<GroupsIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <span className="text-gray-300 mt-4 mb-2 ml-4 block">Contactos</span>
+              <Item
+                title="Compañias"
+                to="/iwachu"
+                icon={<ApartmentIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>
