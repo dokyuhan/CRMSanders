@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import { Button, TextField, FormControl, FormControlLabel, Radio, RadioGroup, Typography, Box, Card, CardContent, Alert } from '@mui/material';
 import axios from 'axios';
 import { dataProvider } from './dataProvider';
+import Cookies from 'js-cookie';
+
 
 const PaymentForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -10,14 +12,18 @@ const PaymentForm = () => {
   const [confirmation, setConfirmation] = useState(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const userData = Cookies.get('user_ID');
+  const auth = userData ? JSON.parse(userData).id : null;
+  console.log(JSON);
+  console.log(auth);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     try {
       // Use the dataProvider.create method to send a POST request
       const { data: responseData } = await dataProvider.create('donate', {
         data: {
-          usuario_id: 1,
-          monto: data.amount,
+          usuario_id: auth,
+          monto: parseFloat(data.amount),
           metodo_pago: paymentMethod,
         }
       });

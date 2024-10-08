@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
 CREATE TABLE IF NOT EXISTS donaciones (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    donador_id INT NOT NULL,
+    usuario_id INT NOT NULL,
     monto DECIMAL(10, 2) NOT NULL,
     metodo_pago VARCHAR(50) NOT NULL,
     fecha_donacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
