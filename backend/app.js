@@ -77,31 +77,15 @@ async function createAdminUsers() {
     }
 }
 
-//---------------------------------Get endpoints---------------------------------
-//admin
-app.get("/donations", authenticateJWT(['admin']), async (req, res) => {
-    console.log("Accessing donations route with user:", req.user);
-    try {
-        const [rows] = await pool.query('SELECT * FROM donaciones');
-        
-        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM donaciones');
-        const totalCount = countResult[0].count;
-        
-        res.setHeader('X-Total-Count', totalCount);
-        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
-        
-        //res.json(rows);
-        res.json({ data: rows, total: totalCount });
-    } catch (err) {
-        console.error("Error in /donations GET route:", err);
-        console.error(err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
+//---------------------------------GET endpoints---------------------------------
 
-// Endpoint para mostrar estadísticas de donaciones
-//admin
+
+
+// -----------------------Ruta utilizada-----------------------
+// Esta ruta se utiliza para mostrar las 3 gráficas
+
 app.get("/stats", authenticateJWT(['admin']), async (req, res) => {
+    console.log("--------------GET /stats")
     try {
         const [donationsByMethod] = await pool.query(`
             SELECT metodo_pago, SUM(monto) as total
@@ -146,9 +130,10 @@ app.get("/stats", authenticateJWT(['admin']), async (req, res) => {
     }
 });
 
-// Endpoint para mostrar los contactos
-//admin y usuario
+// -----------------------Ruta utilizada-----------------------
+//Esta ruta se utiliza para mostrar los contatos
 app.get('/contacts', authenticateJWT(['admin', 'colaborador','donador']), async (req, res) => {
+    console.log("--------------GET /contacts")
     try {
         const [rows, fields] = await pool.query('SELECT * FROM contactos');
         const [countResult] = await pool.query('SELECT COUNT(*) AS count FROM contactos');
@@ -162,9 +147,10 @@ app.get('/contacts', authenticateJWT(['admin', 'colaborador','donador']), async 
     }
 });
 
-//---------------------------------Post endpoints---------------------------------
-// Endopoint de registros
+// -----------------------Ruta utilizada-----------------------
+//Esta ruta se utiliza para registrar nuevos usuarios
 app.post("/register", async (req, res) => {
+    console.log("--------------POST /register")
     console.log("Petición aceptada")
     const { username: nombre, password: contrasena, email: correo } = req.body;
     const tipo_usuario = 'donador'; 
@@ -195,8 +181,10 @@ app.post("/register", async (req, res) => {
     }
 });
 
-// Endpoint de login
+//-----------------------Ruta utilizada-----------------------
+//Esta ruta se utiliza para iniciar sesión 
 app.post("/login", async (req, res) => {
+    console.log("--------------POST /login")
     const { email: correo, password: contrasena } = req.body;
     console.log("Datos recibidos en /login:", req.body);
 
@@ -237,8 +225,12 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// Endpoints para donar
+
+//-----------------------Ruta utilizada-----------------------
+//Esta ruta se utiliza apra registrar las donaciones
+
 app.post("/donate", authenticateJWT(['admin', 'colaborador', 'donador']), async (req, res) => {
+    console.log("--------------POST /donate")
     const { usuario_id, monto, metodo_pago, email } = req.body;
 
     console.log("Datos recibidos en /donate:", req.body);
@@ -288,26 +280,10 @@ app.post("/donate", authenticateJWT(['admin', 'colaborador', 'donador']), async 
     }
 });
 
-app.post("/donations", authenticateJWT(['admin']), async (req, res) => {
-    console.log("Accessing donations route with user:", req.user);
-    const { usuario_id, monto, metodo_pago } = req.body;
-    
-    try {
-        const [result] = await pool.query(
-            'INSERT INTO donaciones (usuario_id, monto, metodo_pago) VALUES (?, ?, ?)',
-            [usuario_id, monto, metodo_pago]
-        );
-
-        res.status(201).json({ id: result.insertId, usuario_id, monto, metodo_pago, fecha_donacion: new Date() });
-    } catch (err) {
-        console.error("Error in /donations POST route:", err);
-        console.error(err.message);
-        res.status(500).send('Error del servidor');
-    }
-});
-
-//usuario
+//-----------------------Ruta utilizada-----------------------
+// Esta ruta se utiliza para mostrar las donaciones hechas por los donadores
 app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => {
+    console.log("--------------GET /donacionesdonadores")
     try {
         const [rows] = await pool.query('SELECT * FROM Donacionesdonadores');
         console.log([rows])
@@ -325,9 +301,10 @@ app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => 
     }
 });
 
-//---------------------------------Create Contact---------------------------------
-// Endpoint para crear la tabla de contactos
+//-----------------------Ruta utilizada-----------------------
+//Esta ruta sirve para crear un nuevo conacto
 app.post('/contacts', authenticateJWT(['admin']), async (req, res) => {
+    console.log("--------------POST /contacts")
     const { nombre, telefono, email, direccion, apellido } = req.body;
 
     if (!nombre || !telefono || !email || !direccion || !apellido) {
@@ -352,8 +329,8 @@ app.post('/contacts', authenticateJWT(['admin']), async (req, res) => {
     }
 });
 
-//---------------------------------Edit Contact---------------------------------
-// Endpoint para agregar contactos
+//-----------------------Ruta utilizada-----------------------
+//Ruta para editar un contacto
 app.put('/contacts/:id', authenticateJWT(['admin']), async (req, res) => {
     const { id } = req.params;
     const { nombre, apellido, telefono, email, direccion } = req.body;
@@ -378,6 +355,9 @@ app.put('/contacts/:id', authenticateJWT(['admin']), async (req, res) => {
     }
 });
 
+
+//-----------------------Ruta utilizada-----------------------
+//Sirve para obtener los datos del contacto al editar
 app.get('/contacts/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -394,6 +374,7 @@ app.get('/contacts/:id', async (req, res) => {
         res.status(500).json({ message: 'Error al obtener el contacto.' });
     }
 });
+
 
 //Creacion de las constantes para las llaves de HTTPS
 const privateKey = fs.readFileSync('../Cert/server.key', 'utf8');
