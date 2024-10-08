@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, TextField, FormControl, FormControlLabel, Radio, RadioGroup, Typography, Box, Card, CardContent, Alert } from '@mui/material';
-import axios from 'axios';
 import { dataProvider } from './dataProvider';
 import Cookies from 'js-cookie';
-
 
 const PaymentForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -13,18 +11,27 @@ const PaymentForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const userData = Cookies.get('user_ID');
-  const auth = userData ? JSON.parse(userData).id : null;
-  console.log(JSON);
-  console.log(auth);
+  let userId: string | null = null;
+
+  if (userData) {
+      const parsedUserData = JSON.parse(userData);
+      userId = parsedUserData.userId;
+      console.log("Retrieved user ID:", userId);
+  } else {
+      console.log("User ID cookie not found.");
+  }
 
   const onSubmit = async (data: any) => {
+    setLoading(true);
+    setError(null);
+    
     try {
-      // Use the dataProvider.create method to send a POST request
       const { data: responseData } = await dataProvider.create('donate', {
         data: {
-          usuario_id: auth,
+          usuario_id: userId,
           monto: parseFloat(data.amount),
           metodo_pago: paymentMethod,
+          correo: data.personalEmail
         }
       });
 
@@ -124,6 +131,17 @@ const PaymentForm = () => {
             {...register('amount', { required: 'Monto es requerido' })}
             error={!!errors.amount}
             helperText={errors.amount ? errors.amount.message : ''}
+            sx={{ mb: 2 }}
+          />
+
+          {/* New Personal Email Field */}
+          <TextField
+            label="Correo Electrónico Personal"
+            variant="outlined"
+            fullWidth
+            {...register('personalEmail', { required: 'Correo electrónico personal es requerido' })}
+            error={!!errors.personalEmail}
+            helperText={errors.personalEmail ? errors.personalEmail.message : ''}
             sx={{ mb: 2 }}
           />
 

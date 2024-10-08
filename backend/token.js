@@ -6,7 +6,7 @@ const authenticateJWT = (allowedRoles) => (req, res, next) => {
     console.log("Cookies received:", req.cookies);  // Log the cookies to verify they're being received
 
     const token = req.cookies.jwt;  // Retrieve the JWT from the 'jwt' cookie
-    console.log("JWT Token from cookies:", token);
+    //console.log("JWT Token from cookies:", token);
 
     if (!token) {
         console.error("No JWT token found in cookies");
@@ -19,7 +19,7 @@ const authenticateJWT = (allowedRoles) => (req, res, next) => {
             return res.sendStatus(403); // Invalid token, send a 403 Forbidden response
         }
 
-        console.log("Token is valid. Decoded:", decoded);
+        //console.log("Token is valid. Decoded:", decoded);
 
         // After decoding, check the user's role
         if (!allowedRoles.includes(decoded.role)) {
