@@ -21,7 +21,9 @@ export const authProvider: AuthProvider = {
                 const role = { role: json.tipo_usuario };
                 const user_id = { userId: json.id };
                 console.log("Setting cookie with user data:", JSON.stringify(role));
+                Cookies.set('user_role', JSON.stringify(role), { expires: 1, secure: true, sameSite: 'Strict' });
                 console.log("Setting cookie with user data:", JSON.stringify(user_id));
+                Cookies.set('user_ID', JSON.stringify(user_id), { expires: 1, secure: true, sameSite: 'Strict' });
                 window.dispatchEvent(new CustomEvent('login-success'));
             } else {
                 throw new Error("Token not provided by the backend");
@@ -33,8 +35,8 @@ export const authProvider: AuthProvider = {
     },
     logout: () => { // Elimina el token de autenticación al cerrar sesión
         // Eliminar las cookies de autenticación
-        Cookies.remove('user_role', { path: '/' });
-        Cookies.remove('user_ID', { path: '/' });
+        Cookies.remove('user_role');
+        Cookies.remove('user_ID');
         //localStorage.removeItem('auth');
         console.log('Logout successful');
         return Promise.resolve();
@@ -49,8 +51,8 @@ export const authProvider: AuthProvider = {
     },
     checkError: ({ status }: { status: number }) => {
         if (status === 401 || status === 403) {
-            Cookies.remove('user_role', { path: '/' });
-            Cookies.remove('user_ID', { path: '/' });
+            Cookies.remove('user_role');
+            Cookies.remove('user_ID');
             return Promise.reject();
         }
         return Promise.resolve();

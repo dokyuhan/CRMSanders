@@ -11,16 +11,6 @@ INSERT INTO contactos (nombre, apellido, email, telefono, direccion) VALUES
 ('Roberto', 'Sánchez', 'roberto.sanchez@example.com', '5557891234', 'Plaza Mayor 606, Ciudad I'),
 ('Elena', 'Díaz', 'elena.diaz@example.com', '5555678901', 'Ruta Antigua 707, Ciudad J');
 
-SELECT * FROM contactos; 
-INSERT INTO donors (name, surname, email, password) 
-VALUES 
-('Juan', 'Pérez', 'juan.perez@example.com', '1234'), 
-('María', 'López', 'maria.lopez@example.com', '1234'), 
-('Carlos', 'García', 'carlos.garcia@example.com', '1234'), 
-('Ana', 'Fernández', 'ana.fernandez@example.com', '1234');
-
-
-
 INSERT INTO donaciones (id, usuario_id, monto, metodo_pago, fecha_donacion) VALUES
 (1, 1, 100.50, 'Tarjeta de Crédito', '2024-09-20'),
 (2, 2, 50.00, 'PayPal', '2024-09-21'),
