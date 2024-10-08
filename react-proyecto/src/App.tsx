@@ -52,6 +52,7 @@ const Home: React.FC = () => {
                   {(auth === 'admin' || auth === 'colaborador') && (
                     <>
                       <Route path="/contacts" element={<Contacts />} />
+                      <Route path="/stats" element={<Stats />} />
                       <Route path="/companies" element={<Companies />} />
                       <Route path="/create-contact" element={<CreateContact />} />
                       <Route path="/edit-contact/:id" element={<EditContact />} />
