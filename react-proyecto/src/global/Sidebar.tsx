@@ -54,7 +54,7 @@ const Sidebar: React.FC = () => {
             onClick={handleImageClick}
           />
           <h2 className="text-gray-100 font-bold text-lg mt-2">USUARIO</h2>
-          <h5 className="text-green-500">DONADOR</h5>
+          <h5 className="text-green-500">ADMINISTRADOR</h5>
         </div>
 
         <div className="flex-1 overflow-y-auto">

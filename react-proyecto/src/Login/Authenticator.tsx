@@ -14,15 +14,18 @@ export const authProvider: AuthProvider = {
             
             console.log("Full response from backend:", response);
             const json = response.data;
-            console.log("json: ", json);
+            console.log("json importante: ", json);
 
-            if (response.status === 200) {
-                // Asegúrate de usar 'tipo_usuario', no 'role'
+            if (response.status === 200 && json) {
                 const role = { role: json.tipo_usuario };
-                const user_id = { userId: json.id };
+                const user_id = { userId: json.user_id };
+                
+                console.log("mi user id: ", user_id);
                 console.log("Setting cookie with user data:", JSON.stringify(role));
+                
                 Cookies.set('user_role', JSON.stringify(role), { expires: 1, secure: true, sameSite: 'Strict' });
-                console.log("Setting cookie with user data:", JSON.stringify(user_id));
+                
+                console.log("Setting cookie with user data:", user_id);
                 Cookies.set('user_ID', JSON.stringify(user_id), { expires: 1, secure: true, sameSite: 'Strict' });
                 window.dispatchEvent(new CustomEvent('login-success'));
             } else {

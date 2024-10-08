@@ -32,7 +32,7 @@ const Home: React.FC = () => {
   const [isSidebarOpen, setIsSidebar] = useState(false);
   const userData = Cookies.get('user_role');
   const auth = userData ? JSON.parse(userData).role : null;
-  console.log('User role:', auth);
+  //console.log('User role:', auth);
 
   return (
   <Routes>
@@ -91,7 +91,7 @@ const permissionsReducer = (state: State, action: Action): State => {
 };
 
 export const App = () => {
-  console.log('App component is mounting');
+  //console.log('App component is mounting');
   const [state, dispatch] = useReducer(permissionsReducer, {
     permissions: null,
     authenticated: false
@@ -104,7 +104,7 @@ export const App = () => {
             const userData = Cookies.get('user_role');
             if (userData) {
                 const { role } = JSON.parse(userData);
-                console.log("Role found after login: ", role);
+                //console.log("Role found after login: ", role);
                 dispatch({ type: SET_PERMISSIONS, payload: role });
             } else {
                 console.error('No user data found in cookies immediately after login');

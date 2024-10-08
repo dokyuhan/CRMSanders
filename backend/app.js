@@ -12,6 +12,8 @@ import fs from 'fs';
 import cookieParser from 'cookie-parser';
 import authenticateJWT from './token.js';
 import { Session } from "inspector";
+import { sendThankYouEmail } from './nodemailer.js';
+
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -71,7 +73,6 @@ async function createAdminUsers() {
         }
     }
 }
-
 
 //---------------------------------Get endpoints---------------------------------
 //admin
@@ -232,16 +233,20 @@ app.post("/login", async (req, res) => {
         res.status(500).send('Error del servidor');
     }
 });
-
-//admin
 app.post("/donate", authenticateJWT(['admin']), async (req, res) => {
-    const { usuario_id, monto, metodo_pago } = req.body;
-    console.log("Received donation request:", req.body);
-    console.log(usuario_id, monto, metodo_pago);
+    const { usuario_id, monto, metodo_pago, email } = req.body;
+
+    console.log("Datos recibidos en /donate:", req.body);
     
     try {
-        if (!usuario_id || !monto || !metodo_pago) {
+        if (!usuario_id || !monto || !metodo_pago || !email) {
             return res.status(400).json({ msg: 'Todos los campos son requeridos' });
+        }
+
+        // Validate email format
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            return res.status(400).json({ msg: 'Correo electrónico no válido' });
         }
 
         const [result] = await pool.query(
@@ -249,6 +254,21 @@ app.post("/donate", authenticateJWT(['admin']), async (req, res) => {
             [usuario_id, monto, metodo_pago]
         );
 
+        const [user] = await pool.query('SELECT nombre FROM usuarios WHERE id = ?', [usuario_id]);
+
+        if (!user.length) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
+        }
+
+        console.log("Sending email to:", email);
+        try {
+            await sendThankYouEmail(email, user[0].nombre, monto);
+        } catch (emailError) {
+            console.error("Error sending email:", emailError);
+            return res.status(500).json({ msg: 'Error al enviar el correo de agradecimiento' });
+        }
+
+        // Respond with the donation details
         res.status(201).json({ 
             id: result.insertId, 
             usuario_id, 
@@ -256,11 +276,13 @@ app.post("/donate", authenticateJWT(['admin']), async (req, res) => {
             metodo_pago, 
             fecha_donacion: new Date() 
         });
+
     } catch (err) {
         console.error("Error in /donate POST route:", err.message);
         res.status(500).send('Error del servidor');
     }
 });
+
 
 //admin
 app.post("/donations", authenticateJWT(['admin']), async (req, res) => {
