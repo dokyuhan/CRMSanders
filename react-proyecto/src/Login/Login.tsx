@@ -1,25 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { Link, useNavigate} from 'react-router-dom';
 import { authProvider } from './Authenticator';
+import Cookies from 'js-cookie';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const notify = useNotify();
+  
+  
+  useEffect(() => {
+    
+    //eliminar permisos y cookies anterirores
+    Cookies.remove('user_role');
+    Cookies.remove('user_ID');
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      await authProvider.login({ username, password });
-      console.log('Login successful');
-
-      navigate('/');
+        await authProvider.login({ username, password });
+        console.log('Login successful');
+        
+        // Añadir un pequeño retraso para asegurarse de que las cookies o el token se han almacenado correctamente
+        setTimeout(() => {
+            navigate('/', { replace: true });
+        }, 500); // Espera de 500 ms antes de redirigir
     } catch (error) {
-      notify('Invalid credentials');
+        notify('Invalid credentials');
     }
-  };
+};
 
   return (
     <>
