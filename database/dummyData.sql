@@ -21,7 +21,7 @@ VALUES
 
 
 
-INSERT INTO donaciones (id, donador_id, monto, metodo_pago, fecha_donacion) VALUES
+INSERT INTO donaciones (id, usuario_id, monto, metodo_pago, fecha_donacion) VALUES
 (1, 1, 100.50, 'Tarjeta de Crédito', '2024-09-20'),
 (2, 2, 50.00, 'PayPal', '2024-09-21'),
 (3, 3, 75.25, 'Transferencia Bancaria', '2024-09-22'),
