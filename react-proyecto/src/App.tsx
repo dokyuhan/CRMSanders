@@ -130,6 +130,30 @@ export const App = () => {
   }, []);
 
   console.log('Rendering App with permissions: ', state.permissions);
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      dispatch({ type: LOGOUT, payload: null });
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
+    const removeAuthOnNavigation = () => {
+      if (window.location.pathname === '/login') {
+        dispatch({ type: LOGOUT, payload: null });
+      }
+    };
+
+    window.addEventListener('popstate', removeAuthOnNavigation);
+
+    return () => {
+      window.removeEventListener('popstate', removeAuthOnNavigation);
+    };
+  }, []);
 
   return (
     <Router>

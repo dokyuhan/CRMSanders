@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
@@ -6,6 +5,7 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Cookies from 'js-cookie'; 
 
 interface TopbarProps {
   setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,8 +16,10 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+    Cookies.remove('user_role');
+    Cookies.remove('user_ID');
+
+    navigate('/login', { replace: true });
   };
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
