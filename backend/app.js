@@ -18,7 +18,7 @@ import { sendThankYouEmail } from './nodemailer.js';
 const app = express();
 const PORT = process.env.PORT || 3003;
 
-//app.use(cors());
+// Configuraciones CORS
 app.use(cors({
     origin: ['https://localhost:5173'],
     exposedHeaders: ['X-Total-Count'],
@@ -26,6 +26,8 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
+
+// Configuraciones para parseo de archivos JSON y uso de cookies
 app.use(bodyParser.json());
 app.use(cookieParser());
 
@@ -37,6 +39,7 @@ const pool = mysql.createPool({
     database: process.env.DB_DATABASE, 
 });
 
+// Creacion de usuarios administrador
 async function createAdminUsers() {
     const admins = [
         {
@@ -160,7 +163,7 @@ app.get('/contacts', authenticateJWT(['admin', 'colaborador','donador']), async 
 });
 
 //---------------------------------Post endpoints---------------------------------
-//admin
+// Endopoint de registros
 app.post("/register", async (req, res) => {
     console.log("Petición aceptada")
     const { username: nombre, password: contrasena, email: correo } = req.body;
@@ -192,7 +195,7 @@ app.post("/register", async (req, res) => {
     }
 });
 
-//admin
+// Endpoint de login
 app.post("/login", async (req, res) => {
     const { email: correo, password: contrasena } = req.body;
     console.log("Datos recibidos en /login:", req.body);
@@ -233,7 +236,9 @@ app.post("/login", async (req, res) => {
         res.status(500).send('Error del servidor');
     }
 });
-app.post("/donate", authenticateJWT(['admin']), async (req, res) => {
+
+// Endpoints para donar
+app.post("/donate", authenticateJWT(['admin', 'colaborador', 'donador']), async (req, res) => {
     const { usuario_id, monto, metodo_pago, email } = req.body;
 
     console.log("Datos recibidos en /donate:", req.body);
@@ -283,8 +288,6 @@ app.post("/donate", authenticateJWT(['admin']), async (req, res) => {
     }
 });
 
-
-//admin
 app.post("/donations", authenticateJWT(['admin']), async (req, res) => {
     console.log("Accessing donations route with user:", req.user);
     const { usuario_id, monto, metodo_pago } = req.body;
@@ -323,6 +326,7 @@ app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => 
 });
 
 //---------------------------------Create Contact---------------------------------
+// Endpoint para crear la tabla de contactos
 app.post('/contacts', authenticateJWT(['admin']), async (req, res) => {
     const { nombre, telefono, email, direccion, apellido } = req.body;
 
@@ -349,6 +353,7 @@ app.post('/contacts', authenticateJWT(['admin']), async (req, res) => {
 });
 
 //---------------------------------Edit Contact---------------------------------
+// Endpoint para agregar contactos
 app.put('/contacts/:id', authenticateJWT(['admin']), async (req, res) => {
     const { id } = req.params;
     const { nombre, apellido, telefono, email, direccion } = req.body;
@@ -407,10 +412,3 @@ httpsServer.listen(PORT, async () => {
         console.error("Error creating admin users:", error);
     }
 });
-/*
-app.listen(PORT, async () => {
-    console.log(`Server running on port ${PORT}`);
-
-    await createAdminUsers();
-});
-*/
