@@ -77,10 +77,6 @@ async function createAdminUsers() {
     }
 }
 
-//---------------------------------GET endpoints---------------------------------
-
-
-
 // -----------------------Ruta utilizada-----------------------
 // Esta ruta se utiliza para mostrar las 3 gráficas
 
@@ -132,6 +128,7 @@ app.get("/stats", authenticateJWT(['admin']), async (req, res) => {
 
 // -----------------------Ruta utilizada-----------------------
 //Esta ruta se utiliza para mostrar los contatos
+
 app.get('/contacts', authenticateJWT(['admin', 'colaborador','donador']), async (req, res) => {
     console.log("--------------GET /contacts")
     try {
@@ -149,6 +146,7 @@ app.get('/contacts', authenticateJWT(['admin', 'colaborador','donador']), async 
 
 // -----------------------Ruta utilizada-----------------------
 //Esta ruta se utiliza para registrar nuevos usuarios
+
 app.post("/register", async (req, res) => {
     console.log("--------------POST /register")
     console.log("Petición aceptada")
@@ -183,6 +181,7 @@ app.post("/register", async (req, res) => {
 
 //-----------------------Ruta utilizada-----------------------
 //Esta ruta se utiliza para iniciar sesión 
+
 app.post("/login", async (req, res) => {
     console.log("--------------POST /login")
     const { email: correo, password: contrasena } = req.body;
@@ -282,6 +281,7 @@ app.post("/donate", authenticateJWT(['admin', 'colaborador', 'donador']), async 
 
 //-----------------------Ruta utilizada-----------------------
 // Esta ruta se utiliza para mostrar las donaciones hechas por los donadores
+
 app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => {
     console.log("--------------GET /donacionesdonadores")
     try {
@@ -303,6 +303,7 @@ app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => 
 
 //-----------------------Ruta utilizada-----------------------
 //Esta ruta sirve para crear un nuevo conacto
+
 app.post('/contacts', authenticateJWT(['admin']), async (req, res) => {
     console.log("--------------POST /contacts")
     const { nombre, telefono, email, direccion, apellido } = req.body;
@@ -331,6 +332,7 @@ app.post('/contacts', authenticateJWT(['admin']), async (req, res) => {
 
 //-----------------------Ruta utilizada-----------------------
 //Ruta para editar un contacto
+
 app.put('/contacts/:id', authenticateJWT(['admin']), async (req, res) => {
     const { id } = req.params;
     const { nombre, apellido, telefono, email, direccion } = req.body;
@@ -358,6 +360,7 @@ app.put('/contacts/:id', authenticateJWT(['admin']), async (req, res) => {
 
 //-----------------------Ruta utilizada-----------------------
 //Sirve para obtener los datos del contacto al editar
+
 app.get('/contacts/:id', async (req, res) => {
     const { id } = req.params;
 
