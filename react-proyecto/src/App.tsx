@@ -1,5 +1,8 @@
 import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
-import { useEffect, useReducer, useState } from 'react';
+import { Admin, Resource } from 'react-admin';
+import { useEffect, useReducer, useState, ReactNode, Fragment} from 'react';
+import { dataProvider } from './dataProvider';
+import { authProvider } from './Login/Authenticator';
 import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
@@ -42,11 +45,11 @@ const Home: React.FC = () => {
               <Topbar setIsSidebar={setIsSidebar} />
               <main className="flex-1 overflow-y-auto p-4 bg-gray-600">
                 <Routes>
-                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/" element={ <Dashboard />} />
                   {auth === 'admin' && (
                     <>
                       <Route path="/donate" element={<DonatePage />} />
-                      <Route path="/donations" element={<Contacts />} />
+                      <Route path="/donations" element={<Contacts/>} />
                       <Route path="/checkout" element={<PaymentForm />} />
                       <Route path="/create-contact" element={<CreateContact />} />
                       <Route path="/edit-contact/:id" element={<EditContact />} />
@@ -96,41 +99,42 @@ export const App = () => {
 
 
   useEffect(() => {
-    
     const handleLoginSuccess = () => {
-      setTimeout(() => {
-        const userData = Cookies.get('user_role');
-        if (userData) {
-          const { role } = JSON.parse(userData);
-          dispatch({ type: SET_PERMISSIONS, payload: role });
-        } else {
-          console.error('No user data found in cookies immediately after login');
-        }
-      }, 500);
+        setTimeout(() => { // Agrega un pequeño retraso para asegurar que la cookie esté lista
+            const userData = Cookies.get('user_role');
+            if (userData) {
+                const { role } = JSON.parse(userData);
+                //console.log("Role found after login: ", role);
+                dispatch({ type: SET_PERMISSIONS, payload: role });
+            } else {
+                console.error('No user data found in cookies immediately after login');
+            }
+        }, 500); // Ajusta este tiempo si es necesario
     };
 
     window.addEventListener('login-success', handleLoginSuccess);
     return () => {
-      window.removeEventListener('login-success', handleLoginSuccess);
-    };
+        window.removeEventListener('login-success', handleLoginSuccess);
+      };
   }, []);
 
   useEffect(() => {
     // Verifica la cookie al cargar el componente para manejar recargas de la página
     const userData = Cookies.get('user_role');
     if (userData) {
-      const { role } = JSON.parse(userData);
-      dispatch({ type: SET_PERMISSIONS, payload: role });
+        const { role } = JSON.parse(userData);
+        dispatch({ type: SET_PERMISSIONS, payload: role });
     } else {
-      dispatch({ type: LOGOUT, payload: null });
+        dispatch({ type: LOGOUT, payload: null });
     }
   }, []);
 
+  console.log('Rendering App with permissions: ', state.permissions);
   useEffect(() => {
     const handleBeforeUnload = () => {
       dispatch({ type: LOGOUT, payload: null });
     };
-    
+
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
@@ -156,7 +160,7 @@ export const App = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/*" element={state.authenticated ? <Home /> : <Navigate to="/login" />} />
+        <Route path="/*" element={state.authenticated ? <Home />: <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
