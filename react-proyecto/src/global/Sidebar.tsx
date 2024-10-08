@@ -78,7 +78,7 @@ const Sidebar: React.FC = () => {
             setSelected={setSelected}
           />
 
-          { auth === 'admin' || auth === 'colaboradores' && (
+          { (auth === 'admin' || auth === 'colaboradores') && (
             <>
               <Item
                 title="Contactos"
