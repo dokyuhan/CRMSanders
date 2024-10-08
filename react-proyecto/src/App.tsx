@@ -10,21 +10,19 @@ import { i18nProvider } from './Polyglot';
 import { MyLayout } from './design/dashboardLayout';
 import { Companies } from './Companies';
 import { Stats } from './Stats';
-import Checkout from './Checkout';
 import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
 import EditContact from './Contactos/EditContacts';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import BusinessIcon from '@mui/icons-material/Business';
 import InsightsIcon from '@mui/icons-material/Insights';
-import SignUp from './SignUp';
-import SignIn from './SignIn';
 import DonatePage from './Donate';
 import Topbar from './global/Topbar';
 import Sidebar from './global/Sidebar';
 import NotFound from './NotFound';
 import Donadores from './Donadores';
 import Cookies from 'js-cookie';
+import PaymentForm from './PaymentForm';
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
@@ -32,7 +30,7 @@ const LOGOUT = 'LOGOUT';
 
 const Home: React.FC = () => {
   const [isSidebarOpen, setIsSidebar] = useState(false);
-  const userData = Cookies.get('user_data');
+  const userData = Cookies.get('role');
   const auth = userData ? JSON.parse(userData).role : null;
   console.log('User role:', auth);
 
@@ -52,9 +50,13 @@ const Home: React.FC = () => {
                     <>
                       <Route path="/donate" element={<DonatePage />} />
                       <Route path="/donations" element={<Contacts/>} />
+                      <Route path="/checkout" element={<PaymentForm />} />
+                      <Route path="/create-contact" element={<CreateContact />} />
+                      <Route path="/edit-contact/:id" element={<EditContact />} />
+                      <Route path="/contacts" element={<Contacts />} />
+                      <Route path="/companies" element={<Companies />} />
                     </>
                   )}
-                  <Route path="/contacts" element={<Checkout />} />
                 </Routes>
               </main>
             </div>
@@ -80,7 +82,8 @@ const permissionsReducer = (state: State, action: Action): State => {
     case SET_PERMISSIONS:
       return { ...state, permissions: action.payload, authenticated: !!action.payload };
     case LOGOUT:
-      Cookies.remove('user_data');
+      Cookies.remove('user_role');
+      Cookies.remove('user_ID');
       return { ...state, permissions: null, authenticated: false };
     default:
       return state;
@@ -98,7 +101,7 @@ export const App = () => {
   useEffect(() => {
     const handleLoginSuccess = () => {
         setTimeout(() => { // Agrega un pequeño retraso para asegurar que la cookie esté lista
-            const userData = Cookies.get('user_data');
+            const userData = Cookies.get('user_role');
             if (userData) {
                 const { role } = JSON.parse(userData);
                 console.log("Role found after login: ", role);
@@ -117,7 +120,7 @@ export const App = () => {
 
   useEffect(() => {
     // Verifica la cookie al cargar el componente para manejar recargas de la página
-    const userData = Cookies.get('user_data');
+    const userData = Cookies.get('user_role');
     if (userData) {
         const { role } = JSON.parse(userData);
         dispatch({ type: SET_PERMISSIONS, payload: role });
@@ -134,13 +137,6 @@ export const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/*" element={state.authenticated ? <Home />: <Navigate to="/login" />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/create-contact" element={<CreateContact />} />
-        <Route path="/edit-contact/:id" element={<EditContact />} />
-        <Route path="/contacts" element={<Contacts />} />
-
       </Routes>
     </Router>
   );

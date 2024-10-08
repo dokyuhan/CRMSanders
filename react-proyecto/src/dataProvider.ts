@@ -10,10 +10,6 @@ const httpClient = (url: string, options: HttpOptions = {}) => {
         options.headers = new Headers({ Accept: 'application/json' });
         console.log("options.headers: ", options.headers);
     }
-    /*
-    const auth = JSON.parse(localStorage.getItem('auth') || '{}');
-    (options.headers as Headers).set('Authorization', `Bearer ${auth.token}`);
-    */
     options.credentials = 'include';
     console.log("options.headers: ", options.headers);
     return fetchUtils.fetchJson(url, options);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Grid, Card, CardContent, Box, CircularProgress, Alert, Button } from '@mui/material';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
@@ -25,17 +25,20 @@ const Contacts: React.FC = () => {
     useEffect(() => {
         const fetchContacts = async () => {
             try {
-                const { data } = await dataProvider.getList('contacts', {
+                const response = await dataProvider.getList('contacts', {
                     pagination: { page: 1, perPage: 10 },
                     sort: { field: 'id', order: 'ASC' },
                     filter: {},
                 });
-
-                setContacts(data);
-                setLoading(false);
+                console.log("Received data:", response);
+                if (!Array.isArray(response.data.data)) {
+                    throw new Error(`Expected data.data to be an array, received ${typeof response.data.data}`);
+                }
+                setContacts(response.data.data);
             } catch (err) {
                 console.error("Error fetching contacts:", err);
-                setError('Error al obtener los contactos');
+                setError(err.message || 'Error al obtener los contactos');
+            } finally {
                 setLoading(false);
             }
         };
