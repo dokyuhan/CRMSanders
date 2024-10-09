@@ -379,6 +379,42 @@ app.get('/contacts/:id', async (req, res) => {
 });
 
 
+
+
+// Backend - Registro de colaborador
+app.post("/registercolab", async (req, res) => {
+    console.log("Petición aceptada en /registercolab");
+    const { username: nombre, password: contrasena, email: correo } = req.body;
+    const tipo_usuario = 'colaborador';  
+    console.log("Datos recibidos en /registercolab:", req.body);
+    
+    try {
+        const [rows] = await pool.query('SELECT * FROM usuarios WHERE nombre = ?', [correo]);
+        console.log("Usuarios encontrados con el correo dado:", rows);
+        
+        if (rows.length > 0) {
+            console.log("El usuario ya existe");
+            return res.status(400).json({ msg: 'El usuario ya existe' });
+        }
+
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(contrasena, salt);
+        const hashedCorreo = await bcrypt.hash(correo, salt);
+
+        await pool.query(
+            'CALL registrar_usuario(?, ?, ?, ?)',
+            [nombre, hashedPassword, hashedCorreo, tipo_usuario]
+        );
+
+        res.status(201).json({ msg: 'Usuario registrado exitosamente como colaborador' });
+    } catch (err) {
+        console.error("Error en /registercolab:", err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+
 //Creacion de las constantes para las llaves de HTTPS
 const privateKey = fs.readFileSync('../Cert/server.key', 'utf8');
 const certificate = fs.readFileSync('../Cert/server.crt', 'utf8');
