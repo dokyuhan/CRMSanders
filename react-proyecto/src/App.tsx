@@ -61,6 +61,8 @@ const Home: React.FC = () => {
                   {auth === 'admin' && (
                     <>
                      <Route path="/register-colab" element={<Registrocolaboradores />} />
+                      <Route path="/stats" element={<Stats />} />
+                      <Route path="/donors" element={<Donadores />} />
 
                     </>
                   )}

@@ -401,11 +401,10 @@ app.get('/contacts/:id', async (req, res) => {
 app.post("/registercolab", async (req, res) => {
     console.log("Petición aceptada en /registercolab");
     const { username: nombre, password: contrasena, email: correo } = req.body;
-    const tipo_usuario = 'colaborador';  // Tipo de usuario: colaborador
+    const tipo_usuario = 'colaborador';  
     console.log("Datos recibidos en /registercolab:", req.body);
     
     try {
-        // Verificar si el usuario ya existe
         const [rows] = await pool.query('SELECT * FROM usuarios WHERE nombre = ?', [correo]);
         console.log("Usuarios encontrados con el correo dado:", rows);
         
@@ -414,12 +413,11 @@ app.post("/registercolab", async (req, res) => {
             return res.status(400).json({ msg: 'El usuario ya existe' });
         }
 
-        // Hashear la contraseña y el correo
+        
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(contrasena, salt);
         const hashedCorreo = await bcrypt.hash(correo, salt);
 
-        // Insertar el nuevo usuario colaborador en la base de datos
         await pool.query(
             'CALL registrar_usuario(?, ?, ?, ?)',
             [nombre, hashedPassword, hashedCorreo, tipo_usuario]
