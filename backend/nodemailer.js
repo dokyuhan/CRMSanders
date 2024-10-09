@@ -25,10 +25,10 @@ const sendThankYouEmail = async (donorEmail, donorName, donationAmount) => {
     }
 
     const mailOptions = {
-        from: '"Fundación SANDERS" <A01027893@tec.mx>', // Hardcoded email
+        from: '"Fundación SANDERS" <A01027893@tec.mx>',
         to: donorEmail,
         subject: '¡Gracias por tu donación a la Fundación SANDERS!',
-        text: `Thanks for your donation of ${donationAmount} MXN, ${donorName}!`,
+        text: `Tu contribución nos permite constuir más sistemas de recoleccion de agua en comunidades rurales. Gracias por tu generosidad.`,
         html: `
             <p>¡Hola ${donorName}!</p>
             <p>En nombre de todos los que formamos parte de la Fundación SANDERS, queremos expresarte nuestra más sincera gratitud por tu generosa donación de <strong>${donationAmount} MXN</strong>.</p>
@@ -37,7 +37,7 @@ const sendThankYouEmail = async (donorEmail, donorName, donationAmount) => {
             <p>Una vez más, ¡gracias por tu generosidad!</p>
             <p>Con aprecio,<br>El equipo de la Fundación SANDERS</p>
             <p>Contacto</p>
-            <p>Teléfono: 55 1707-6203<br>Correo: <a href="mailto:contacto@sanders.com.mx">contacto@sanders.com.mx</a><br>Sitio web: <a href="https://sanders.com.mx">sanders.com.mx</a></p>
+            <p>Página web: <a href="https://sanders.com.mx/">https://sanders.com.mx/</a></p>
         `
     };
 
