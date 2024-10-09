@@ -113,6 +113,13 @@ const Sidebar: React.FC = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
+              <Item
+                title="Registrar Colaborador"
+                to="/register-colab"
+                icon={<PeopleOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
             </>
           )}
         </div>
