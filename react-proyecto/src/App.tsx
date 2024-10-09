@@ -6,7 +6,6 @@ import { authProvider } from './Login/Authenticator';
 import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
-import Registrocolaboradores from './Registrocolaboradores';
 import { i18nProvider } from './Polyglot';
 import { MyLayout } from './design/dashboardLayout';
 import { Companies } from './Companies';
@@ -62,10 +61,6 @@ const Home: React.FC = () => {
                   )}
                   {auth === 'admin' && (
                     <>
-                     <Route path="/register-colab" element={<Registrocolaboradores />} />
-                      <Route path="/stats" element={<Stats />} />
-                      <Route path="/donors" element={<Donadores />} />
-
                     </>
                   )}
                 </Routes>
