@@ -31,7 +31,7 @@ const PaymentForm = () => {
           usuario_id: userId,
           monto: parseFloat(data.amount),
           metodo_pago: paymentMethod,
-          correo: data.personalEmail
+          email: data.personalEmail
         }
       });
 
