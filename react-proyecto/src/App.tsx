@@ -29,7 +29,6 @@ import PaymentForm from './PaymentForm';
 import AdminDashboard from './AdminDashboard'
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
-const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
 const LOGOUT = 'LOGOUT';
 
 const Home: React.FC = () => {
@@ -106,8 +105,7 @@ const permissionsReducer = (state: State, action: Action): State => {
     case SET_PERMISSIONS:
       return { ...state, permissions: action.payload, authenticated: !!action.payload };
     case LOGOUT:
-      Cookies.remove('user_role');
-      Cookies.remove('user_ID');
+      authProvider.logout;
       return { ...state, permissions: null, authenticated: false };
     default:
       return state;
@@ -138,15 +136,8 @@ export const App = () => {
 
     window.addEventListener('login-success', handleAuthentication);
 
-    // Añadiendo el listener para el evento 'load'
-    window.addEventListener('load', () => {
-      console.log('Page loaded, checking authentication...');
-      handleAuthentication();
-    });
-
     return () => {
       window.removeEventListener('login-success', handleAuthentication);
-      window.removeEventListener('load', handleAuthentication);
     };
   }, [state.authenticated]);
 

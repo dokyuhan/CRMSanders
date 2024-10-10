@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authProvider } from "../Login/Authenticator";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
@@ -17,8 +18,7 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar }) => {
 
   const handleLogout = () => {
     console.log('Logging out...');
-    Cookies.remove('user_role');
-    Cookies.remove('user_ID');
+    authProvider.logout();
     console.log('Cookies removed:', Cookies.get('user_role'), Cookies.get('user_ID'));
     setTimeout(() => {
         navigate('/login', { replace: true });
