@@ -13,6 +13,7 @@ import { Stats } from './Stats';
 import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
 import EditContact from './Contactos/EditContacts';
+import Registrocola from './Registro colab';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import BusinessIcon from '@mui/icons-material/Business';
 import InsightsIcon from '@mui/icons-material/Insights';
@@ -61,6 +62,9 @@ const Home: React.FC = () => {
                   )}
                   {auth === 'admin' && (
                     <>
+                    <Route path="/register-colab" element={<Registrocola />} />
+                      <Route path="/stats" element={<Stats />} />
+                      <Route path="/donors" element={<Donadores />} />
                     </>
                   )}
                 </Routes>
