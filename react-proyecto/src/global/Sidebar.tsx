@@ -78,7 +78,7 @@ const Sidebar: React.FC = () => {
             setSelected={setSelected}
           />
 
-          { (auth === 'admin' || auth === 'colaboradores') && (
+          { (auth === 'admin' || auth === 'colaborador') && (
             <>
               <Item
                 title="Contactos"
@@ -87,7 +87,16 @@ const Sidebar: React.FC = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
+              <span className="text-gray-300 mt-4 mb-2 ml-4 block">Compañias</span>
+              <Item
+              title="Compañias"
+              to="iwachu"
+              icon={<ApartmentIcon />}
+              selected={selected}
+              setSelected={setSelected}
+              />
             </>
+            
           )}
           { auth === 'admin' && (
             <>
@@ -110,6 +119,13 @@ const Sidebar: React.FC = () => {
                 title="Compañias"
                 to="/iwachu"
                 icon={<ApartmentIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Registrar Colaborador"
+                to="/register-colab"
+                icon={<PeopleOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />

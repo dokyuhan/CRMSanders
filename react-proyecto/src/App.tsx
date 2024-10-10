@@ -16,6 +16,10 @@ import EditContact from './Contactos/EditContacts';
 import Donadores from './Donaciones/Donations';
 import CreateDonation from './Donaciones/CreateDonation';
 import EditDonation from './Donaciones/EditDonations';
+import Registrocola from './Registro colab';
+import ContactsIcon from '@mui/icons-material/Contacts';
+import BusinessIcon from '@mui/icons-material/Business';
+import InsightsIcon from '@mui/icons-material/Insights';
 import DonatePage from './Donate';
 import Topbar from './global/Topbar';
 import Sidebar from './global/Sidebar';
@@ -62,6 +66,9 @@ const Home: React.FC = () => {
                   )}
                   {auth === 'admin' && (
                     <>
+                    <Route path="/register-colab" element={<Registrocola />} />
+                      <Route path="/stats" element={<Stats />} />
+                      <Route path="/donors" element={<Donadores />} />
                     </>
                   )}
                 </Routes>
@@ -97,6 +104,8 @@ const permissionsReducer = (state: State, action: Action): State => {
   }
 };
 
+
+
 export const App = () => {
   //console.log('App component is mounting');
   const [state, dispatch] = useReducer(permissionsReducer, {
@@ -126,15 +135,19 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    // Verifica la cookie al cargar el componente para manejar recargas de la página
     const userData = Cookies.get('user_role');
     if (userData) {
         const { role } = JSON.parse(userData);
-        dispatch({ type: SET_PERMISSIONS, payload: role });
+        if (!state.authenticated) {
+            dispatch({ type: SET_PERMISSIONS, payload: role });
+        }
     } else {
-        dispatch({ type: LOGOUT, payload: null });
+        if (state.authenticated) {
+            dispatch({ type: LOGOUT, payload: null });
+        }
     }
-  }, []);
+}, [state.authenticated]); 
+
 
   console.log('Rendering App with permissions: ', state.permissions);
   useEffect(() => {

@@ -13,7 +13,6 @@ const LoginPage: React.FC = () => {
   
   useEffect(() => {
     
-    //eliminar permisos y cookies anterirores
     Cookies.remove('user_role');
     Cookies.remove('user_ID');
   }, []);
@@ -24,10 +23,10 @@ const LoginPage: React.FC = () => {
         await authProvider.login({ username, password });
         console.log('Login successful');
         
-        // Añadir un pequeño retraso para asegurarse de que las cookies o el token se han almacenado correctamente
+        
         setTimeout(() => {
             navigate('/', { replace: true });
-        }, 500); // Espera de 500 ms antes de redirigir
+        }, 500); 
     } catch (error) {
         notify('Invalid credentials');
     }
