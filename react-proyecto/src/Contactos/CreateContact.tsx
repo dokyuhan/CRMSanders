@@ -22,7 +22,7 @@ const CreateContact: React.FC = () => {
         try {
             // Usamos el dataProvider para crear el contacto
             await dataProvider.create('contacts', { data: contact });
-            navigate('/');
+            navigate('/contacts');
         } catch (err) {
             console.error('Error al crear el contacto');
         }
@@ -30,6 +30,7 @@ const CreateContact: React.FC = () => {
 
     return (
         <Container sx={{ mt: 4 }}>
+            <Button variant="contained" onClick={() => navigate('/contacts')} sx={{ mb: 3 }}>Volver</Button>
             <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
                 Crear Contacto
             </Typography>
