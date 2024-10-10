@@ -416,7 +416,7 @@ app.get('/companies', authenticateJWT(['admin']), async (req, res) => {
     console.log("--------------GET /companies");
     try {
         const [rows] = await pool.query('SELECT * FROM companies');
-        console.log("")
+        console.log(rows)
 
         const [countResult] = await pool.query('SELECT COUNT(*) as count FROM companies');
         const totalCount = countResult[0].count;
