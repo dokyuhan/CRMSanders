@@ -108,7 +108,7 @@ const Sidebar: React.FC = () => {
             <>
               <Item
                 title="Dashboard"
-                to="/"
+                to="/AdminDashboard"
                 icon={<HomeOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
