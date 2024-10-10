@@ -1,6 +1,10 @@
-import { AuthProvider } from "react-admin";
 import axiosInstance from "./axiosConfig";
 import Cookies from 'js-cookie';
+
+interface AuthProvider {
+    login: (params: { username: string; password: string }) => Promise<void>;
+    logout: () => Promise<void>;
+}
 
 export const authProvider: AuthProvider = {
     login: async (params: { username: string; password: string }) => {
@@ -43,37 +47,5 @@ export const authProvider: AuthProvider = {
         //localStorage.removeItem('auth');
         console.log('Logout successful');
         return Promise.resolve();
-    },
-    checkAuth: () => { // Obtiene el token de local storage
-        if (Cookies.get('user_role') && Cookies.get('user_ID')) {
-            return Promise.resolve();
-        } else {
-            return Promise.reject();
-        }
-        //return localStorage.getItem('auth') ? Promise.resolve() : Promise.reject();
-    },
-    checkError: ({ status }: { status: number }) => {
-        if (status === 401 || status === 403) {
-            Cookies.remove('user_role');
-            Cookies.remove('user_ID');
-            return Promise.reject();
-        }
-        return Promise.resolve();
-    },
-    getPermissions: () => {
-        const role = Cookies.get('user_role');
-        if (role) {
-            return Promise.resolve(role);
-        } else {
-            return Promise.reject(new Error("No user role found"));
-        }
-    },
-    getUserId: () => {
-        const userId = Cookies.get('user_ID');
-        if (userId) {
-            return Promise.resolve(userId);
-        } else {
-            return Promise.reject(new Error("No user ID found"));
-        }
     },
 };

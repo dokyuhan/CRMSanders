@@ -2,20 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { Link, useNavigate} from 'react-router-dom';
 import { authProvider } from './Authenticator';
-import Cookies from 'js-cookie';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const notify = useNotify();
-  
-  
-  useEffect(() => {
-    
-    Cookies.remove('user_role');
-    Cookies.remove('user_ID');
-  }, []);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -27,7 +19,8 @@ const LoginPage: React.FC = () => {
         setTimeout(() => {
             navigate('/', { replace: true });
         }, 500); 
-    } catch (error) {
+    } catch (error) {  
+        console.log("Error", error);
         notify('Invalid credentials');
     }
 };
