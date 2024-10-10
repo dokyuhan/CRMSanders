@@ -54,6 +54,7 @@ const Home: React.FC = () => {
                       <Route path="/AdminDashboard" element={ <AdminDashboard />} />
                       <Route path="/register-colab" element={<Registrocola />} />
                       <Route path="/stats" element={<Stats />} />
+                      <Route path="/companies" element={<Companies />} />
                       <Route path="/donors" element={<Donadores />} />
                     </>
                   )}
