@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser';
 
 // This middleware function will both authenticate and authorize users
 const authenticateJWT = (allowedRoles) => (req, res, next) => {
-    console.log("Cookies received:", req.cookies);  // Log the cookies to verify they're being received
+    //console.log("Cookies received:", req.cookies);  // Log the cookies to verify they're being received
 
     const token = req.cookies.jwt;  // Retrieve the JWT from the 'jwt' cookie
     //console.log("JWT Token from cookies:", token);

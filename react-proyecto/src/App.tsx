@@ -1,18 +1,21 @@
 import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
-import { Admin, Resource } from 'react-admin';
 import { useEffect, useReducer, useState, ReactNode, Fragment} from 'react';
+import { Admin, Resource } from 'react-admin';
 import { dataProvider } from './dataProvider';
 import { authProvider } from './Login/Authenticator';
+import { i18nProvider } from './Polyglot';
+import { MyLayout } from './design/dashboardLayout';
 import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
-import { i18nProvider } from './Polyglot';
-import { MyLayout } from './design/dashboardLayout';
 import { Companies } from './Companies';
 import { Stats } from './Stats';
 import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
 import EditContact from './Contactos/EditContacts';
+import Donadores from './Donaciones/Donations';
+import CreateDonation from './Donaciones/CreateDonation';
+import EditDonation from './Donaciones/EditDonations';
 import Registrocola from './Registro colab';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -20,8 +23,7 @@ import InsightsIcon from '@mui/icons-material/Insights';
 import DonatePage from './Donate';
 import Topbar from './global/Topbar';
 import Sidebar from './global/Sidebar';
-import NotFound from './NotFound';
-import Donadores from './Donadores';
+import AuthRequired from './Login/Load'
 import Cookies from 'js-cookie';
 import PaymentForm from './PaymentForm';
 import AdminDashboard from './AdminDashboard'
@@ -67,6 +69,8 @@ const Home: React.FC = () => {
                       <Route path="/companies" element={<Companies />} />
                       <Route path="/create-contact" element={<CreateContact />} />
                       <Route path="/edit-contact/:id" element={<EditContact />} />
+                      <Route path="/create-donation" element={<CreateDonation />} />
+                      <Route path="/edit-donation/:id" element={<EditDonation />} />
                       <Route path="/donadores" element={<Donadores/>}/>
                     </>
                   )}
@@ -115,78 +119,49 @@ const permissionsReducer = (state: State, action: Action): State => {
 export const App = () => {
   //console.log('App component is mounting');
   const [state, dispatch] = useReducer(permissionsReducer, {
-    permissions: null,
-    authenticated: false
+    permissions: Cookies.get('user_role') || null,
+    authenticated: !!Cookies.get('user_role')
   });
 
-
+  // Manejar la autenticación en el momento del login o al cargar la página
   useEffect(() => {
-    const handleLoginSuccess = () => {
-        setTimeout(() => { // Agrega un pequeño retraso para asegurar que la cookie esté lista
-            const userData = Cookies.get('user_role');
-            if (userData) {
-                const { role } = JSON.parse(userData);
-                //console.log("Role found after login: ", role);
-                dispatch({ type: SET_PERMISSIONS, payload: role });
-            } else {
-                console.error('No user data found in cookies immediately after login');
-            }
-        }, 500); // Ajusta este tiempo si es necesario
-    };
-
-    window.addEventListener('login-success', handleLoginSuccess);
-    return () => {
-        window.removeEventListener('login-success', handleLoginSuccess);
-      };
-  }, []);
-
-  useEffect(() => {
-    const userData = Cookies.get('user_role');
-    if (userData) {
-        const { role } = JSON.parse(userData);
-        if (!state.authenticated) {
-            dispatch({ type: SET_PERMISSIONS, payload: role });
-        }
-    } else {
-        if (state.authenticated) {
-            dispatch({ type: LOGOUT, payload: null });
-        }
-    }
-}, [state.authenticated]); 
-
-
-  console.log('Rendering App with permissions: ', state.permissions);
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      dispatch({ type: LOGOUT, payload: null });
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []);
-
-  useEffect(() => {
-    const removeAuthOnNavigation = () => {
-      if (window.location.pathname === '/login') {
-        dispatch({ type: LOGOUT, payload: null });
+    const handleAuthentication = () => {
+      const userData = Cookies.get('user_role');
+      if (userData) {
+        console.log('User role found in cookie:', userData);
+        dispatch({ type: SET_PERMISSIONS, payload: userData });
+      } else if (state.authenticated) {
+        console.log('No user role found, triggering logout');
+        dispatch({ type: LOGOUT, payload: null});
       }
     };
 
-    window.addEventListener('popstate', removeAuthOnNavigation);
+    window.addEventListener('login-success', handleAuthentication);
+
+    // Añadiendo el listener para el evento 'load'
+    window.addEventListener('load', () => {
+      console.log('Page loaded, checking authentication...');
+      handleAuthentication();
+    });
 
     return () => {
-      window.removeEventListener('popstate', removeAuthOnNavigation);
+      window.removeEventListener('login-success', handleAuthentication);
+      window.removeEventListener('load', handleAuthentication);
     };
-  }, []);
+  }, [state.authenticated]);
+
+  console.log('Rendering App', { authenticated: state.authenticated, permissions: state.permissions });
 
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/*" element={state.authenticated ? <Home />: <Navigate to="/login" />} />
+        <Route path="/*" element={
+          <AuthRequired>
+            <Home />
+          </AuthRequired> 
+        } />
       </Routes>
     </Router>
   );
