@@ -409,6 +409,28 @@ app.post("/registercolab", async (req, res) => {
     }
 });
 
+//-----------------------Ruta utilizada-----------------------
+//Esta ruta se utiliza para mostrar las compañías
+
+app.get('/companies', authenticateJWT(['admin']), async (req, res) => {
+    console.log("--------------GET /companies");
+    try {
+        const [rows] = await pool.query('SELECT * FROM companies');
+        console.log(rows)
+
+        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM companies');
+        const totalCount = countResult[0].count;
+
+        res.setHeader('X-Total-Count', totalCount);
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
+        res.json({ data: rows, total: totalCount });
+    } catch (err) {
+        console.error("Error fetching companies:", error);
+        res.status(500).json({ message: "Error al obtener las compañías." });
+    }
+});
+
+
 
 //Creacion de las constantes para las llaves de HTTPS
 const privateKey = fs.readFileSync('../Cert/server.key', 'utf8');

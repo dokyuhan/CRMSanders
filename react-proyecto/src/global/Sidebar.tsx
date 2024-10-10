@@ -89,7 +89,7 @@ const Sidebar: React.FC = () => {
               <span className="text-gray-300 mt-4 mb-2 ml-4 block">Contactos</span>
               <Item
                 title="Compañias"
-                to="/iwachu"
+                to="/companies"
                 icon={<ApartmentIcon />}
                 selected={selected}
                 setSelected={setSelected}

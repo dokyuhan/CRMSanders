@@ -8,7 +8,7 @@ import { MyLayout } from './design/dashboardLayout';
 import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
-import { Companies } from './Companies';
+import Companies from './Companies';
 import { Stats } from './Stats';
 import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
@@ -56,6 +56,7 @@ const Home: React.FC = () => {
                       <Route path="/AdminDashboard" element={ <AdminDashboard />} />
                       <Route path="/register-colab" element={<Registrocola />} />
                       <Route path="/stats" element={<Stats />} />
+                      <Route path="/companies" element={<Companies />} />
                       <Route path="/donors" element={<Donadores />} />
                     </>
                   )}

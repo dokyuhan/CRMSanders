@@ -29,6 +29,13 @@ CREATE TABLE IF NOT EXISTS contactos (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS companies(
+id INT AUTO_INCREMENT PRIMARY KEY,
+company VARCHAR(50) NOT NULL,
+email VARCHAR (50) NOT NULL,
+number VARCHAR (50) NOT NULL
+);
+
 CREATE VIEW DonacionesUsuarios AS
 SELECT
     d.id AS donacion_id,
