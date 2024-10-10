@@ -16,11 +16,14 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleLogout = () => {
+    console.log('Logging out...');
     Cookies.remove('user_role');
     Cookies.remove('user_ID');
-
-    navigate('/login', { replace: true });
-  };
+    console.log('Cookies removed:', Cookies.get('user_role'), Cookies.get('user_ID'));
+    setTimeout(() => {
+        navigate('/login', { replace: true });
+    }, 100); // Ajusta el tiempo si es necesario
+};
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

@@ -100,6 +100,8 @@ const permissionsReducer = (state: State, action: Action): State => {
   }
 };
 
+
+
 export const App = () => {
   //console.log('App component is mounting');
   const [state, dispatch] = useReducer(permissionsReducer, {
@@ -129,15 +131,19 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    // Verifica la cookie al cargar el componente para manejar recargas de la página
     const userData = Cookies.get('user_role');
     if (userData) {
         const { role } = JSON.parse(userData);
-        dispatch({ type: SET_PERMISSIONS, payload: role });
+        if (!state.authenticated) {
+            dispatch({ type: SET_PERMISSIONS, payload: role });
+        }
     } else {
-        dispatch({ type: LOGOUT, payload: null });
+        if (state.authenticated) {
+            dispatch({ type: LOGOUT, payload: null });
+        }
     }
-  }, []);
+}, [state.authenticated]); 
+
 
   console.log('Rendering App with permissions: ', state.permissions);
   useEffect(() => {
