@@ -30,7 +30,6 @@ const Contacts: React.FC = () => {
                     sort: { field: 'id', order: 'ASC' },
                     filter: {},
                 });
-                console.log("Received data:", response);
                 if (!Array.isArray(response.data.data)) {
                     throw new Error(`Expected data.data to be an array, received ${typeof response.data.data}`);
                 }
@@ -51,7 +50,7 @@ const Contacts: React.FC = () => {
 
     return (
         <Container sx={{ mt: 4 }}>
-            <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
+            <Typography variant="h4" component="h1" color="white" align="center" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
                 Lista de Contactos
             </Typography>
             <Button variant="contained" component={Link} to="/create-contact" sx={{ mb: 3 }}>Crear Contacto</Button>

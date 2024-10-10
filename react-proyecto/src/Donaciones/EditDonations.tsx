@@ -3,47 +3,43 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, CircularProgress, Alert, Box, Typography } from '@mui/material';
 import { dataProvider } from '../dataProvider';
 
-
-const EditContact: React.FC = () => {
+const EditDonation: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [contact, setContact] = useState({
-        nombre: '',
-        apellido: '',
-        email: '',
-        telefono: '',
-        direccion: ''
+    const [donation, setDonation] = useState({
+        usuario_id: '',
+        monto: '',
+        metodo_pago: ''
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchContact = async () => {
+        const fetchDonation = async () => {
             try {
-                const { data } = await dataProvider.getOne('contacts', { id });
-                setContact(data);
+                const { data } = await dataProvider.getOne('donaciones', { id });
+                setDonation(data);
                 setLoading(false);
             } catch (err) {
-                setError('Error al obtener el contacto');
+                setError('Error al obtener la donación');
                 setLoading(false);
             }
         };
 
-        fetchContact();
+        fetchDonation();
     }, [id]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setContact({ ...contact, [e.target.name]: e.target.value });
+        setDonation({ ...donation, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            
-            await dataProvider.update('contacts', { id, data: contact });
-            navigate('/');
+            await dataProvider.update('donaciones', { id, data: donation });
+            navigate('/donaciones'); // Redirigir a la lista de donaciones
         } catch (err) {
-            setError('Error al actualizar el contacto');
+            setError('Error al actualizar la donación');
         }
     };
 
@@ -52,51 +48,34 @@ const EditContact: React.FC = () => {
 
     return (
         <Container sx={{ mt: 4 }}>
-            <Button variant="contained" onClick={() => navigate('/contacts')} sx={{ mb: 3 }}>Volver</Button>
+            <Button variant="contained" onClick={() => navigate('/donaciones')} sx={{ mb: 3 }}>Volver</Button>
             <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
-                Editar Contacto
+                Editar Donación
             </Typography>
             <Box component="form" onSubmit={handleSubmit}>
                 <TextField
-                    label="Nombre"
-                    name="nombre"
-                    value={contact.nombre}
+                    label="Usuario ID"
+                    name="usuario_id"
+                    value={donation.usuario_id}
                     onChange={handleChange}
                     fullWidth
                     required
                     sx={{ mb: 2 }}
                 />
                 <TextField
-                    label="Apellido"
-                    name="apellido"
-                    value={contact.apellido}
+                    label="Monto"
+                    name="monto"
+                    type="number"
+                    value={donation.monto}
                     onChange={handleChange}
                     fullWidth
                     required
                     sx={{ mb: 2 }}
                 />
                 <TextField
-                    label="Email"
-                    name="email"
-                    value={contact.email}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    sx={{ mb: 2 }}
-                />
-                <TextField
-                    label="Teléfono"
-                    name="telefono"
-                    value={contact.telefono}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    sx={{ mb: 2 }}
-                />
-                <TextField
-                    label="Dirección"
-                    name="direccion"
-                    value={contact.direccion}
+                    label="Método de Pago"
+                    name="metodo_pago"
+                    value={donation.metodo_pago}
                     onChange={handleChange}
                     fullWidth
                     required
@@ -108,4 +87,4 @@ const EditContact: React.FC = () => {
     );
 };
 
-export default EditContact;
+export default EditDonation;

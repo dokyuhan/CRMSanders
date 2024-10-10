@@ -1,18 +1,21 @@
 import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
-import { Admin, Resource } from 'react-admin';
 import { useEffect, useReducer, useState, ReactNode, Fragment} from 'react';
+import { Admin, Resource } from 'react-admin';
 import { dataProvider } from './dataProvider';
 import { authProvider } from './Login/Authenticator';
+import { i18nProvider } from './Polyglot';
+import { MyLayout } from './design/dashboardLayout';
 import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
-import { i18nProvider } from './Polyglot';
-import { MyLayout } from './design/dashboardLayout';
 import { Companies } from './Companies';
 import { Stats } from './Stats';
 import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
 import EditContact from './Contactos/EditContacts';
+import Donadores from './Donaciones/Donations';
+import CreateDonation from './Donaciones/CreateDonation';
+import EditDonation from './Donaciones/EditDonations';
 import Registrocola from './Registro colab';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -21,7 +24,6 @@ import DonatePage from './Donate';
 import Topbar from './global/Topbar';
 import Sidebar from './global/Sidebar';
 import NotFound from './NotFound';
-import Donadores from './Donadores';
 import Cookies from 'js-cookie';
 import PaymentForm from './PaymentForm';
 
@@ -57,6 +59,8 @@ const Home: React.FC = () => {
                       <Route path="/companies" element={<Companies />} />
                       <Route path="/create-contact" element={<CreateContact />} />
                       <Route path="/edit-contact/:id" element={<EditContact />} />
+                      <Route path="/create-donation" element={<CreateDonation />} />
+                      <Route path="/edit-donation/:id" element={<EditDonation />} />
                       <Route path="/donadores" element={<Donadores/>}/>
                     </>
                   )}
