@@ -430,6 +430,77 @@ app.get('/companies', authenticateJWT(['admin']), async (req, res) => {
     }
 });
 
+//-----------------------Ruta utilizada-----------------------
+// Endpoint para obtener contactos recientes
+app.get('/recentContacts', authenticateJWT(['admin']), async (req, res) => {
+    console.log("--------------GET /recentContacts");
+    try {
+        const [rows] = await pool.query('SELECT * FROM contactos ORDER BY fecha_creacion DESC LIMIT 5');
+        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM contactos');
+        const totalCount = countResult[0].count;
+
+        res.setHeader('X-Total-Count', totalCount);
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
+        res.json({ data: rows, total: totalCount });
+    } catch (error) {
+        console.error("Error fetching recent contacts:", error);
+        res.status(500).json({ message: "Error al obtener los contactos recientes." });
+    }
+});
+
+// Endpoint para obtener estadísticas de usuarios
+app.get('/userStats', authenticateJWT(['admin']), async (req, res) => {
+    console.log("--------------GET /userStats");
+    try {
+        const [rows] = await pool.query('SELECT tipo_usuario, COUNT(*) as cantidad FROM usuarios GROUP BY tipo_usuario');
+        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM usuarios');
+        const totalCount = countResult[0].count;
+
+        res.setHeader('X-Total-Count', totalCount);
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
+        res.json({ data: rows, total: totalCount });
+    } catch (error) {
+        console.error("Error fetching user stats:", error);
+        res.status(500).json({ message: "Error al obtener estadísticas de usuarios." });
+    }
+});
+
+// Endpoint para obtener donaciones recientes
+app.get('/recentDonations', authenticateJWT(['admin']), async (req, res) => {
+    console.log("--------------GET /recentDonations");
+    try {
+        const [rows] = await pool.query('SELECT * FROM DonacionesUsuarios ORDER BY donacion_fecha DESC LIMIT 5');
+        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM donaciones');
+        const totalCount = countResult[0].count;
+
+        res.setHeader('X-Total-Count', totalCount);
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
+        res.json({ data: rows, total: totalCount });
+    } catch (error) {
+        console.error("Error fetching recent donations:", error);
+        res.status(500).json({ message: "Error al obtener las donaciones recientes." });
+    }
+});
+
+// Endpoint para obtener compañías
+app.get('/latestCompanies', authenticateJWT(['admin']), async (req, res) => {
+    console.log("--------------GET /companies");
+    try {
+        const [rows] = await pool.query('SELECT * FROM companies');
+        console.log(rows);
+
+        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM companies');
+        const totalCount = countResult[0].count;
+
+        res.setHeader('X-Total-Count', totalCount);
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
+        res.json({ data: rows, total: totalCount });
+    } catch (error) {
+        console.error("Error fetching companies:", error);
+        res.status(500).json({ message: "Error al obtener las compañías." });
+    }
+});
+
 
 
 //Creacion de las constantes para las llaves de HTTPS
