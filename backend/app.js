@@ -305,7 +305,7 @@ app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => 
 //-----------------------Ruta utilizada-----------------------
 //Esta ruta sirve para crear un nuevo conacto
 
-app.post('/contacts', authenticateJWT(['admin']), async (req, res) => {
+app.post('/contacts', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
     console.log("--------------POST /contacts")
     const { nombre, telefono, email, direccion, apellido } = req.body;
 
@@ -334,7 +334,7 @@ app.post('/contacts', authenticateJWT(['admin']), async (req, res) => {
 //-----------------------Ruta utilizada-----------------------
 //Ruta para editar un contacto
 
-app.put('/contacts/:id', authenticateJWT(['admin']), async (req, res) => {
+app.put('/contacts/:id', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
     const { id } = req.params;
     const { nombre, apellido, telefono, email, direccion } = req.body;
 
@@ -362,7 +362,7 @@ app.put('/contacts/:id', authenticateJWT(['admin']), async (req, res) => {
 //-----------------------Ruta utilizada-----------------------
 //Sirve para obtener los datos del contacto al editar
 
-app.get('/contacts/:id', async (req, res) => {
+app.get('/contacts/:id', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -380,10 +380,9 @@ app.get('/contacts/:id', async (req, res) => {
 });
 
 // Backend - Registro de colaborador
-app.post("/registercolab", async (req, res) => {
+app.post("/registercolab", authenticateJWT(['admin']), async (req, res) => {
     console.log("Petición aceptada en /registercolab");
-    const { username: nombre, password: contrasena, email: correo } = req.body;
-    const tipo_usuario = 'colaborador';  
+    const { username: nombre, password: contrasena, email: correo, role: tipo_usuario } = req.body; 
     console.log("Datos recibidos en /registercolab:", req.body);
     
     try {
@@ -412,7 +411,7 @@ app.post("/registercolab", async (req, res) => {
 //-----------------------Ruta utilizada-----------------------
 //Esta ruta se utiliza para mostrar las compañías
 
-app.get('/companies', authenticateJWT(['admin']), async (req, res) => {
+app.get('/companies', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
     console.log("--------------GET /companies");
     try {
         const [rows] = await pool.query('SELECT * FROM companies');
@@ -432,7 +431,7 @@ app.get('/companies', authenticateJWT(['admin']), async (req, res) => {
 
 //-----------------------Ruta utilizada-----------------------
 // Endpoint para obtener contactos recientes
-app.get('/recentContacts', authenticateJWT(['admin']), async (req, res) => {
+app.get('/recentContacts', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
     console.log("--------------GET /recentContacts");
     try {
         const [rows] = await pool.query('SELECT * FROM contactos ORDER BY fecha_creacion DESC LIMIT 5');
@@ -449,7 +448,7 @@ app.get('/recentContacts', authenticateJWT(['admin']), async (req, res) => {
 });
 
 // Endpoint para obtener estadísticas de usuarios
-app.get('/userStats', authenticateJWT(['admin']), async (req, res) => {
+app.get('/userStats', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
     console.log("--------------GET /userStats");
     try {
         const [rows] = await pool.query('SELECT tipo_usuario, COUNT(*) as cantidad FROM usuarios GROUP BY tipo_usuario');
@@ -466,7 +465,7 @@ app.get('/userStats', authenticateJWT(['admin']), async (req, res) => {
 });
 
 // Endpoint para obtener donaciones recientes
-app.get('/recentDonations', authenticateJWT(['admin']), async (req, res) => {
+app.get('/recentDonations', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
     console.log("--------------GET /recentDonations");
     try {
         const [rows] = await pool.query('SELECT * FROM DonacionesUsuarios ORDER BY donacion_fecha DESC LIMIT 5');
@@ -483,7 +482,7 @@ app.get('/recentDonations', authenticateJWT(['admin']), async (req, res) => {
 });
 
 // Endpoint para obtener compañías
-app.get('/latestCompanies', authenticateJWT(['admin']), async (req, res) => {
+app.get('/latestCompanies', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
     console.log("--------------GET /companies");
     try {
         const [rows] = await pool.query('SELECT * FROM companies');
