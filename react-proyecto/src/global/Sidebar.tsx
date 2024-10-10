@@ -62,44 +62,16 @@ const Sidebar: React.FC = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          <Item
-            title="Dashboard"
-            to="/"
-            icon={<HomeOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
           <span className="text-gray-300 mt-4 mb-2 ml-4 block">Donaciones</span>
-          <Item
-            title="Donaciones"
-            to="/donate"
-            icon={<DonationIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-
-          { (auth === 'admin' || auth === 'colaborador') && (
+          { (auth === 'admin') && (
             <>
               <Item
-                title="Contactos"
-                to="/contacts"
-                icon={<ContactsOutlinedIcon />}
+                title="Dashboard"
+                to="/AdminDashboard"
+                icon={<HomeOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
-              <span className="text-gray-300 mt-4 mb-2 ml-4 block">Compañias</span>
-              <Item
-              title="Compañias"
-              to="iwachu"
-              icon={<ApartmentIcon />}
-              selected={selected}
-              setSelected={setSelected}
-              />
-            </>
-            
-          )}
-          { auth === 'admin' && (
-            <>
               <Item
                 title="Estadisticas"
                 to="/stats"
@@ -131,6 +103,49 @@ const Sidebar: React.FC = () => {
               />
             </>
           )}
+
+          { (auth === 'colaborador') && (
+            <>
+              <Item
+                title="Dashboard"
+                to="/AdminDashboard"
+                icon={<HomeOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Contactos"
+                to="/contacts"
+                icon={<ContactsOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <span className="text-gray-300 mt-4 mb-2 ml-4 block">Compañias</span>
+              <Item
+              title="Compañias"
+              to="iwachu"
+              icon={<ApartmentIcon />}
+              selected={selected}
+              setSelected={setSelected}
+              />
+            </>
+            
+          )}
+
+          { (auth === 'donador') && (
+
+            <>
+                <Item
+                  title="Donaciones"
+                  to="/donate"
+                  icon={<DonationIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+              />
+            </>
+          )}
+
+
         </div>
       </div>
     </div>

@@ -41,8 +41,7 @@ SELECT
 FROM
     donaciones d
 JOIN
-    usuarios u ON d.donador_id = u.id;
-
+    usuarios u ON d.usuario_id = u.id;
 
 
 DELIMITER $$
