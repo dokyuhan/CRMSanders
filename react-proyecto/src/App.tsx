@@ -24,6 +24,7 @@ import NotFound from './NotFound';
 import Donadores from './Donadores';
 import Cookies from 'js-cookie';
 import PaymentForm from './PaymentForm';
+import AdminDashboard from './AdminDashboard'
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const UPDATE_PERMISSIONS = 'UPDATE_PERMISSIONS';
@@ -46,12 +47,20 @@ const Home: React.FC = () => {
               <Topbar setIsSidebar={setIsSidebar} />
               <main className="flex-1 overflow-y-auto p-4 bg-gray-600">
                 <Routes>
-                  <Route path="/" element={ <Dashboard />} />
-                  <Route path="/donate" element={<DonatePage />} />
                   <Route path="/donations" element={<Contacts/>} />
                   <Route path="/checkout" element={<PaymentForm />} />
-                  {(auth === 'admin' || auth === 'colaborador') && (
+                  {(auth === 'admin') && (
                     <>
+                      <Route path="/AdminDashboard" element={ <AdminDashboard />} />
+                      <Route path="/register-colab" element={<Registrocola />} />
+                      <Route path="/stats" element={<Stats />} />
+                      <Route path="/donors" element={<Donadores />} />
+                    </>
+                  )}
+
+                  {(auth === 'colaborador') && (
+                    <>
+                      <Route path="/AdminDashboard" element={ <Dashboard />} />
                       <Route path="/contacts" element={<Contacts />} />
                       <Route path="/stats" element={<Stats />} />
                       <Route path="/companies" element={<Companies />} />
@@ -60,13 +69,13 @@ const Home: React.FC = () => {
                       <Route path="/donadores" element={<Donadores/>}/>
                     </>
                   )}
-                  {auth === 'admin' && (
+
+                  {(auth === 'donador') && (
                     <>
-                    <Route path="/register-colab" element={<Registrocola />} />
-                      <Route path="/stats" element={<Stats />} />
-                      <Route path="/donors" element={<Donadores />} />
+                    <Route path="/donate" element={<DonatePage />} />
                     </>
                   )}
+
                 </Routes>
               </main>
             </div>
