@@ -122,11 +122,11 @@ const Sidebar: React.FC = () => {
               />
               <span className="text-gray-300 mt-4 mb-2 ml-4 block">Compañias</span>
               <Item
-              title="Compañias"
-              to="iwachu"
-              icon={<ApartmentIcon />}
-              selected={selected}
-              setSelected={setSelected}
+                title="Compañias"
+                to="/companies"
+                icon={<ApartmentIcon />}
+                selected={selected}
+                setSelected={setSelected}
               />
             </>
             
