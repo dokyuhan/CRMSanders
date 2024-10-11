@@ -16,10 +16,7 @@ import EditContact from './Contactos/EditContacts';
 import Donadores from './Donaciones/Donations';
 import CreateDonation from './Donaciones/CreateDonation';
 import EditDonation from './Donaciones/EditDonations';
-import Registrocola from './Registro colab';
-import ContactsIcon from '@mui/icons-material/Contacts';
-import BusinessIcon from '@mui/icons-material/Business';
-import InsightsIcon from '@mui/icons-material/Insights';
+import Registrocola from './UserRegister';
 import DonatePage from './Donate';
 import Topbar from './global/Topbar';
 import Sidebar from './global/Sidebar';
@@ -50,27 +47,24 @@ const Home: React.FC = () => {
                 <Routes>
                   <Route path="/donations" element={<Contacts/>} />
                   <Route path="/checkout" element={<PaymentForm />} />
-                  {(auth === 'admin') && (
+                  {(auth === 'admin' || auth === 'colaborador') && (
                     <>
                       <Route path="/AdminDashboard" element={ <AdminDashboard />} />
-                      <Route path="/register-colab" element={<Registrocola />} />
                       <Route path="/stats" element={<Stats />} />
                       <Route path="/companies" element={<Companies />} />
                       <Route path="/donors" element={<Donadores />} />
-                    </>
-                  )}
-
-                  {(auth === 'colaborador') && (
-                    <>
-                      <Route path="/AdminDashboard" element={ <AdminDashboard />} />
                       <Route path="/contacts" element={<Contacts />} />
-                      <Route path="/stats" element={<Stats />} />
-                      <Route path="/companies" element={<Companies />} />
                       <Route path="/create-contact" element={<CreateContact />} />
                       <Route path="/edit-contact/:id" element={<EditContact />} />
                       <Route path="/create-donation" element={<CreateDonation />} />
                       <Route path="/edit-donation/:id" element={<EditDonation />} />
                       <Route path="/donadores" element={<Donadores/>}/>
+                    </>
+                  )}
+
+                  {(auth === 'admin') && (
+                    <>
+                      <Route path="/register-colab" element={<Registrocola />} />
                     </>
                   )}
 

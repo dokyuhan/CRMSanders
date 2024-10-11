@@ -63,7 +63,7 @@ const Sidebar: React.FC = () => {
 
         <div className="flex-1 overflow-y-auto">
           <span className="text-gray-300 mt-4 mb-2 ml-4 block">Donaciones</span>
-          { (auth === 'admin') && (
+          { (auth === 'admin' || auth === 'colaborador') && (
             <>
               <Item
                 title="Dashboard"
@@ -88,45 +88,31 @@ const Sidebar: React.FC = () => {
               />
               <span className="text-gray-300 mt-4 mb-2 ml-4 block">Contactos</span>
               <Item
-                title="Compañias"
-                to="/companies"
-                icon={<ApartmentIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <Item
-                title="Registrar Colaborador"
-                to="/register-colab"
-                icon={<PeopleOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-            </>
-          )}
-
-          { (auth === 'colaborador') && (
-            <>
-              <Item
-                title="Dashboard"
-                to="/AdminDashboard"
-                icon={<HomeOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <Item
                 title="Contactos"
                 to="/contacts"
                 icon={<ContactsOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
-              <span className="text-gray-300 mt-4 mb-2 ml-4 block">Compañias</span>
               <Item
-              title="Compañias"
-              to="iwachu"
-              icon={<ApartmentIcon />}
-              selected={selected}
-              setSelected={setSelected}
+                title="Compañias"
+                to="/companies"
+                icon={<ApartmentIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </>
+          )}
+
+          { (auth === 'admin') && (
+            <>
+              <span className="text-gray-300 mt-4 mb-2 ml-4 block">Registros de colaboradores</span>
+              <Item
+                title="Registrar Colaborador"
+                to="/register-colab"
+                icon={<PeopleOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
               />
             </>
             
