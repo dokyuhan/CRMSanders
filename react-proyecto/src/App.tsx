@@ -14,8 +14,7 @@ import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
 import EditContact from './Contactos/EditContacts';
 import Donadores from './Donaciones/Donations';
-import CreateDonation from './Donaciones/CreateDonation';
-import EditDonation from './Donaciones/EditDonations';
+
 import Registrocola from './Registro colab';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -56,7 +55,7 @@ const Home: React.FC = () => {
                       <Route path="/register-colab" element={<Registrocola />} />
                       <Route path="/stats" element={<Stats />} />
                       <Route path="/companies" element={<Companies />} />
-                      <Route path="/donors" element={<Donadores />} />
+                      <Route path="/donadores" element={<Donadores />} />
                     </>
                   )}
 
@@ -68,8 +67,6 @@ const Home: React.FC = () => {
                       <Route path="/companies" element={<Companies />} />
                       <Route path="/create-contact" element={<CreateContact />} />
                       <Route path="/edit-contact/:id" element={<EditContact />} />
-                      <Route path="/create-donation" element={<CreateDonation />} />
-                      <Route path="/edit-donation/:id" element={<EditDonation />} />
                       <Route path="/donadores" element={<Donadores/>}/>
                     </>
                   )}
