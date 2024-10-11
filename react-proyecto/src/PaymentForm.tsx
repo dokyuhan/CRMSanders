@@ -150,7 +150,7 @@ const PaymentForm = () => {
           )}
 
           <Button type="submit" variant="contained" color="primary" fullWidth>
-            {loading ? 'Processing...' : 'Pagar'}
+            {loading ? 'Procesando...' : 'Pagar'}
           </Button>
         </form>
 
