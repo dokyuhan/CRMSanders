@@ -14,7 +14,6 @@ import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
 import EditContact from './Contactos/EditContacts';
 import Donadores from './Donaciones/Donations';
-
 import Registrocola from './Registro colab';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -112,7 +111,6 @@ const permissionsReducer = (state: State, action: Action): State => {
 
 
 export const App = () => {
-  //console.log('App component is mounting');
   const [state, dispatch] = useReducer(permissionsReducer, {
     permissions: Cookies.get('user_role') || null,
     authenticated: !!Cookies.get('user_role')
