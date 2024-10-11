@@ -71,12 +71,6 @@ const Registercolab: React.FC = () => {
             >
               Registrar Colaborador
             </button>
-            <p className="mt-4 text-center text-gray-700 text-sm">
-              ¿Ya tienes una cuenta?{' '}
-              <Link to="/login" className="font-semibold text-gray-900 hover:underline">
-                Inicia sesión
-              </Link>
-            </p>
           </div>
         </form>
       </div>
