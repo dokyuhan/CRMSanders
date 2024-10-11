@@ -10,9 +10,11 @@ import { dataProvider } from '../dataProvider';
 interface Donacion {
     id: number;
     usuario_id: number;
-    monto: string;
-    metodo_pago: string;
-    fecha_donacion: string;
+    usuario_nombre: string;
+    usuario_correo:string;
+    donacion_monto:string;
+    donacion_fecha:string;
+    donacion_metodo_pago:string;
 }
 
 const Donadores: React.FC = () => {
@@ -55,7 +57,6 @@ const Donadores: React.FC = () => {
             <Typography variant="h4" component="h1" align="center" color="white" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
                 Lista de Donadores
             </Typography>
-            <Button variant="contained" component={Link} to="/create-donation" sx={{ mb: 3 }}>Crear Donación</Button>
             <Grid container spacing={3}>
                 {donaciones.map((donacion) => (
                     <Grid item xs={12} sm={6} md={4} key={donacion.id}>
@@ -69,29 +70,26 @@ const Donadores: React.FC = () => {
                         >
                             <CardContent>
                                 <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', mb: 2 }}>
-                                    Donación ID: {donacion.id}
+                                    Donador: {donacion.usuario_nombre}
                                 </Typography>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                    <EmailIcon color="primary" sx={{ mr: 1 }} />
+                                    <AttachMoneyIcon color="primary" sx={{ mr: 1 }} />
                                     <Typography variant="body2" color="textSecondary">
-                                        Monto: ${donacion.monto}
+                                        Monto: ${donacion.donacion_monto}
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                                     <PaymentIcon color="primary" sx={{ mr: 1 }} />
                                     <Typography variant="body2" color="textSecondary">
-                                        Método de pago: {donacion.metodo_pago}
+                                        Método de pago: {donacion.donacion_metodo_pago}
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     <EventIcon color="primary" sx={{ mr: 1 }} />
                                     <Typography variant="body2" color="textSecondary">
-                                        Fecha de donación: {new Date(donacion.fecha_donacion).toLocaleString()}
+                                        Fecha de donación: {new Date(donacion.donacion_fecha).toLocaleString()}
                                     </Typography>
                                 </Box>
-                                <Button variant="outlined" component={Link} to={`/edit-donation/${donacion.id}`} sx={{ mt: 1 }}>
-                                    Editar
-                                </Button>
                             </CardContent>
                         </Card>
                     </Grid>
