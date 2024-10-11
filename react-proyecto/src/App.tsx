@@ -14,16 +14,14 @@ import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
 import EditContact from './Contactos/EditContacts';
 import Donadores from './Donaciones/Donations';
-import CreateDonation from './Donaciones/CreateDonation';
-import EditDonation from './Donaciones/EditDonations';
-import Registrocola from './UserRegister';
 import DonatePage from './Donate';
 import Topbar from './global/Topbar';
 import Sidebar from './global/Sidebar';
 import AuthRequired from './Login/Load'
 import Cookies from 'js-cookie';
 import PaymentForm from './PaymentForm';
-import AdminDashboard from './AdminDashboard'
+import AdminDashboard from './AdminDashboard';
+import Registercolab from './UserRegister';
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const LOGOUT = 'LOGOUT';
@@ -56,15 +54,13 @@ const Home: React.FC = () => {
                       <Route path="/contacts" element={<Contacts />} />
                       <Route path="/create-contact" element={<CreateContact />} />
                       <Route path="/edit-contact/:id" element={<EditContact />} />
-                      <Route path="/create-donation" element={<CreateDonation />} />
-                      <Route path="/edit-donation/:id" element={<EditDonation />} />
                       <Route path="/donadores" element={<Donadores/>}/>
                     </>
                   )}
 
                   {(auth === 'admin') && (
                     <>
-                      <Route path="/register-colab" element={<Registrocola />} />
+                      <Route path="/register-colab" element={<Registercolab />} />
                     </>
                   )}
 
@@ -109,7 +105,6 @@ const permissionsReducer = (state: State, action: Action): State => {
 
 
 export const App = () => {
-  //console.log('App component is mounting');
   const [state, dispatch] = useReducer(permissionsReducer, {
     permissions: Cookies.get('user_role') || null,
     authenticated: !!Cookies.get('user_role')

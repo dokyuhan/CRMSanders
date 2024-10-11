@@ -150,7 +150,7 @@ const PaymentForm = () => {
           )}
 
           <Button type="submit" variant="contained" color="primary" fullWidth>
-            {loading ? 'Processing...' : 'Pagar'}
+            {loading ? 'Procesando...' : 'Pagar'}
           </Button>
         </form>
 
@@ -160,10 +160,8 @@ const PaymentForm = () => {
               <Typography variant="h6">
                 Donación exitosa!
               </Typography>
-              <Typography>ID de Donación: {confirmation.id}</Typography>
               <Typography>Monto: ${confirmation.monto}</Typography>
               <Typography>Método de Pago: {confirmation.metodo_pago}</Typography>
-              <Typography>Fecha de Donación: {new Date(confirmation.fecha_donacion).toLocaleString()}</Typography>
             </Alert>
           </Box>
         )}

@@ -287,9 +287,10 @@ app.post("/donate", authenticateJWT(['admin', 'colaborador', 'donador']), async 
 app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => {
     console.log("--------------GET /donacionesdonadores")
     try {
-        const [rows] = await pool.query('SELECT * FROM donaciones');
+        const [rows] = await pool.query('SELECT * FROM DonacionesUsuarios');
+        console.log(rows);
 
-        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM donaciones');
+        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM DonacionesUsuarios');
         const totalCount = countResult[0].count;
 
         res.setHeader('X-Total-Count', totalCount);
