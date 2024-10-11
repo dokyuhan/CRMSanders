@@ -37,12 +37,6 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar }) => {
     <div className="flex justify-between p-2 bg-gray-800 text-white">
       <div></div>
       <div className="flex space-x-2">
-        <button className="p-1">
-          <NotificationsOutlinedIcon />
-        </button>
-        <button className="p-1">
-          <SettingsOutlinedIcon />
-        </button>
         <button className="p-1" onClick={handleMenuClick}>
           <PersonOutlinedIcon />
         </button>
