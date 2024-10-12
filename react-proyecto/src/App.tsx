@@ -9,7 +9,7 @@ import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
 import Companies from './Companies';
-import { Stats } from './Stats';
+import { Stats } from './stats/Stats';
 import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
 import EditContact from './Contactos/EditContacts';
@@ -25,6 +25,7 @@ import AuthRequired from './Login/Load'
 import Cookies from 'js-cookie';
 import PaymentForm from './PaymentForm';
 import AdminDashboard from './AdminDashboard'
+import ColabDashboard from './ColabDashboard'
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const LOGOUT = 'LOGOUT';
@@ -55,12 +56,15 @@ const Home: React.FC = () => {
                       <Route path="/stats" element={<Stats />} />
                       <Route path="/companies" element={<Companies />} />
                       <Route path="/donadores" element={<Donadores />} />
+                      <Route path="/contacts" element={<Contacts />} />
+                      <Route path="/create-contact" element={<CreateContact />} />
+                      <Route path="/edit-contact/:id" element={<EditContact />} />
                     </>
                   )}
 
                   {(auth === 'colaborador') && (
                     <>
-                      <Route path="/AdminDashboard" element={ <AdminDashboard />} />
+                      <Route path="/ColabDashboard" element={ <ColabDashboard />} />
                       <Route path="/contacts" element={<Contacts />} />
                       <Route path="/stats" element={<Stats />} />
                       <Route path="/companies" element={<Companies />} />
