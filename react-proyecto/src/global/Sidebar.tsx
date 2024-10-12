@@ -31,8 +31,7 @@ const Sidebar: React.FC = () => {
   const [selected, setSelected] = useState<string>("Dashboard");
   const [imageIndex, setImageIndex] = useState<number>(0);
   const images = [
-    "https://ui-avatars.com/api/?name=Eduardo+Porto",
-    "https://robohash.org/EP"
+    "/public/Logo_sanders.jpeg",
   ];
 
   const handleImageClick = () => {
@@ -46,7 +45,6 @@ const Sidebar: React.FC = () => {
     <div className="bg-gray-800 w-64 transition-all duration-300">
       <div className="flex flex-col h-full">
         <div className="flex items-center gap-5 p-4">
-          <img src= "../../public/Logo_sanders.jpeg" alt="logo" className="w-10 h-10 rounded-md" />
           <span className="text-xl text-gray-100">SANDERS</span>
         </div>
 
@@ -58,7 +56,13 @@ const Sidebar: React.FC = () => {
             onClick={handleImageClick}
           />
           <h2 className="text-gray-100 font-bold text-lg mt-2">USUARIO</h2>
-          <h5 className="text-green-500">ADMINISTRADOR</h5>
+          <h5 className="text-green-500">
+            {auth === 'admin' && 'Administrador'}
+            {auth === 'colaborador' && 'Colaborador'}
+            {auth === 'donador' && 'Donador'}
+        </h5>
+
+
         </div>
 
         <div className="flex-1 overflow-y-auto">
