@@ -14,10 +14,6 @@ import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
 import EditContact from './Contactos/EditContacts';
 import Donadores from './Donaciones/Donations';
-import Registrocola from './Registro colab';
-import ContactsIcon from '@mui/icons-material/Contacts';
-import BusinessIcon from '@mui/icons-material/Business';
-import InsightsIcon from '@mui/icons-material/Insights';
 import DonatePage from './Donate';
 import Topbar from './global/Topbar';
 import Sidebar from './global/Sidebar';
@@ -26,6 +22,8 @@ import Cookies from 'js-cookie';
 import PaymentForm from './PaymentForm';
 import AdminDashboard from './AdminDashboard'
 import ColabDashboard from './ColabDashboard'
+import Registercolab from './UserRegister';
+
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const LOGOUT = 'LOGOUT';
@@ -49,28 +47,32 @@ const Home: React.FC = () => {
                 <Routes>
                   <Route path="/donations" element={<Contacts/>} />
                   <Route path="/checkout" element={<PaymentForm />} />
-                  {(auth === 'admin') && (
+                  {(auth === 'admin' || auth === 'colaborador') && (
                     <>
                       <Route path="/AdminDashboard" element={ <AdminDashboard />} />
-                      <Route path="/register-colab" element={<Registrocola />} />
                       <Route path="/stats" element={<Stats />} />
                       <Route path="/companies" element={<Companies />} />
-                      <Route path="/donadores" element={<Donadores />} />
                       <Route path="/contacts" element={<Contacts />} />
                       <Route path="/create-contact" element={<CreateContact />} />
                       <Route path="/edit-contact/:id" element={<EditContact />} />
+                       <Route path="/donadores" element={<Donadores />} />
                     </>
                   )}
 
                   {(auth === 'colaborador') && (
                     <>
                       <Route path="/ColabDashboard" element={ <ColabDashboard />} />
+                      <Route path="/donors" element={<Donadores />} />
                       <Route path="/contacts" element={<Contacts />} />
-                      <Route path="/stats" element={<Stats />} />
-                      <Route path="/companies" element={<Companies />} />
                       <Route path="/create-contact" element={<CreateContact />} />
                       <Route path="/edit-contact/:id" element={<EditContact />} />
                       <Route path="/donadores" element={<Donadores/>}/>
+                    </>
+                  )}
+
+                  {(auth === 'admin') && (
+                    <>
+                      <Route path="/register-colab" element={<Registercolab />} />
                     </>
                   )}
 

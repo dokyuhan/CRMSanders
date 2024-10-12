@@ -63,7 +63,7 @@ const Sidebar: React.FC = () => {
 
         <div className="flex-1 overflow-y-auto">
           <span className="text-gray-300 mt-4 mb-2 ml-4 block">Donaciones</span>
-          { (auth === 'admin') && (
+          { (auth === 'admin' || auth === 'colaborador') && (
             <>
               <Item
                 title="Dashboard"
@@ -88,16 +88,16 @@ const Sidebar: React.FC = () => {
               />
               <span className="text-gray-300 mt-4 mb-2 ml-4 block">Contactos</span>
               <Item
-                title="Compañias"
-                to="/companies"
-                icon={<ApartmentIcon />}
+                title="Contactos"
+                to="/contacts"
+                icon={<ContactsOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
               <Item
-                title="Registrar Colaborador"
-                to="/register-colab"
-                icon={<PeopleOutlinedIcon />}
+                title="Compañias"
+                to="/companies"
+                icon={<ApartmentIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
@@ -111,9 +111,11 @@ const Sidebar: React.FC = () => {
             </>
           )}
 
-          { (auth === 'colaborador') && (
+          { (auth === 'admin') && (
             <>
+              <span className="text-gray-300 mt-4 mb-2 ml-4 block">Registros de colaboradores</span>
               <Item
+
                 title="Dashboard"
                 to="/ColabDashboard"
                 icon={<HomeOutlinedIcon />}
@@ -132,6 +134,10 @@ const Sidebar: React.FC = () => {
                 title="Compañias"
                 to="/companies"
                 icon={<ApartmentIcon />}
+                title="Registrar Colaborador"
+                to="/register-colab"
+                icon={<PeopleOutlinedIcon />}
+
                 selected={selected}
                 setSelected={setSelected}
               />
