@@ -14,10 +14,7 @@ import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
 import EditContact from './Contactos/EditContacts';
 import Donadores from './Donaciones/Donations';
-import Registrocola from './Registro colab';
-import ContactsIcon from '@mui/icons-material/Contacts';
-import BusinessIcon from '@mui/icons-material/Business';
-import InsightsIcon from '@mui/icons-material/Insights';
+import Registrocola from './UserRegister';
 import DonatePage from './Donate';
 import Topbar from './global/Topbar';
 import Sidebar from './global/Sidebar';
@@ -25,7 +22,8 @@ import AuthRequired from './Login/Load'
 import Cookies from 'js-cookie';
 import PaymentForm from './PaymentForm';
 import AdminDashboard from './AdminDashboard';
-import Registercolab from './UserRegister';
+import ColabDashboard from './ColabDashboard';
+//import Registerocolab from './UserRegister';
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const LOGOUT = 'LOGOUT';
