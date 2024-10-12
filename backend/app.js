@@ -103,6 +103,11 @@ app.get("/stats", authenticateJWT(['admin']), async (req, res) => {
             ORDER BY fecha
         `);
 
+        const [donationsCountByMethod] = await pool.query(`
+            SELECT metodo_pago, COUNT(*) as total
+            FROM donaciones
+            GROUP BY metodo_pago
+        `);
         let cumulativeSum = 0;
         const cumulativeData = cumulativeDonations.map(row => {
             cumulativeSum += parseFloat(row.daily_total);
@@ -111,20 +116,21 @@ app.get("/stats", authenticateJWT(['admin']), async (req, res) => {
 
         // Aquí se cuenta el total de donaciones o el total de resultados que desees
         const totalResults = donationsByMethod.length + donationsPerDay.length + cumulativeData.length;
-
         // Establecer el encabezado X-Total-Count
         res.setHeader('X-Total-Count', totalResults);
-        
+
         res.json({
             donationsByMethod,
             donationsPerDay,
-            cumulativeData
+            cumulativeData,
+            donationsCountByMethod // Lista de métodos de pago con el número total de donaciones
         });
     } catch (err) {
         console.error("Error en /donaciones-estadisticas:", err.message);
         res.status(500).send('Error del servidor');
     }
 });
+
 
 // -----------------------Ruta utilizada-----------------------
 //Esta ruta se utiliza para mostrar los contatos
