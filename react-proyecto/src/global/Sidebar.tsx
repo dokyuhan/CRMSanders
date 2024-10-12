@@ -101,13 +101,6 @@ const Sidebar: React.FC = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
-              <Item
-                title="Contactos"
-                to="/contacts"
-                icon={<ContactsOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
             </>
           )}
 
@@ -115,29 +108,9 @@ const Sidebar: React.FC = () => {
             <>
               <span className="text-gray-300 mt-4 mb-2 ml-4 block">Registros de colaboradores</span>
               <Item
-
-                title="Dashboard"
-                to="/ColabDashboard"
-                icon={<HomeOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <Item
-                title="Contactos"
-                to="/contacts"
-                icon={<ContactsOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <span className="text-gray-300 mt-4 mb-2 ml-4 block">Compañias</span>
-              <Item
-                title="Compañias"
-                to="/companies"
-                icon={<ApartmentIcon />}
                 title="Registrar Colaborador"
                 to="/register-colab"
                 icon={<PeopleOutlinedIcon />}
-
                 selected={selected}
                 setSelected={setSelected}
               />
