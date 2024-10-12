@@ -119,9 +119,7 @@ const Sidebar: React.FC = () => {
                 title="Compañias"
                 to="/companies"
                 icon={<ApartmentIcon />}
-                title="Registrar Colaborador"
-                to="/register-colab"
-                icon={<PeopleOutlinedIcon />}
+            
 
                 selected={selected}
                 setSelected={setSelected}
