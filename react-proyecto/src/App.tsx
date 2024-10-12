@@ -9,7 +9,7 @@ import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
 import Companies from './Companies';
-import { Stats } from './Stats';
+import { Stats } from './stats/Stats';
 import Contacts from './Contactos/Contacts';
 import CreateContact from './Contactos/CreateContact';
 import EditContact from './Contactos/EditContacts';
@@ -20,8 +20,10 @@ import Sidebar from './global/Sidebar';
 import AuthRequired from './Login/Load'
 import Cookies from 'js-cookie';
 import PaymentForm from './PaymentForm';
-import AdminDashboard from './AdminDashboard';
+import AdminDashboard from './AdminDashboard'
+import ColabDashboard from './ColabDashboard'
 import Registercolab from './UserRegister';
+
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
 const LOGOUT = 'LOGOUT';
@@ -50,6 +52,16 @@ const Home: React.FC = () => {
                       <Route path="/AdminDashboard" element={ <AdminDashboard />} />
                       <Route path="/stats" element={<Stats />} />
                       <Route path="/companies" element={<Companies />} />
+                      <Route path="/contacts" element={<Contacts />} />
+                      <Route path="/create-contact" element={<CreateContact />} />
+                      <Route path="/edit-contact/:id" element={<EditContact />} />
+                       <Route path="/donadores" element={<Donadores />} />
+                    </>
+                  )}
+
+                  {(auth === 'colaborador') && (
+                    <>
+                      <Route path="/ColabDashboard" element={ <ColabDashboard />} />
                       <Route path="/donors" element={<Donadores />} />
                       <Route path="/contacts" element={<Contacts />} />
                       <Route path="/create-contact" element={<CreateContact />} />
