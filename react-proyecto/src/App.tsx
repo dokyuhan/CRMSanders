@@ -1,11 +1,6 @@
 import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
 import { useEffect, useReducer, useState, ReactNode, Fragment} from 'react';
-import { Admin, Resource } from 'react-admin';
-import { dataProvider } from './dataProvider';
 import { authProvider } from './Login/Authenticator';
-import { i18nProvider } from './Polyglot';
-import { MyLayout } from './design/dashboardLayout';
-import { Dashboard } from './dashboard';
 import LoginPage from './Login/Login';
 import RegisterPage from './Register';
 import Companies from './Companies';
