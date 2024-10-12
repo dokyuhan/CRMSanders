@@ -5,7 +5,6 @@ const Registercolab: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('');
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const notify = useNotify();
   const handleSubmit = async (event: React.FormEvent) => {
@@ -16,7 +15,7 @@ const Registercolab: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password, email, role }),
+        body: JSON.stringify({ username, password, email }),
       });
       const data = await response.json();
       if (response.ok) {
@@ -66,17 +65,6 @@ const Registercolab: React.FC = () => {
               type="email"
               required
             />
-            <select
-              className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
-              value={role}
-              onChange={e => setRole(e.target.value)}
-              required
-            >
-              <option value="">Seleccione un rol</option>
-              <option value="admin">Administrador</option>
-              <option value="colaborador">Colaborador</option>
-              <option value="usuario">Usuario</option>
-            </select>
             <button
               type="submit"
               className="w-full py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-transform transform hover:translate-y-0.5 duration-300"
