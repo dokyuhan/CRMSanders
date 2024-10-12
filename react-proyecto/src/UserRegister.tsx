@@ -86,23 +86,7 @@ const Registercolab: React.FC = () => {
           </div>
         </form>
       </div>
-      <div className='bg-gray-500 flex-1 text-white rounded-lg'>
-        <h1 className='text-xl font-bold p-6 bg-gray-700 rounded-t-lg'>¡Registra un nuevo colaborador!</h1>
-        <div className='p-8'>
-          <p className='mt-4'>
-            Aquí puedes registrar nuevos colaboradores que te ayudarán a gestionar la plataforma.
-            Asegúrate de completar todos los campos correctamente.
-          </p>
-          <div className='p-6'>
-            <p className='mt-4'>Una vez registrado:</p>
-            <ul className='list-disc list-inside'>
-              <li>El colaborador podrá iniciar sesión</li>
-              <li>Podrá gestionar contactos y empresas</li>
-              <li>Recibirá un correo de confirmación</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 };
