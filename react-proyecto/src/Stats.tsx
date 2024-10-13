@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, AreaChart, Area } from 'recharts';
 import { dataProvider } from './dataProvider';
+
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919'];
+
 export const Stats = () => {
     const [data, setData] = useState({
         donationsByMethod: [],
@@ -10,6 +12,7 @@ export const Stats = () => {
         donationsCountByMethod: [],
     });
     const [error, setError] = useState<string | null>(null);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -18,28 +21,43 @@ export const Stats = () => {
                     sort: { field: 'id', order: 'DESC' },
                     filter: {}
                 });
+
                 const donationsByMethod = responseData.donationsByMethod.map(item => ({
                     ...item,
                     total: parseFloat(item.total)
                 }));
+
                 const donationsCountByMethod = responseData.donationsCountByMethod.map(item => ({
                     ...item,
                     total: parseFloat(item.total)
                 }));
+
+                const donationsPerDay = responseData.donationsPerDay.map(item => ({
+                    ...item,
+                    fecha: new Date(item.fecha).toLocaleDateString('en-CA')
+                }));
+
+                const cumulativeData = responseData.cumulativeData.map(item => ({
+                    ...item,
+                    fecha: new Date(item.fecha).toLocaleDateString('en-CA') 
+                }));
+
                 setData(prevData => ({
                     ...prevData,
                     donationsByMethod,
                     donationsCountByMethod,
-                    donationsPerDay: responseData.donationsPerDay,
-                    cumulativeData: responseData.cumulativeData
+                    donationsPerDay,
+                    cumulativeData
                 }));
             } catch (err) {
                 console.error('Error fetching statistics:', err);
                 setError('Error al obtener las estadísticas');
             }
         };
+
         fetchData();
     }, []);
+
     return (
         <div className="bg-gray-800 shadow-lg rounded-lg p-6">
             <h2 className="text-3xl font-semibold mb-4 text-white">Estadísticas</h2>
@@ -84,7 +102,7 @@ export const Stats = () => {
                                     nameKey="metodo_pago"
                                     cx="50%"
                                     cy="50%"
-                                    outerRadius={110} // Aumentado el radio exterior
+                                    outerRadius={110} 
                                     fill="#8884d8"
                                     label
                                 >
@@ -101,27 +119,26 @@ export const Stats = () => {
                     </ResponsiveContainer>
                 </div>
             </div>
-            
-            
+
             <div className="my-40"></div>
-                    {/* Gráfico de línea para el número de donaciones por día */}                
-                    
-                    <h3 className="text-lg text-center font-semibold mt-12 text-white">Número de donaciones por día</h3> {/* Cambié mt-6 por mt-12 para mayor espacio */}
-                <div className="h-72 mb-6">
-                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={data.donationsPerDay}>
+            {/* Gráfico de línea para el número de donaciones por día */}
+            <h3 className="text-lg text-center font-semibold mt-12 text-white">Número de donaciones por día</h3>
+            <div className="h-72 mb-6">
+                <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={data.donationsPerDay}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#444" />
                         <XAxis dataKey="fecha" stroke="#fff" />
                         <YAxis stroke="#fff" />
                         <Tooltip contentStyle={{ backgroundColor: '#333', color: '#fff' }} />
                         <Legend wrapperStyle={{ color: '#fff' }} />
                         <Line type="monotone" dataKey="count" stroke="#82ca9d" />
-                        </LineChart>
-                        </ResponsiveContainer>
-                    </div>
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
+
             {/* Gráfico de área para las donaciones acumuladas a lo largo del tiempo */}
             <h3 className="text-lg text-center font-semibold mb-3 text-white">Donaciones acumuladas a lo largo del tiempo</h3>
-            <div className="h-72 mb-6"> {/* Agregado margen inferior para evitar superposición */}
+            <div className="h-72 mb-6">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data.cumulativeData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#444" />
