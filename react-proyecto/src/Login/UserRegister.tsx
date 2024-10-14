@@ -28,59 +28,58 @@ const Registercolab: React.FC = () => {
   };
 
   return (
-    <div className='flex flex-col md:flex-row gap-8 m-4'>
-      <div className='flex-1'>
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-md w-full max-w-lg flex flex-col">
+        <h1 className="text-2xl font-bold text-center text-gray-700 mb-6">Registro de Usuarios</h1>
         <form 
           onSubmit={handleSubmit} 
-          className="bg-white bg-opacity-80 p-8 rounded-lg shadow-md w-full max-w-lg flex flex-col"
+          className="flex flex-col w-full"
         >
           {registrationSuccess && (
             <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-md text-center">
               ¡Registro exitoso!
             </div>
           )}
-          <div className="flex flex-col w-full">
-            <input
-              className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              placeholder="Usuario"
-              type="text"
-              required
-            />
-            <input
-              className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="Contraseña"
-              type="password"
-              required
-            />
-            <input
-              className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="Correo electrónico"
-              type="email"
-              required
-            />
-            <select
-              className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
-              value={role}
-              onChange={e => setRole(e.target.value)}
-              required
-            >
-              <option value="">Seleccione un rol</option>
-              <option value="admin">Administrador</option>
-              <option value="colaborador">Colaborador</option>
-            </select>
-            <button
-              type="submit"
-              className="w-full py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-transform transform hover:translate-y-0.5 duration-300"
-            >
-              Registrar Colaborador
-            </button>
-          </div>
+          <input
+            className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            placeholder="Usuario"
+            type="text"
+            required
+          />
+          <input
+            className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Contraseña"
+            type="password"
+            required
+          />
+          <input
+            className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="Correo electrónico"
+            type="email"
+            required
+          />
+          <select
+            className="w-full p-4 mb-4 border-b-2 border-gray-400 text-gray-700 bg-white bg-opacity-80 shadow-md focus:border-blue-600 focus:outline-none transition-colors duration-300"
+            value={role}
+            onChange={e => setRole(e.target.value)}
+            required
+          >
+            <option value="">Seleccione un rol</option>
+            <option value="admin">Administrador</option>
+            <option value="colaborador">Colaborador</option>
+          </select>
+          <button
+            type="submit"
+            className="w-full py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-transform transform hover:translate-y-0.5 duration-300"
+          >
+            Registrar Colaborador
+          </button>
         </form>
       </div>
     </div>

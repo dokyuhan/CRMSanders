@@ -47,7 +47,7 @@ export default function ColabDashboard() {
     }, []);
 
     return (
-        <div className="bg-gray-800 text-white p-5">
+        <div className="bg-gray-800 text-white p-5 rounded-lg p-6">
             <div className="flex justify-between items-center mb-5">
                 <h1 className="text-3xl">Panel de Control</h1>
                 <div className="text-sm">

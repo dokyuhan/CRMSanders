@@ -70,7 +70,7 @@ const Contacts: React.FC = () => {
     if (error) return <Container sx={{ textAlign: 'center', mt: 4 }}><Alert severity="error">{error}</Alert></Container>;
 
     return (
-        <Container sx={{ mt: 4 }}>
+        <Container sx={{ mt: 4 }} className="bg-gray-800 text-white p-4 rounded-lg p-6">
             <Typography variant="h4" component="h1" color="white" align="center" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
                 Lista de Contactos
             </Typography>

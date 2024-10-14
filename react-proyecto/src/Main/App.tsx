@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
 import { useEffect, useReducer, useState, ReactNode, Fragment} from 'react';
 import { authProvider } from '../Login/Authenticator';
+import { Dashboard } from '../dashboard';
 import LoginPage from '../Login/Login';
 import RegisterPage from '../Login/Register';
 import Companies from './Companies';
@@ -40,6 +41,11 @@ const Home: React.FC = () => {
               <Topbar setIsSidebar={setIsSidebar} />
               <main className="flex-1 overflow-y-auto p-4 bg-gray-600">
                 <Routes>
+                  <Route index element={
+                    auth === 'admin' ? <Navigate to="/AdminDashboard" replace /> :
+                    auth === 'colaborador' ? <Navigate to="/ColabDashboard" replace /> :
+                    <Dashboard />
+                  } />
                   <Route path="/donations" element={<Contacts/>} />
                   <Route path="/checkout" element={<PaymentForm />} />
                   {(auth === 'admin') && (
@@ -69,6 +75,7 @@ const Home: React.FC = () => {
 
                   {(auth === 'donador') && (
                     <>
+                    <Route path="/" element={<Dashboard />} />
                     <Route path="/donate" element={<DonatePage />} />
                     </>
                   )}

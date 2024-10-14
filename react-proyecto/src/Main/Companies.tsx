@@ -3,7 +3,14 @@ import { dataProvider } from '../dataProvider';
 import { Card, CardContent, CardHeader, ListItemText } from '@mui/material';
 
 export default function Companies() {
-    const [companies, setCompanies] = useState([]);
+    interface Company {
+        id: number;
+        company: string;
+        email: string;
+        number: string;
+    }
+
+    const [companies, setCompanies] = useState<Company[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -34,27 +41,22 @@ export default function Companies() {
     if (error) return <div className="text-red-500">{error}</div>;
 
     return (
-        <div className="relative">
-            {/* Título de Compañías en color banco y más grande */}
-            <h1 className="text-4xl font-bold text-white mb-4">Compañías</h1>
-
-            {/* Si totalCount es mayor que 0, muestra el número en la esquina superior derecha */}
+        <div className="relative bg-gray-800 min-h-screen p-6 rounded-lg p-6">
+            <h1 className="text-4xl font-bold text-white mb-8">Compañías</h1>
             {totalCount > 0 && (
                 <div className="absolute top-0 right-0 text-white text-lg mt-4 mr-4">
                     Total de compañías: {totalCount}
                 </div>
             )}
 
-            <div className="flex flex-wrap gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {companies.map(company => (
-                    <div key={company.id} className="flex-1 max-w-xs">
-                        <Card className="shadow-lg">
-                            <CardHeader title={company.company} className="bg-gray-100" />
-                            <CardContent>
-                                <ListItemText primary={`Email: ${company.email}`} secondary={`Número: ${company.number}`} />
-                            </CardContent>
-                        </Card>
-                    </div>
+                    <Card key={company.id} className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                        <CardHeader title={company.company} className="bg-gray-100 text-gray-800" />
+                        <CardContent>
+                            <ListItemText primary={`Email: ${company.email}`} secondary={`Número: ${company.number}`} />
+                        </CardContent>
+                    </Card>
                 ))}
             </div>
         </div>

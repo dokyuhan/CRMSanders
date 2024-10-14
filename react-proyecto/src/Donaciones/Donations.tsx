@@ -7,6 +7,7 @@ import EventIcon from '@mui/icons-material/Event';
 import PaymentIcon from '@mui/icons-material/Payment';
 import { dataProvider } from '../dataProvider'; 
 
+
 interface Donacion {
     id: number;
     usuario_id: number;
@@ -53,7 +54,7 @@ const Donadores: React.FC = () => {
     }
 
     return (
-        <Container sx={{ mt: 4 }}>
+        <Container sx={{ mt: 4 }} className="bg-gray-800 text-white p-4 rounded-lg p-6">
             <Typography variant="h4" component="h1" align="center" color="white" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
                 Lista de Donadores
             </Typography>

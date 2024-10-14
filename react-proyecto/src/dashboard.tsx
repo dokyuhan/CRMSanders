@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, Button } from "@mui/material";
 
 export const Dashboard = () => (
-    <div className="flex items-center justify-center h-full p-4">
-        <Card className="w-full h-full bg-gray-800 text-gray-100 shadow-lg flex flex-col">
+    <div className="flex items-center justify-center h-full p-4 rounded-lg p-6">
+        <Card className="w-full h-full bg-gray-800 text-gray-100 shadow-lg flex flex-col rounded-lg p-6">
             <CardHeader title="Bienvenido a la Página de donaciones NO OFICIAL de Fundación Sanders" className="bg-gray-700 text-white" />
             <CardContent className="flex-1">
                 <h2 className="text-xl font-semibold mb-4">¡Hola, Usuario!</h2>
