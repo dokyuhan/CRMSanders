@@ -20,14 +20,14 @@ export const Donadores: React.FC = () => {
 
     const handleSearch = async () => {
         if (!search.trim()) {
-            alert('Por favor ingrese un ID de usuario válido.');
+            alert('Por favor ingrese un nombre de usuario válido.');
             return;
         }
         setLoading(true);
         setError(null);
         try {
             const response = await dataProvider.getList('donacionesdonadores', {
-                filter: { usuario_id: search },
+                filter: { usuario_nombre: search }, // Cambiado a buscar por nombre
             });
             setDatos({
                 usuarioData: response.data.usuarioData,
@@ -43,6 +43,7 @@ export const Donadores: React.FC = () => {
         }
         setLoading(false);
     };
+    
 
     if (loading) return <CircularProgress />;
     if (error) return <Alert severity="error">{error}</Alert>;
@@ -52,7 +53,7 @@ export const Donadores: React.FC = () => {
             <Typography variant="h4" sx={{ color: 'white' }}>Estadísticas del Donador</Typography>
             <TextField
                 fullWidth
-                label="Buscar Usuario por ID"
+                label="Buscar Usuario por Nombre"
                 value={search}
                 onChange={handleSearchChange}
                 margin="normal"
