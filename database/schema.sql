@@ -50,6 +50,24 @@ FROM
 JOIN
     usuarios u ON d.usuario_id = u.id;
 
+DELIMITER //
+
+CREATE PROCEDURE UpdateCompany(
+    IN companyId INT,
+    IN companyName VARCHAR(255),
+    IN companyEmail VARCHAR(255),
+    IN companyNumber VARCHAR(20)
+)
+BEGIN
+    UPDATE companies
+    SET company = companyName,
+        email = companyEmail,
+        number = companyNumber
+    WHERE id = companyId;
+END //
+
+DELIMITER ;
+
 
 DELIMITER $$
 CREATE PROCEDURE registrar_usuario(

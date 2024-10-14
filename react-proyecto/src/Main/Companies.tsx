@@ -45,7 +45,7 @@ export default function Companies() {
 
     const handleCreateCompany = async () => {
         try {
-            const response = await dataProvider.create('companies', {
+            const response = await dataProvider.create('createCompany', {
                 data: newCompany,
             });
 
@@ -159,9 +159,6 @@ export default function Companies() {
                         <CardContent>
                             <ListItemText primary={`Email: ${company.email}`} secondary={`Número: ${company.number}`} />
                         </CardContent>
-                        <Button onClick={() => handleEditCompany(company)}>
-                            <EditIcon /> Editar
-                        </Button>
                         <Button onClick={() => handleDeleteCompany(company.id)}>
                             <DeleteIcon /> Borrar
                         </Button>
