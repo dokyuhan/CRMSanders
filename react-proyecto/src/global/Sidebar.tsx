@@ -39,6 +39,7 @@ const Sidebar: React.FC = () => {
   };
 
   const userData = Cookies.get('user_role');
+  const userName = Cookies.get('user_name');
   const auth = userData ? JSON.parse(userData).role : null;
 
   return (
@@ -55,8 +56,8 @@ const Sidebar: React.FC = () => {
             src={images[imageIndex]}
             onClick={handleImageClick}
           />
-          <h2 className="text-gray-100 font-bold text-lg mt-2">USUARIO</h2>
-          <h5 className="text-green-500">
+          <h2 className="text-gray-100 font-bold text-lg mt-2">{userName}</h2> 
+            <h5 className="text-green-500">
             {auth === 'admin' && 'Administrador'}
             {auth === 'colaborador' && 'Colaborador'}
             {auth === 'donador' && 'Donador'}

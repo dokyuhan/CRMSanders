@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNotify } from 'react-admin';
-import { Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie'; 
 import { authProvider } from './Authenticator';
 
 const LoginPage: React.FC = () => {
@@ -14,17 +15,18 @@ const LoginPage: React.FC = () => {
     event.preventDefault();
     setErrorMessage('');
     try {
-        await authProvider.login({ username, password });
-        console.log('Login successful');
-        
-        
-        setTimeout(() => {
-          navigate('/', { replace: true });
-        }, 500);
-      } catch (error) {
-        console.log("Error", error);
-        setErrorMessage('Usuario o contraseña incorrecta'); 
-      }
+      await authProvider.login({ username, password });
+      console.log('Login successful');
+      
+      Cookies.set('user_name', username, { expires: 1 });
+
+      setTimeout(() => {
+        navigate('/', { replace: true });
+      }, 500);
+    } catch (error) {
+      console.log('Error', error);
+      setErrorMessage('Usuario o contraseña incorrecta');
+    }
   };
 
   return (
@@ -44,7 +46,7 @@ const LoginPage: React.FC = () => {
         </div>
         <div className="flex-1 flex flex-col mx-4 justify-center">
           <form onSubmit={handleSubmit} className="flex flex-col">
-            {errorMessage && ( 
+            {errorMessage && (
               <div className="mb-4 text-red-500 text-center">{errorMessage}</div>
             )}
             <input
@@ -81,6 +83,5 @@ const LoginPage: React.FC = () => {
     </div>
   );
 };
-
 
 export default LoginPage;
