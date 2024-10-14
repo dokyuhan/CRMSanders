@@ -293,24 +293,33 @@ app.post("/donate", authenticateJWT(['admin', 'colaborador', 'donador']), async 
 app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => {
     const usuarioId = req.query.usuario_id; // Se captura el ID del usuario desde los parámetros de consulta
 
-    let query = 'SELECT * FROM DonacionesUsuarios WHERE usuario_id = ?';
+    let query = 'SELECT * FROM DonacionesUsuariosSeparados WHERE usuario_id = ?';
     let queryPorFecha = 'SELECT * FROM DonacionesPorFecha WHERE usuario_id = ?';
     let params = [usuarioId];
 
     try {
         const [usuarioRows] = await pool.query(query, params);
         const [fechaRows] = await pool.query(queryPorFecha, params);
-        const totalCount = usuarioRows.length;
 
-        res.setHeader('X-Total-Count', totalCount);
+        if (!usuarioRows.length) {
+            res.status(404).send("Usuario no encontrado.");
+            return;
+        }
+
+        // Configuración del encabezado X-Total-Count
+        res.setHeader('X-Total-Count', usuarioRows.length);
         res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
 
-        res.json({ usuarioData: usuarioRows[0], fechaData: fechaRows, total: totalCount });
+        res.json({
+            usuarioData: usuarioRows[0],
+            fechaData: fechaRows
+        });
     } catch (err) {
         console.error("Error in /donacionesDetalladas GET route:", err);
         res.status(500).send('Error del servidor');
     }
 });
+
 
 //-----------------------Ruta utilizada-----------------------
 //Esta ruta sirve para crear un nuevo conacto

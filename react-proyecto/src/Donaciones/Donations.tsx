@@ -36,6 +36,7 @@ export const Donadores: React.FC = () => {
                     total: parseFloat(d.total_donado_por_fecha)
                 }))
             });
+            console.log(response.data.usuarioData);
         } catch (err) {
             console.error('Error fetching donaciones:', err);
             setError('Error al cargar las donaciones');
@@ -47,14 +48,20 @@ export const Donadores: React.FC = () => {
     if (error) return <Alert severity="error">{error}</Alert>;
 
     return (
-        <Container>
-            <Typography variant="h4">Estadísticas del Donador</Typography>
+        <Container className="bg-gray-800 text-white p-4 rounded-lg p-6">
+            <Typography variant="h4" sx={{ color: 'white' }}>Estadísticas del Donador</Typography>
             <TextField
                 fullWidth
                 label="Buscar Usuario por ID"
                 value={search}
                 onChange={handleSearchChange}
                 margin="normal"
+                InputLabelProps={{
+                    style: { color: 'white' }
+                }}
+                inputProps={{
+                    style: { color: 'white' }
+                }}
             />
             <Button onClick={handleSearch} color="primary" variant="contained" style={{ margin: '10px 0' }}>
                 Buscar
