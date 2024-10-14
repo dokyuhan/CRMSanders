@@ -3,7 +3,14 @@ import { dataProvider } from '../dataProvider';
 import { Card, CardContent, CardHeader, List, ListItem, ListItemText, Typography } from '@mui/material';
 
 export default function Companies() {
-    const [companies, setCompanies] = useState([]);
+    interface Company {
+        id: number;
+        company: string;
+        email: string;
+        number: string;
+    }
+
+    const [companies, setCompanies] = useState<Company[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
