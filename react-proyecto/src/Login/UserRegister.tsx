@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNotify } from 'react-admin';
 import { Link } from 'react-router-dom';
-import { dataProvider } from './dataProvider';
+import { dataProvider } from '../dataProvider';
 
 const Registercolab: React.FC = () => {
   const [username, setUsername] = useState('');

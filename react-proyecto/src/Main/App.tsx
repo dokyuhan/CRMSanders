@@ -1,23 +1,23 @@
 import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
 import { useEffect, useReducer, useState, ReactNode, Fragment} from 'react';
-import { authProvider } from './Login/Authenticator';
-import LoginPage from './Login/Login';
-import RegisterPage from './Register';
+import { authProvider } from '../Login/Authenticator';
+import LoginPage from '../Login/Login';
+import RegisterPage from '../Login/Register';
 import Companies from './Companies';
-import { Stats } from './Stats';
-import Contacts from './Contactos/Contacts';
-import CreateContact from './Contactos/CreateContact';
-import EditContact from './Contactos/EditContacts';
-import Donadores from './Donaciones/Donations';
-import Registrocola from './UserRegister';
-import DonatePage from './Donate';
-import Topbar from './global/Topbar';
-import Sidebar from './global/Sidebar';
-import AuthRequired from './Login/Load'
+import { Stats } from '../admin/Stats';
+import Contacts from '../Contactos/Contacts';
+import CreateContact from '../Contactos/CreateContact';
+import EditContact from '../Contactos/EditContacts';
+import Donadores from '../Donaciones/Donations';
+import Registrocola from '../Login/UserRegister';
+import DonatePage from '../Donate';
+import Topbar from '../global/Topbar';
+import Sidebar from '../global/Sidebar';
+import AuthRequired from '../Login/Load'
 import Cookies from 'js-cookie';
 import PaymentForm from './PaymentForm';
-import AdminDashboard from './AdminDashboard';
-import ColabDashboard from './ColabDashboard';
+import AdminDashboard from '../admin/AdminDashboard';
+import ColabDashboard from '../Colaboradores/ColabDashboard';
 //import Registerocolab from './UserRegister';
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';

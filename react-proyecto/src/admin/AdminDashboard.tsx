@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { dataProvider } from './dataProvider';
+import { dataProvider } from '../dataProvider';
 import { Typography } from '@mui/material'; // Import Typography from Material-UI
 
 export default function AdminDashboard() {

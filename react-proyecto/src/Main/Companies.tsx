@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { dataProvider } from './dataProvider';
+import { dataProvider } from '../dataProvider';
 import { Card, CardContent, CardHeader, List, ListItem, ListItemText, Typography } from '@mui/material';
 
 export default function Companies() {
