@@ -1,101 +1,82 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Typography, Grid, Card, CardContent, Box, Button, CircularProgress, Alert } from '@mui/material';
-import { Link } from 'react-router-dom';
-import EmailIcon from '@mui/icons-material/Email';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import EventIcon from '@mui/icons-material/Event';
-import PaymentIcon from '@mui/icons-material/Payment';
-import { dataProvider } from '../dataProvider'; 
+import React, { useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Container, Typography, TextField, Button, CircularProgress, Alert } from '@mui/material';
+import { dataProvider } from '../dataProvider';
 
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
-interface Donacion {
-    id: number;
-    usuario_id: number;
-    usuario_nombre: string;
-    usuario_correo:string;
-    donacion_monto:string;
-    donacion_fecha:string;
-    donacion_metodo_pago:string;
-}
-
-const Donadores: React.FC = () => {
-    const [donaciones, setDonaciones] = useState<Donacion[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+export const Donadores: React.FC = () => {
+    const [datos, setDatos] = useState({
+        usuarioData: null,
+        fechaData: []
+    });
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [search, setSearch] = useState('');
 
-    useEffect(() => {
-        const fetchDonaciones = async () => {
-            setLoading(true);
-            try {
-                const response = await dataProvider.getList<Donacion>('donacionesdonadores', {
-                    pagination: { page: 1, perPage: 10 },
-                    sort: { field: 'id', order: 'ASC' },
-                    filter: {},
-                });
-                const fetchedDonaciones = Array.isArray(response.data.rows) ? response.data.rows : [];
-                setDonaciones(fetchedDonaciones);
-            } catch (err) {
-                console.error('Error fetching donaciones:', err);
-                setError('Error al cargar las donaciones');
-            } finally {
-                setLoading(false);
-            }
-        };
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(event.target.value);
+    };
 
-        fetchDonaciones();
-    }, []);
+    const handleSearch = async () => {
+        if (!search.trim()) {
+            alert('Por favor ingrese un ID de usuario válido.');
+            return;
+        }
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await dataProvider.getList('donacionesdonadores', {
+                filter: { usuario_id: search },
+            });
+            setDatos({
+                usuarioData: response.data.usuarioData,
+                fechaData: response.data.fechaData.map(d => ({
+                    fecha: d.fecha,
+                    total: parseFloat(d.total_donado_por_fecha)
+                }))
+            });
+        } catch (err) {
+            console.error('Error fetching donaciones:', err);
+            setError('Error al cargar las donaciones');
+        }
+        setLoading(false);
+    };
 
-    if (loading) {
-        return <Container sx={{ textAlign: 'center', mt: 4 }}><CircularProgress /></Container>;
-    }
-
-    if (error) {
-        return <Container sx={{ textAlign: 'center', mt: 4 }}><Alert severity="error">{error}</Alert></Container>;
-    }
+    if (loading) return <CircularProgress />;
+    if (error) return <Alert severity="error">{error}</Alert>;
 
     return (
-        <Container sx={{ mt: 4 }} className="bg-gray-800 text-white p-4 rounded-lg p-6">
-            <Typography variant="h4" component="h1" align="center" color="white" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
-                Lista de Donadores
-            </Typography>
-            <Grid container spacing={3}>
-                {donaciones.map((donacion) => (
-                    <Grid item xs={12} sm={6} md={4} key={donacion.id}>
-                        <Card 
-                            variant="outlined" 
-                            sx={{ 
-                                boxShadow: 3, 
-                                transition: 'transform 0.3s', 
-                                '&:hover': { transform: 'scale(1.05)' } 
-                            }}
-                        >
-                            <CardContent>
-                                <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', mb: 2 }}>
-                                    Donador: {donacion.usuario_nombre}
-                                </Typography>
-                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                    <AttachMoneyIcon color="primary" sx={{ mr: 1 }} />
-                                    <Typography variant="body2" color="textSecondary">
-                                        Monto: ${donacion.donacion_monto}
-                                    </Typography>
-                                </Box>
-                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                    <PaymentIcon color="primary" sx={{ mr: 1 }} />
-                                    <Typography variant="body2" color="textSecondary">
-                                        Método de pago: {donacion.donacion_metodo_pago}
-                                    </Typography>
-                                </Box>
-                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <EventIcon color="primary" sx={{ mr: 1 }} />
-                                    <Typography variant="body2" color="textSecondary">
-                                        Fecha de donación: {new Date(donacion.donacion_fecha).toLocaleString()}
-                                    </Typography>
-                                </Box>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
+        <Container>
+            <Typography variant="h4">Estadísticas del Donador</Typography>
+            <TextField
+                fullWidth
+                label="Buscar Usuario por ID"
+                value={search}
+                onChange={handleSearchChange}
+                margin="normal"
+            />
+            <Button onClick={handleSearch} color="primary" variant="contained" style={{ margin: '10px 0' }}>
+                Buscar
+            </Button>
+            {datos.usuarioData && (
+                <>
+                    <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={datos.fechaData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="fecha" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="total" fill="#8884d8" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                    <div>
+                        <p>Total Donado: ${datos.usuarioData.suma_donaciones}</p>
+                        <p>Donación Máxima: ${datos.usuarioData.donacion_maxima}</p>
+                    </div>
+                </>
+            )}
         </Container>
     );
 };

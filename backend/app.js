@@ -291,18 +291,21 @@ app.post("/donate", authenticateJWT(['admin', 'colaborador', 'donador']), async 
 // Esta ruta se utiliza para mostrar las donaciones hechas por los donadores
 
 app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => {
-    console.log("--------------GET /donacionesdonadores")
-    try {
-        const [rows] = await pool.query('SELECT * FROM DonacionesUsuarios');
-        console.log(rows);
+    const usuarioId = req.query.usuario_id; // Se captura el ID del usuario desde los parámetros de consulta
 
-        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM DonacionesUsuarios');
-        const totalCount = countResult[0].count;
+    let query = 'SELECT * FROM DonacionesUsuarios WHERE usuario_id = ?';
+    let queryPorFecha = 'SELECT * FROM DonacionesPorFecha WHERE usuario_id = ?';
+    let params = [usuarioId];
+
+    try {
+        const [usuarioRows] = await pool.query(query, params);
+        const [fechaRows] = await pool.query(queryPorFecha, params);
+        const totalCount = usuarioRows.length;
 
         res.setHeader('X-Total-Count', totalCount);
         res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
 
-        res.json({ rows, total: totalCount });
+        res.json({ usuarioData: usuarioRows[0], fechaData: fechaRows, total: totalCount });
     } catch (err) {
         console.error("Error in /donacionesDetalladas GET route:", err);
         res.status(500).send('Error del servidor');
