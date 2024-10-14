@@ -15,12 +15,9 @@ export default function Companies() {
     const [companies, setCompanies] = useState<Company[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState(null);
     
-    // State for new company form
     const [newCompany, setNewCompany] = useState({ company: '', email: '', number: '' });
-    
-    // State for editing company
     const [editCompany, setEditCompany] = useState<Company | null>(null);
     const [openEditDialog, setOpenEditDialog] = useState(false);
 
@@ -48,8 +45,11 @@ export default function Companies() {
 
     const handleCreateCompany = async () => {
         try {
-            const { data } = await dataProvider.create('createCompany', { data: newCompany });
-            setCompanies(prev => [...prev, data]);
+            const response = await dataProvider.create('companies', {
+                data: newCompany,
+            });
+
+            setCompanies(prev => [...prev, response.data]);
             setTotalCount(prev => prev + 1);
             setNewCompany({ company: '', email: '', number: '' });
         } catch (err) {
@@ -66,8 +66,15 @@ export default function Companies() {
     const handleUpdateCompany = async () => {
         if (editCompany) {
             try {
-                const { data } = await dataProvider.update('companies', { id: editCompany.id, data: editCompany });
-                setCompanies(prev => prev.map(c => (c.id === data.id ? data : c)));
+                const response = await dataProvider.update('companies', {
+                    id: editCompany.id,
+                    data: { ...editCompany },
+                });
+
+                const updatedCompany = response.data; // Obtener la compañía actualizada
+
+                // Actualiza el estado con la compañía actualizada
+                setCompanies(prev => prev.map(c => (c.id === updatedCompany.id ? updatedCompany : c)));
                 setOpenEditDialog(false);
                 setEditCompany(null);
             } catch (err) {
@@ -80,6 +87,7 @@ export default function Companies() {
     const handleDeleteCompany = async (id: number) => {
         try {
             await dataProvider.delete('companies', { id });
+
             setCompanies(prev => prev.filter(c => c.id !== id));
             setTotalCount(prev => prev - 1);
         } catch (err) {
@@ -100,7 +108,6 @@ export default function Companies() {
                 </div>
             )}
 
-            {/* Formulario para crear nueva compañía */}
             <Box component="form" sx={{ mb: 4 }} noValidate autoComplete="off">
                 <TextField
                     label="Nombre de la Compañía"
@@ -109,6 +116,9 @@ export default function Companies() {
                     margin="normal"
                     value={newCompany.company}
                     onChange={(e) => setNewCompany({ ...newCompany, company: e.target.value })}
+                    InputProps={{
+                        style: { backgroundColor: 'white', color: 'black' }, // Cambiar color de fondo y texto
+                    }}
                 />
                 <TextField
                     label="Email"
@@ -117,6 +127,9 @@ export default function Companies() {
                     margin="normal"
                     value={newCompany.email}
                     onChange={(e) => setNewCompany({ ...newCompany, email: e.target.value })}
+                    InputProps={{
+                        style: { backgroundColor: 'white', color: 'black' }, // Cambiar color de fondo y texto
+                    }}
                 />
                 <TextField
                     label="Número"
@@ -125,12 +138,15 @@ export default function Companies() {
                     margin="normal"
                     value={newCompany.number}
                     onChange={(e) => setNewCompany({ ...newCompany, number: e.target.value })}
+                    InputProps={{
+                        style: { backgroundColor: 'white', color: 'black' }, // Cambiar color de fondo y texto
+                    }}
                 />
                 <Button 
                     variant="contained" 
                     color="primary" 
                     onClick={handleCreateCompany}
-                    style={{ marginTop: '16px' }} // Espaciado superior para el botón
+                    style={{ marginTop: '16px' }} 
                 >
                     Crear Compañía
                 </Button>
@@ -153,7 +169,6 @@ export default function Companies() {
                 ))}
             </div>
 
-            {/* Diálogo para editar compañía */}
             <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
                 <DialogTitle>Editar Compañía</DialogTitle>
                 <DialogContent>
@@ -164,6 +179,9 @@ export default function Companies() {
                         margin="normal"
                         value={editCompany?.company || ''}
                         onChange={(e) => setEditCompany({ ...editCompany, company: e.target.value })}
+                        InputProps={{
+                            style: { backgroundColor: 'white', color: 'black' }, // Cambiar color de fondo y texto
+                        }}
                     />
                     <TextField
                         label="Email"
@@ -172,6 +190,9 @@ export default function Companies() {
                         margin="normal"
                         value={editCompany?.email || ''}
                         onChange={(e) => setEditCompany({ ...editCompany, email: e.target.value })}
+                        InputProps={{
+                            style: { backgroundColor: 'white', color: 'black' }, // Cambiar color de fondo y texto
+                        }}
                     />
                     <TextField
                         label="Número"
@@ -180,6 +201,9 @@ export default function Companies() {
                         margin="normal"
                         value={editCompany?.number || ''}
                         onChange={(e) => setEditCompany({ ...editCompany, number: e.target.value })}
+                        InputProps={{
+                            style: { backgroundColor: 'white', color: 'black' }, // Cambiar color de fondo y texto
+                        }}
                     />
                 </DialogContent>
                 <DialogActions>

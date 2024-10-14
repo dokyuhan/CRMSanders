@@ -151,7 +151,7 @@ app.get('/contacts', authenticateJWT(['admin', 'colaborador','donador']), async 
 });
 
 app.post('/createCompany', authenticateJWT(['admin']), async (req, res) => {
-    console.log("Ruta /createCompany")
+    console.log("Ruta /createCompany");
     const { company, email, number } = req.body;
 
     if (!company || !email || !number) {
@@ -159,8 +159,8 @@ app.post('/createCompany', authenticateJWT(['admin']), async (req, res) => {
     }
 
     try {
-        // Inserta la nueva compañía en la base de datos
-        const [result] = await pool.query('INSERT INTO companies (company, email, number) VALUES (?, ?, ?)', [company, email, number]);
+        // Llamar al procedimiento almacenado
+        const [result] = await pool.query('CALL CreateCompany(?, ?, ?)', [company, email, number]);
         
         // Devuelve la nueva compañía creada
         const newCompany = {
@@ -176,6 +176,7 @@ app.post('/createCompany', authenticateJWT(['admin']), async (req, res) => {
         res.status(500).json({ message: "Error al crear la compañía." });
     }
 });
+
 
 
 app.get('/companies/:id', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
@@ -199,17 +200,18 @@ app.put('/companies/:id', authenticateJWT(['admin']), async (req, res) => {
     const { company, email, number } = req.body;
 
     try {
-        const [result] = await pool.query('UPDATE companies SET company = ?, email = ?, number = ? WHERE id = ?', [company, email, number, id]);
+        const [result] = await pool.query('CALL UpdateCompany(?, ?, ?, ?)', [id, company, email, number]);
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Compañía no encontrada' });
-        }
         res.json({ message: 'Compañía actualizada exitosamente' });
     } catch (error) {
         console.error("Error updating company:", error);
+        if (error.sqlMessage && error.sqlMessage.includes('Compañía no encontrada')) {
+            return res.status(404).json({ message: 'Compañía no encontrada' });
+        }
         res.status(500).json({ message: "Error al actualizar la compañía." });
     }
 });
+
 
 
 app.delete('/companies/:id', authenticateJWT(['admin']), async (req, res) => {

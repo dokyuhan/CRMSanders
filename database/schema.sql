@@ -116,6 +116,8 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
 select * from usuarios;
 
  
