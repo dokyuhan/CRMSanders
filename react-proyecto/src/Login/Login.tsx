@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNotify } from 'react-admin';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie'; 
@@ -10,6 +10,15 @@ const LoginPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const notify = useNotify();
+
+  useEffect(() => {
+    // Limpiar todas las cookies y credenciales al cargar la página de login
+    Cookies.remove('user_role');
+    Cookies.remove('user_ID');
+    localStorage.clear();
+    sessionStorage.clear();
+    console.log('Credentials cleared on login page load');
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
