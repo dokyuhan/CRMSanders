@@ -75,8 +75,8 @@ const Registercolab: React.FC = () => {
             <option value="colaborador">Colaborador</option>
           </select>
           <button
-            type="submit"
-            className="w-full py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-transform transform hover:translate-y-0.5 duration-300"
+              type="submit"
+              className="w-full py-3 bg-[#207CCD] text-white rounded-md hover:bg-[#1b6cab] transition-transform transform hover:-translate-y-0.5 duration-300"
           >
             Registrar Colaborador
           </button>

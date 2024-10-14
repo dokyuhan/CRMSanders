@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Container, Typography, TextField, Button, CircularProgress, Alert } from '@mui/material';
 import { dataProvider } from '../dataProvider';
+import { format } from 'date-fns';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -32,7 +33,7 @@ export const Donadores: React.FC = () => {
             setDatos({
                 usuarioData: response.data.usuarioData,
                 fechaData: response.data.fechaData.map(d => ({
-                    fecha: d.fecha,
+                    fecha: format(new Date(d.fecha), 'yyyy-MM-dd'), // Formatea la fecha sin tiempo
                     total: parseFloat(d.total_donado_por_fecha)
                 }))
             });
@@ -64,7 +65,18 @@ export const Donadores: React.FC = () => {
                     style: { color: 'white' }
                 }}
             />
-            <Button onClick={handleSearch} color="primary" variant="contained" style={{ margin: '10px 0' }}>
+            <Button
+                onClick={handleSearch}
+                variant="contained"
+                sx={{
+                    mt: 1,
+                    mb: 1,
+                    backgroundColor: '#207CCD', // Establece el color de fondo principal
+                    '&:hover': {
+                        backgroundColor: '#1b6cab' // Cambia el color de fondo en el hover a un tono más oscuro
+                    }
+                }}
+            >
                 Buscar
             </Button>
             {datos.usuarioData && (
@@ -74,9 +86,11 @@ export const Donadores: React.FC = () => {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="fecha" />
                             <YAxis />
-                            <Tooltip />
+                            <Tooltip 
+                                contentStyle={{ color: '#000', backgroundColor: '#fff' }} // Estilos personalizados para Tooltip
+                            />
                             <Legend />
-                            <Bar dataKey="total" fill="#8884d8" />
+                            <Bar dataKey="total" fill="#2284C6" />
                         </BarChart>
                     </ResponsiveContainer>
                     <div>
