@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, AreaChart, Area } from 'recharts';
-import { dataProvider } from './dataProvider';
+import { dataProvider } from '../dataProvider';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919'];
 

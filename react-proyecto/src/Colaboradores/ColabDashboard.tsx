@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { dataProvider } from './dataProvider';
+import { dataProvider } from '../dataProvider';
 
 export default function ColabDashboard() {
     const [recentContacts, setRecentContacts] = useState([]);

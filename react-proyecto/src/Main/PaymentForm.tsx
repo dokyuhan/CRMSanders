@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, TextField, FormControl, FormControlLabel, Radio, RadioGroup, Typography, Box, Card, CardContent, Alert } from '@mui/material';
-import { dataProvider } from './dataProvider';
+import { dataProvider } from '../dataProvider';
 import Cookies from 'js-cookie';
 
 const PaymentForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [paymentMethod, setPaymentMethod] = useState('credit');
-  const [confirmation, setConfirmation] = useState(null);
+
+  interface Confirmation {
+    monto: number;
+    metodo_pago: string;
+  }
+  
+  const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const userData = Cookies.get('user_ID');
