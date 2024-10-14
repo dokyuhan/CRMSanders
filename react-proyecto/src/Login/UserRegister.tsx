@@ -73,6 +73,7 @@ const Registercolab: React.FC = () => {
             <option value="">Seleccione un rol</option>
             <option value="admin">Administrador</option>
             <option value="colaborador">Colaborador</option>
+            <option value="donador"> Donador</option>
           </select>
           <button
               type="submit"
