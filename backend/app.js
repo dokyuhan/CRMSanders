@@ -150,6 +150,106 @@ app.get('/contacts', authenticateJWT(['admin', 'colaborador','donador']), async 
     }
 });
 
+app.post('/createCompany', authenticateJWT(['admin']), async (req, res) => {
+    console.log("Ruta /createCompany");
+    const { company, email, number } = req.body;
+
+    // Validación de campos requeridos
+    if (!company || !email || !number) {
+        return res.status(400).json({ message: 'Todos los campos son requeridos.' });
+    }
+
+    try {
+        // Inserta la nueva compañía en la base de datos
+        const [result] = await pool.query('INSERT INTO companies (company, email, number) VALUES (?, ?, ?)', [company, email, number]);
+
+        // Devuelve la nueva compañía creada
+        const newCompany = {
+            id: result.insertId,
+            company,
+            email,
+            number,
+        };
+
+        res.status(201).json({ message: 'Compañía creada exitosamente', data: newCompany });
+    } catch (error) {
+        console.error("Error creating company:", error);
+        // Devuelve un mensaje más específico si es posible
+        res.status(500).json({ message: "Error al crear la compañía.", error: error.message });
+    }
+});
+
+
+
+app.get('/companies/:id', authenticateJWT(['admin', 'colaborador']), async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [[company]] = await pool.query('SELECT * FROM companies WHERE id = ?', [id]);
+        if (!company) {
+            return res.status(404).json({ message: 'Compañía no encontrada' });
+        }
+        res.json({ data: company });
+    } catch (error) {
+        console.error("Error fetching company:", error);
+        res.status(500).json({ message: "Error al obtener la compañía." });
+    }
+});
+
+
+app.put('/companies/:id', authenticateJWT(['admin']), async (req, res) => {
+    console.log("edit company route");
+    const { id } = req.params;
+    const { company, email, number } = req.body;
+
+    // Validación de campos requeridos
+    if (!company || !email || !number) {
+        return res.status(400).json({ message: 'Todos los campos son requeridos.' });
+    }
+
+    try {
+        const [result] = await pool.query('CALL UpdateCompany(?, ?, ?, ?)', [id, company, email, number]);
+
+        // Comprobar si se actualizó alguna fila
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Compañía no encontrada' });
+        }
+
+        res.json({ message: 'Compañía actualizada exitosamente' });
+    } catch (error) {
+        console.error("Error updating company:", error);
+        if (error.sqlMessage && error.sqlMessage.includes('Compañía no encontrada')) {
+            return res.status(404).json({ message: 'Compañía no encontrada' });
+        }
+        res.status(500).json({ message: "Error al actualizar la compañía.", error: error.message });
+    }
+});
+
+
+
+
+app.delete('/companies/:id', authenticateJWT(['admin']), async (req, res) => {
+    const { id } = req.params;
+
+    console.log(`Request to delete company with ID: ${id}`);
+
+    try {
+        const [result] = await pool.query('DELETE FROM companies WHERE id = ?', [id]);
+        console.log('Result of delete operation:', result);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Compañía no encontrada' });
+        }
+        res.json({ message: 'Compañía eliminada exitosamente' });
+    } catch (error) {
+        console.error("Error deleting company:", error);
+        res.status(500).json({ message: "Error al eliminar la compañía." });
+    }
+});
+
+
+
+
 // -----------------------Ruta utilizada-----------------------
 //Esta ruta se utiliza para registrar nuevos usuarios
 

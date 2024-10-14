@@ -50,8 +50,22 @@ FROM
 JOIN
     usuarios u ON d.usuario_id = u.id;
 
-DROP VIEW IF EXISTS DonacionesUsuarios;
-DROP VIEW IF EXISTS DonacionesPorFecha;
+DELIMITER //
+CREATE PROCEDURE UpdateCompany(
+    IN companyId INT,
+    IN companyName VARCHAR(255),
+    IN companyEmail VARCHAR(255),
+    IN companyNumber VARCHAR(20)
+)
+BEGIN
+    UPDATE companies
+    SET company = companyName,
+        email = companyEmail,
+        number = companyNumber
+    WHERE id = companyId;
+END //
+
+DELIMITER ;
 CREATE VIEW DonacionesUsuariosSeparados AS
 SELECT
     u.id AS usuario_id,
@@ -76,7 +90,6 @@ FROM
     donaciones d
 GROUP BY
     usuario_id, DATE(fecha_donacion);
-
 
 DELIMITER $$
 CREATE PROCEDURE registrar_usuario(
@@ -142,6 +155,8 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
+
+
 
 select * from usuarios;
 

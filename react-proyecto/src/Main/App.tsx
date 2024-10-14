@@ -21,6 +21,7 @@ import Cookies from 'js-cookie';
 import PaymentForm from './PaymentForm';
 import AdminDashboard from '../admin/AdminDashboard';
 import ColabDashboard from '../Colaboradores/ColabDashboard';
+import EditCompany from './EditCompany';
 //import Registerocolab from './UserRegister';
 
 const SET_PERMISSIONS = 'SET_PERMISSIONS';
@@ -85,6 +86,7 @@ const Home: React.FC = () => {
                       <Route path="/register-colab" element={<Registrocola />} />
                       <Route path="/stats" element={<Stats />} />
                       <Route path="/companies" element={<Companies />} />
+                      <Route path="/companies/edit/:id" element={<EditCompany />} />
                       <Route path="/donadores" element={<Donadores />} />
                       <Route path="/contacts" element={<Contacts />} />
                       <Route path="/create-contact" element={<CreateContact />} />
@@ -98,6 +100,7 @@ const Home: React.FC = () => {
                       <Route path="/contacts" element={<Contacts />} />
                       <Route path="/stats" element={<Stats />} />
                       <Route path="/companies" element={<Companies />} />
+                      <Route path="/companies/edit/:id" element={<EditCompany />} />
                       <Route path="/create-contact" element={<CreateContact />} />
                       <Route path="/edit-contact/:id" element={<EditContact />} />
                       <Route path="/donadores" element={<Donadores />} />
