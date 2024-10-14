@@ -1,3 +1,4 @@
+// Authenticator.ts
 import axiosInstance from "./axiosConfig";
 import Cookies from 'js-cookie';
 
@@ -40,12 +41,14 @@ export const authProvider: AuthProvider = {
             return Promise.reject(error);
         }
     },
-    logout: () => { // Elimina el token de autenticación al cerrar sesión
+    logout: () => {
         // Eliminar las cookies de autenticación
         Cookies.remove('user_role');
         Cookies.remove('user_ID');
-        //localStorage.removeItem('auth');
-        console.log('Logout successful');
+        // Eliminar cualquier dato adicional del almacenamiento local o de sesión
+        localStorage.clear();
+        sessionStorage.clear();
+        console.log('Logout successful and credentials cleared');
         return Promise.resolve();
     },
 };
