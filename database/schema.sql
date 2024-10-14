@@ -51,7 +51,6 @@ JOIN
     usuarios u ON d.usuario_id = u.id;
 
 DELIMITER //
-
 CREATE PROCEDURE UpdateCompany(
     IN companyId INT,
     IN companyName VARCHAR(255),
@@ -67,7 +66,30 @@ BEGIN
 END //
 
 DELIMITER ;
+CREATE VIEW DonacionesUsuariosSeparados AS
+SELECT
+    u.id AS usuario_id,
+    u.nombre AS usuario_nombre,
+    u.correo AS usuario_correo,
+    COUNT(d.id) AS total_donaciones,
+    SUM(d.monto) AS suma_donaciones,
+    MAX(d.monto) AS donacion_maxima
+FROM
+    donaciones d
+JOIN
+    usuarios u ON d.usuario_id = u.id
+GROUP BY
+    u.id;
 
+CREATE VIEW DonacionesPorFecha AS
+SELECT
+    usuario_id,
+    DATE(fecha_donacion) AS fecha,
+    SUM(monto) AS total_donado_por_fecha
+FROM
+    donaciones d
+GROUP BY
+    usuario_id, DATE(fecha_donacion);
 
 DELIMITER $$
 CREATE PROCEDURE registrar_usuario(

@@ -391,23 +391,35 @@ app.post("/donate", authenticateJWT(['admin', 'colaborador', 'donador']), async 
 // Esta ruta se utiliza para mostrar las donaciones hechas por los donadores
 
 app.get("/donacionesdonadores", authenticateJWT(['admin']), async (req, res) => {
-    console.log("--------------GET /donacionesdonadores")
+    const usuarioNombre = req.query.usuario_nombre; 
+
+    let query = 'SELECT * FROM DonacionesUsuariosSeparados WHERE usuario_nombre = ?';
+    let queryPorFecha = 'SELECT * FROM DonacionesPorFecha WHERE usuario_id = (SELECT id FROM usuarios WHERE nombre = ?)';
+    let params = [usuarioNombre];
+
     try {
-        const [rows] = await pool.query('SELECT * FROM DonacionesUsuarios');
-        console.log(rows);
+        const [usuarioRows] = await pool.query(query, params);
+        const [fechaRows] = await pool.query(queryPorFecha, params);
 
-        const [countResult] = await pool.query('SELECT COUNT(*) as count FROM DonacionesUsuarios');
-        const totalCount = countResult[0].count;
+        if (!usuarioRows.length) {
+            res.status(404).send("Usuario no encontrado.");
+            return;
+        }
 
-        res.setHeader('X-Total-Count', totalCount);
+        // Configuración del encabezado X-Total-Count
+        res.setHeader('X-Total-Count', usuarioRows.length);
         res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
 
-        res.json({ rows, total: totalCount });
+        res.json({
+            usuarioData: usuarioRows[0],
+            fechaData: fechaRows
+        });
     } catch (err) {
-        console.error("Error in /donacionesDetalladas GET route:", err);
+        console.error("Error in /donacionesdonadores GET route:", err);
         res.status(500).send('Error del servidor');
     }
 });
+
 
 //-----------------------Ruta utilizada-----------------------
 //Esta ruta sirve para crear un nuevo conacto
