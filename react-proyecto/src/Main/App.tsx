@@ -41,7 +41,11 @@ const Home: React.FC = () => {
               <Topbar setIsSidebar={setIsSidebar} />
               <main className="flex-1 overflow-y-auto p-4 bg-gray-600">
                 <Routes>
-                  <Route path="/" element={<Dashboard />} />
+                  <Route index element={
+                    auth === 'admin' ? <Navigate to="/AdminDashboard" replace /> :
+                    auth === 'colaborador' ? <Navigate to="/ColabDashboard" replace /> :
+                    <Dashboard />
+                  } />
                   <Route path="/donations" element={<Contacts/>} />
                   <Route path="/checkout" element={<PaymentForm />} />
                   {(auth === 'admin') && (
@@ -71,6 +75,7 @@ const Home: React.FC = () => {
 
                   {(auth === 'donador') && (
                     <>
+                    <Route path="/" element={<Dashboard />} />
                     <Route path="/donate" element={<DonatePage />} />
                     </>
                   )}
