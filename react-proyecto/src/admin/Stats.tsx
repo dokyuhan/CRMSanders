@@ -82,7 +82,7 @@ export const Stats = () => {
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip contentStyle={{ backgroundColor: '#333', color: '#fff' }} />
+                                <Tooltip contentStyle={{ backgroundColor: '#fff', color: '#fff' }} />
                                 <Legend wrapperStyle={{ color: '#fff' }} />
                             </PieChart>
                         ) : (
@@ -110,7 +110,7 @@ export const Stats = () => {
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip contentStyle={{ backgroundColor: '#333', color: '#fff' }} />
+                                <Tooltip contentStyle={{ backgroundColor: '#fff', color: '#fff' }} />
                                 <Legend wrapperStyle={{ color: '#fff' }} />
                             </PieChart>
                         ) : (
