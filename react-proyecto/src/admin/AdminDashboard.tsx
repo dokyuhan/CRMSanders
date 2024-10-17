@@ -131,7 +131,7 @@ export default function AdminDashboard() {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Tooltip contentStyle={{ backgroundColor: '#333', color: '#fff' }} />
+                                    <Tooltip contentStyle={{ backgroundColor: '#fff', color: '#fff' }} />
                                     <Legend wrapperStyle={{ color: '#fff' }} />
                                 </PieChart>
                             ) : (
